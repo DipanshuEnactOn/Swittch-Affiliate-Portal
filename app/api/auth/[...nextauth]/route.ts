@@ -23,8 +23,8 @@ const handler = NextAuth({
   ],
   pages: {
     signIn: "/signin",
-    signOut: "/signin", // Redirect to home instead of signin
-    error: "/signin", // Keep this for error handling
+    signOut: "/signin",
+    error: "/signin",
   },
   callbacks: {
     async jwt({ token, user }) {

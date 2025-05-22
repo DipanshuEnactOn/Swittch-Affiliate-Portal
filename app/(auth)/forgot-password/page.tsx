@@ -7,44 +7,45 @@ import AuthForm from "@/components/AuthForm";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import Link from "next/link";
 import { AppRoutes } from "@/utils/routes";
+import { ArrowLeftIcon } from "lucide-react";
 
-export default function SignUpPage() {
+export default function ForgotPassword() {
   const router = useRouter();
   const { t } = useTranslation();
 
   const handleSubmit = async (values: any) => {
-    const result = values !== null;
+    // Here you would typically make an API call to create the user
+    // For now, we'll simulate a successful signup
     // const result = await signIn("credentials", {
     //   ...values,
     //   redirect: false,
     // });
-
-    if (result) {
-      router.push(AppRoutes.auth.signIn);
-    }
+    // if (result?.ok) {
+    //   router.push(AppRoutes.auth.pending);
+    // }
   };
 
   return (
     <AuthLayout>
       <div className="flex flex-col items-center justify-center min-h-screen w-full p-8 space-y-5">
         <div className="flex flex-col gap-2 w-full">
-          <h1 className="text-2xl font-bold">{t("auth.signUp.title")}</h1>
+          <h1 className="text-2xl font-bold">
+            {t("auth.forgotPassword.title")}
+          </h1>
           <p className="text-muted-foreground mt-2">
-            {t("auth.signUp.description")}
+            {t("auth.forgotPassword.description")}
           </p>
         </div>
 
-        <AuthForm type="signup" onSubmit={handleSubmit} />
+        <AuthForm type="forgot-password" onSubmit={handleSubmit} />
 
         <div className="flex gap-1 w-full">
-          <p className="text-center text-sm text-muted-foreground">
-            {t("auth.signUp.haveAccount")}
-          </p>
+          <ArrowLeftIcon className="w-4 h-4 text-blue-500 mt-0.5" />
           <Link
             href="/signin"
             className="text-sm hover:underline text-blue-500 font-semibold"
           >
-            {t("auth.signUp.signIn")}
+            {t("auth.forgotPassword.backToSignIn")}
           </Link>
         </div>
       </div>
