@@ -5,6 +5,8 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: { unoptimized: true },
+  reactStrictMode: true,
+  swcMinify: true,
 };
 
 module.exports = nextConfig;

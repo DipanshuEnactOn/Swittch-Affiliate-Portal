@@ -59,6 +59,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
                 id="name"
                 name="name"
                 type="text"
+                placeholder={t("auth.placeholder.name")}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.name}
@@ -78,6 +79,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
               id="email"
               name="email"
               type="email"
+              placeholder={t("auth.placeholder.email")}
               onChange={handleChange}
               onBlur={handleBlur}
               value={values.email}
@@ -97,6 +99,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
                 id="password"
                 name="password"
                 type="password"
+                placeholder={t("auth.placeholder.password")}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.password}
@@ -124,7 +127,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
 
               <Link
                 href="/forgot-password"
-                className="text-sm text-blue-500 hover:underline"
+                className="text-sm text-brand-500 hover:underline hover:text-brand-600"
               >
                 {t("auth.signIn.forgotPassword")}
               </Link>
@@ -133,7 +136,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
 
           <Button
             type="submit"
-            className="w-full bg-blue-500 text-white hover:bg-blue-700 rounded-md"
+            className="w-full bg-brand-500 text-white hover:bg-brand-700 rounded-md"
           >
             {t(
               `auth.${

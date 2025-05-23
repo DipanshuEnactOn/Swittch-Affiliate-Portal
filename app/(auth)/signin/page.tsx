@@ -26,7 +26,9 @@ export default function SignInPage() {
     <AuthLayout>
       <div className="flex flex-col items-center justify-center min-h-screen w-full p-8 space-y-5">
         <div className="flex flex-col gap-2 w-full">
-          <h1 className="text-2xl font-bold">{t("auth.signIn.title")}</h1>
+          <h1 className="font-semibold text-gray-800 dark:text-white/90 sm:text-title-md text-3xl">
+            {t("auth.signIn.title")}
+          </h1>
           <p className="text-muted-foreground mt-2">
             {t("auth.signIn.description")}
           </p>
@@ -40,7 +42,7 @@ export default function SignInPage() {
           </p>
           <Link
             href="/signup"
-            className="text-sm hover:underline text-blue-500 font-semibold"
+            className="text-sm hover:underline text-brand-500 font-semibold"
           >
             {t("auth.signIn.signUp")}
           </Link>

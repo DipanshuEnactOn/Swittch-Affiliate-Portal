@@ -1,3 +1,4 @@
+import MainProgressBar from "@/components/MainProgressBar";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -16,7 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+        <link rel="icon" href="/images/favicon.png" />
+      </head>
+      <body className={inter.className}>
+        <MainProgressBar>{children}</MainProgressBar>
+      </body>
     </html>
   );
 }

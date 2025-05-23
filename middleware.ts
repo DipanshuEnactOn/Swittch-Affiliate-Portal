@@ -8,26 +8,34 @@ export default withAuth(
     const isAuthenticated = req.nextauth.token;
     const { pathname } = req.nextUrl;
 
-    if (pathname.startsWith("/api/auth")) {
+    if (process.env.NODE_ENV === "development" && pathname.includes("_next")) {
       return NextResponse.next();
     }
 
-    const isPendingPath = pathname === AppRoutes.auth.pending;
-    const isAuthPath = [
-      AppRoutes.auth.signIn,
-      AppRoutes.auth.signUp,
-      AppRoutes.auth.forgot_password,
-    ].includes(pathname);
+    // if (pathname.startsWith("/api/auth")) {
+    //   return NextResponse.next();
+    // }
+    // if (pathname.startsWith("/dashboard")) {
+    //   console.log("Going to dashboard");
+    //   return NextResponse.next();
+    // }
 
-    if (isAuthenticated && isAuthPath) {
-      return NextResponse.redirect(new URL(AppRoutes.auth.pending, req.url));
-    }
+    // const isPendingPath = pathname === AppRoutes.auth.pending;
+    // const isAuthPath = [
+    //   AppRoutes.auth.signIn,
+    //   AppRoutes.auth.signUp,
+    //   AppRoutes.auth.forgot_password,
+    // ].includes(pathname);
 
-    if (!isAuthenticated && !isAuthPath && !isPendingPath) {
-      return NextResponse.redirect(new URL(AppRoutes.auth.signIn, req.url));
-    }
+    // if (isAuthenticated && isAuthPath) {
+    //   return NextResponse.redirect(new URL(AppRoutes.auth.pending, req.url));
+    // }
 
-    return NextResponse.next();
+    // if (!isAuthenticated && !isAuthPath && !isPendingPath) {
+    //   return NextResponse.redirect(new URL(AppRoutes.auth.signIn, req.url));
+    // }
+
+    // return NextResponse.next();
   }
   // {
   //   callbacks: {
@@ -48,6 +56,6 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/((?!api/auth|_next/|.*\\..*|signin|signup|forgot-password|error).*)",
+    "/((?!api/auth|_next/|.*\\..*|signin|signup|forgot-password|dashboard|error).*)",
   ],
 };

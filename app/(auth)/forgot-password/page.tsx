@@ -29,7 +29,7 @@ export default function ForgotPassword() {
     <AuthLayout>
       <div className="flex flex-col items-center justify-center min-h-screen w-full p-8 space-y-5">
         <div className="flex flex-col gap-2 w-full">
-          <h1 className="text-2xl font-bold">
+          <h1 className="font-semibold text-gray-800 dark:text-white/90 sm:text-title-md text-3xl">
             {t("auth.forgotPassword.title")}
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -40,10 +40,10 @@ export default function ForgotPassword() {
         <AuthForm type="forgot-password" onSubmit={handleSubmit} />
 
         <div className="flex gap-1 w-full">
-          <ArrowLeftIcon className="w-4 h-4 text-blue-500 mt-0.5" />
+          <ArrowLeftIcon className="w-4 h-4 text-brand-500 hover:text-brand-600 mt-0.5" />
           <Link
             href="/signin"
-            className="text-sm hover:underline text-blue-500 font-semibold"
+            className="text-sm hover:underline text-brand-500 font-semibold hover:text-brand-600"
           >
             {t("auth.forgotPassword.backToSignIn")}
           </Link>

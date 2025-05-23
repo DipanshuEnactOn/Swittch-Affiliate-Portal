@@ -32,6 +32,11 @@
       "title": "Request Pending",
       "description": "Your request has been sent to the admin. Once approved, we will notify you via email.",
       "message": "Thank you for signing up! Please check your email for further instructions."
+    },
+    "placeholder":{
+      "name": "Enter your name",
+      "email": "Enter your email",
+      "password": "Enter your password"
     }
   },
   "validation": {

@@ -1,6 +1,17 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    };
+  }
+}
+
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
@@ -33,12 +44,10 @@ const handler = NextAuth({
       }
       return token;
     },
-    session: async (props) => {
-      let session = {
-        ...props.session,
-        ...props.token,
-      };
-      // return session;
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
       return session;
     },
   },

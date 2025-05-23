@@ -1,4 +1,4 @@
-import { Sidebar } from "../Sidebar";
+import { Sidebar } from "./sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -9,7 +9,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 overflow-auto">
-        <main className="p-10 bg-slate-50">{children}</main>
+        <main className="p-6">{children}</main>
       </div>
     </div>
   );
