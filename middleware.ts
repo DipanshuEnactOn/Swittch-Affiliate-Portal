@@ -2,6 +2,7 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { AppRoutes } from "./utils/routes";
+import { getAffiliateStatus } from "./models/affiliates-model";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -45,6 +46,15 @@ export async function middleware(req: NextRequest) {
   }
 
   const userStatus = token.status as string;
+  const token1 = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  // console.log("[Middleware] Token1 status:", token1?.status);
+
+  // console.log("Token Status:", userStatus);
+  // const userEmail = token.email;
+  // if (!userEmail)
+  //   return NextResponse.redirect(new URL(authPaths.signIn, req.url));
+  // const statusResult = await getAffiliateStatus(userEmail);
+  // const userStatus = statusResult.data?.status;
 
   if (userStatus === "pending") {
     if (isAuthPath) {

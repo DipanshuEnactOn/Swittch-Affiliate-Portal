@@ -1,4 +1,6 @@
 {
+  "success":"Success",
+  "error":"Error",
   "auth": {
     "signIn": {
       "title": "Sign In",
@@ -10,7 +12,8 @@
       "submit": "Sign In",
       "noAccount": "Don't have an account?",
       "signUp": "Sign Up",
-      "rememberMe": "Keep me logged in"    },
+      "rememberMe": "Keep me logged in"
+    },
     "signUp": {
       "title": "Sign Up",
       "description": "Enter your email and password to sign up!",
@@ -46,6 +49,8 @@
     "errorCreatingUser":"Error signing up. Please try again.",
     "errorSigningIn": "Error signing in. Please check your credentials and try again.",
     "userCreatedSuccessfully":"Sign up successful!",
-    "checkEmailForVerification": "Please check your email for verification instructions."
+    "checkEmailForVerification": "Please check your email for verification instructions.",
+    "signInSuccess":"Sign in successful!",
+    "emailAlreadyExists":"Email already exists. Please use a different email address or sign in with your existing account."
   }
 }

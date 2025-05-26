@@ -126,8 +126,10 @@ export const getClicksByAffiliateId = async (affiliateId: number) => {
       .where(eq(clicks.affiliateId, affiliateId))
       .orderBy(sql`${clicks.clickedAt} DESC`);
 
+    const totalClicks = result?.length;
+
     return {
-      data: result,
+      data: result ? { result, totalClicks } : null,
       message: "ok",
       status: "success",
     };

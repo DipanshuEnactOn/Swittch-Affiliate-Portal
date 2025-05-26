@@ -253,6 +253,7 @@ export const getAffiliateLinksByAffiliateId = async (
           currentPage: page,
           rows_per_page,
         },
+        countResult: countResult[0]?.count || 0,
       },
       message: "ok",
       status: "success",
@@ -479,6 +480,29 @@ export const getAffiliateLinkStats = async (id: number) => {
       })
       .from(affiliateLinks)
       .where(eq(affiliateLinks.id, id));
+
+    return {
+      data: result[0] || null,
+      message: "ok",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const getAllAffiliateLinksEarnings = async (affiliateId: number) => {
+  try {
+    const result = await db
+      .select({
+        totalEarnings: sql<number>`COALESCE(SUM(${affiliateLinks.totalEarnings}), 0)`,
+      })
+      .from(affiliateLinks)
+      .where(eq(affiliateLinks.affiliateId, affiliateId));
 
     return {
       data: result[0] || null,

@@ -1,26 +1,32 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { getAffiliateLinksByAffiliateId } from "@/models/affiliate-link-model";
+import { getAuthSession } from "@/models/auth-models";
+import { getClicksByAffiliateId } from "@/models/clicks-model";
+import { getConversionStatsForAffiliate } from "@/models/conversions-model";
 import { LightbulbIcon, Link, DollarSign } from "lucide-react";
 
-export function MetricsCards({
-  totalClicks = 3782,
-  totalLinks = 3782,
-  totalEarnings = 5359,
-}) {
+export async function MetricsCards() {
+  const user = await getAuthSession();
+  const userAllClicks = (await getClicksByAffiliateId(user.user.id))?.data;
+  const userAllLinks = (await getAffiliateLinksByAffiliateId(user.user.id))
+    ?.data;
+  const userAllEarnings = (await getConversionStatsForAffiliate(user.user.id))
+    ?.data;
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <MetricCard
         title="Total Clicks"
-        value={totalClicks.toLocaleString()}
+        value={userAllClicks?.totalClicks?.toLocaleString() || "0"}
         icon={<LightbulbIcon className="h-6 w-6 text-blue-500" />}
       />
       <MetricCard
         title="Total Links"
-        value={totalLinks.toLocaleString()}
+        value={userAllLinks?.countResult?.toLocaleString() || "0"}
         icon={<Link className="h-6 w-6 text-blue-500" />}
       />
       <MetricCard
         title="Total Earnings"
-        value={totalEarnings.toLocaleString()}
+        value={userAllEarnings?.totalValue?.toLocaleString() || "0"}
         icon={<DollarSign className="h-6 w-6 text-blue-500" />}
       />
     </div>

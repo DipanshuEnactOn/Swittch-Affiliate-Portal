@@ -18,7 +18,7 @@ export const approvalStatusEnum = pgEnum("approval_status", [
   "pending",
 ]);
 export const statusEnum = pgEnum("status", [
-  "approved",
+  "confirmed",
   "declined",
   "pending",
   "active",
@@ -90,6 +90,7 @@ export const affiliateLinks = pgTable("affiliate_links", {
   campaignId: bigint("campaign_id", { mode: "number" }).notNull(),
   affiliateId: bigint("affiliate_id", { mode: "number" }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
+  name: varchar("name", { length: 255 }).notNull(),
   destinationUrl: varchar("destination_url", { length: 1000 }).notNull(),
   sub1: varchar("sub1", { length: 255 }),
   sub2: varchar("sub2", { length: 255 }),

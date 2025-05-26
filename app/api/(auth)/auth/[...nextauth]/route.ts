@@ -1,7 +1,10 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import { getAffiliateByEmail } from "@/models/affiliates-model";
+import {
+  getAffiliateByEmail,
+  getAffiliateStatus,
+} from "@/models/affiliates-model";
 import { Config } from "@/utils/config";
 
 declare module "next-auth" {
@@ -31,6 +34,7 @@ export const {
   session: {
     strategy: "jwt",
     maxAge: Config.env.app.jwt_login_expiry,
+    updateAge: 5 * 60,
   },
   providers: [
     CredentialsProvider({
@@ -44,7 +48,12 @@ export const {
 
         const { email, password } = credentials;
 
-        const user = await getAffiliateByEmail(email);
+        let user;
+        try {
+          user = await getAffiliateByEmail(email);
+        } catch (err) {
+          return null;
+        }
         if (user === null || user === undefined || !user.data) {
           return null;
         }
@@ -73,10 +82,22 @@ export const {
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.status = user.status;
+      } else {
+        if (token.email) {
+          try {
+            const affiliate = await getAffiliateStatus(token.email);
+            if (affiliate && affiliate.data) {
+              token.status = affiliate.data.status || "pending";
+            }
+          } catch (error) {
+            console.log(error);
+            // token.status = user.status;
+          }
+        }
       }
       return token;
     },
@@ -91,6 +112,7 @@ export const {
   },
 
   secret: process.env.NEXTAUTH_SECRET,
+  debug: false,
 });
 
 // export { handler as GET, handler as POST };

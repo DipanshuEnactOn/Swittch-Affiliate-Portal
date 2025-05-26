@@ -4,12 +4,24 @@ import AuthLayout from "../../components/layouts/AuthLayout";
 import { createTranslation } from "@/i18n/server";
 import { getAffiliateStatus } from "@/models/affiliates-model";
 import { getAuthSession } from "@/models/auth-models";
+import { redirect } from "next/navigation";
+import { AppRoutes } from "@/utils/routes";
+import { signIn } from "../api/(auth)/auth/[...nextauth]/route";
 
 export default async function PendingPage() {
   const session = await getAuthSession();
   const { t } = await createTranslation();
-  console.log(session);
-  // const status = await getAffiliateStatus()
+  const status = (await getAffiliateStatus(session.user.email as string)).data
+    ?.status;
+
+  console.log("Status from Pending Page:", status);
+  // if (status === "approved") {
+  //   signIn("Credentials", { redirect: false });
+  // }
+
+  // if (status === "approved") {
+  //   return redirect(AppRoutes.dashboard);
+  // }
 
   return (
     <AuthLayout>

@@ -7,13 +7,14 @@ import AuthLayout from "@/components/layouts/AuthLayout";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/client";
 import { toast } from "@/hooks/use-toast";
+import { AppRoutes } from "@/utils/routes";
 
 export default function SignInPage() {
   const router = useRouter();
   const { t } = useTranslation();
 
   const handleSubmit = async (values: any) => {
-    const result = await signIn("credentials", {
+    const result: any = await signIn("credentials", {
       ...values,
       redirect: false,
     });
@@ -21,15 +22,15 @@ export default function SignInPage() {
     if (result?.error) {
       toast({
         title: t("error"),
-        description: t(result.error),
+        description: t("validation.errorSigningIn"),
       });
     } else {
       toast({
         title: t("success"),
-        description: t("auth.login.success"),
+        description: t("validation.signInSuccess"),
       });
       setTimeout(() => {
-        window.location.href = window.location.origin + "/pending";
+        router.push(AppRoutes.auth.pending);
       }, 1500);
     }
   };

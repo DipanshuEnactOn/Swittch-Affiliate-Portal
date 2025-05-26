@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -7,116 +9,237 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoveRight } from "lucide-react";
+import { MoveRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { statusColors } from "@/utils/get-color-for-status";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  flexRender,
+  createColumnHelper,
+  SortingState,
+  ColumnFiltersState,
+  ColumnDef,
+} from "@tanstack/react-table";
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import { AppRoutes } from "@/utils/routes";
 
 interface Transaction {
   id: string;
-  date: string;
-  link: string;
-  goal: string;
-  subId1: string;
-  subId2: string;
-  earning: string;
-  status: "Confirmed" | "Pending" | "Declined";
+  createdAt: string;
+  campaignId: string;
+  campaignGoalId: string;
+  sub1: string;
+  sub2: string;
+  commission: number;
+  status: "confirmed" | "declined" | "pending";
 }
 
-const transactions: Transaction[] = [
-  {
-    id: "1",
-    date: "08-05-2025",
-    link: "YouTube",
-    goal: "Download the app",
-    subId1: "#or1o9",
-    subId2: "#qqOwQ",
-    earning: "$2399.00",
-    status: "Confirmed",
-  },
-  {
-    id: "2",
-    date: "08-05-2025",
-    link: "Instagram",
-    goal: "Create account",
-    subId1: "#ff672",
-    subId2: "#14568",
-    earning: "$2399.00",
-    status: "Pending",
-  },
-  {
-    id: "3",
-    date: "08-05-2025",
-    link: "Facebook",
-    goal: "Complete onboarding",
-    subId1: "#12389",
-    subId2: "#hKO2b",
-    earning: "$2399.00",
-    status: "Confirmed",
-  },
-  {
-    id: "4",
-    date: "08-05-2025",
-    link: "YouTube",
-    goal: "Download the app",
-    subId1: "#f1289",
-    subId2: "#12769",
-    earning: "$2399.00",
-    status: "Declined",
-  },
-  {
-    id: "5",
-    date: "08-05-2025",
-    link: "Twitter",
-    goal: "Download the app",
-    subId1: "#6r1oN",
-    subId2: "#66798",
-    earning: "$2399.00",
-    status: "Confirmed",
-  },
-];
+export function TransactionsTable({ transactions }: any) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-export function TransactionsTable() {
+  const columns: ColumnDef<Transaction>[] = [
+    {
+      accessorKey: "createdAt",
+      header: "Date",
+      cell: ({ row }) => {
+        const rowValue = row.original;
+        return <div className="flex items-center">{rowValue.createdAt}</div>;
+      },
+    },
+    {
+      accessorKey: "campaignId",
+      header: "Link",
+      cell: ({ row }) => {
+        const rowValue = row.original;
+        return <div className="flex items-center">{rowValue.campaignId}</div>;
+      },
+    },
+    {
+      accessorKey: "campaignGoalId",
+      header: "Goal",
+      cell: ({ row }) => {
+        const rowValue = row.original;
+        return (
+          <div className="flex items-center">{rowValue.campaignGoalId}</div>
+        );
+      },
+    },
+    {
+      accessorKey: "sub1",
+      header: "SubId1",
+      cell: ({ row }) => {
+        const rowValue = row.original;
+        return <div className="flex items-center">{rowValue.sub1}</div>;
+      },
+    },
+    {
+      accessorKey: "sub2",
+      header: "SubId2",
+      cell: ({ row }) => {
+        const rowValue = row.original;
+        return <div className="flex items-center">{rowValue.sub2}</div>;
+      },
+    },
+    {
+      accessorKey: "commission",
+      header: "Earning",
+      cell: ({ row }) => {
+        const rowValue = row.original;
+        return (
+          <div className="flex items-center">
+            ${rowValue.commission.toFixed(2)}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const rowValue = row.original;
+        return (
+          <div className="flex items-center">
+            <StatusBadge status={rowValue.status} />
+          </div>
+        );
+      },
+    },
+  ];
+
+  const table = useReactTable({
+    data: transactions || [],
+    columns,
+    state: {
+      sorting,
+      columnFilters,
+    },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
+  });
+
+  // if (!transactions || transactions.length === 0) {
+  //   return (
+  //     <Card className="border rounded-lg">
+  //       <CardHeader>
+  //         <CardTitle>No Recent Transactions</CardTitle>
+  //       </CardHeader>
+  //       <CardContent>
+  //         <p className="text-gray-500">You have no recent transactions.</p>
+  //       </CardContent>
+  //     </Card>
+  //   );
+  // }
+
   return (
-    <Card className="border rounded-lg">
+    <Card className="border rounded-2xl">
       <CardHeader>
         <CardTitle>Recent Transactions</CardTitle>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Link</TableHead>
-              <TableHead>Goal</TableHead>
-              <TableHead>SubId1</TableHead>
-              <TableHead>SubId2</TableHead>
-              <TableHead>Earning</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell>{transaction.date}</TableCell>
-                <TableCell>{transaction.link}</TableCell>
-                <TableCell>{transaction.goal}</TableCell>
-                <TableCell>{transaction.subId1}</TableCell>
-                <TableCell>{transaction.subId2}</TableCell>
-                <TableCell>{transaction.earning}</TableCell>
-                <TableCell>
-                  <StatusBadge status={transaction.status} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <div className="mt-4 flex justify-end">
-          <Button variant="outline" className="text-primary">
-            View all transactions <MoveRight className="ml-2 h-4 w-4" />
-          </Button>
+        <div className="space-y-4">
+          {/* Search/Filter Input */}
+          {/* <div className="flex items-center space-x-2">
+            <input
+              placeholder="Filter transactions..."
+              value={
+                (table.getColumn("campaignId")?.getFilterValue() as string) ??
+                ""
+              }
+              onChange={(event) =>
+                table
+                  .getColumn("campaignId")
+                  ?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div> */}
+
+          {/* Table */}
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No recent transactions found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="flex justify-end">
+            <Link href={AppRoutes.transactions}>
+              <Button className="text-white bg-blue-600 hover:bg-blue-700">
+                View all transactions <MoveRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </CardContent>
     </Card>
   );
+}
+
+function SortIcon({ sorted }: { sorted: false | "asc" | "desc" }) {
+  if (sorted === "asc") {
+    return <ArrowUp className="ml-2 h-4 w-4" />;
+  }
+  if (sorted === "desc") {
+    return <ArrowDown className="ml-2 h-4 w-4" />;
+  }
+  return <ArrowUpDown className="ml-2 h-4 w-4" />;
 }
 
 interface CardProps {
@@ -161,20 +284,18 @@ function CardContent({ className, children }: CardContentProps) {
   return <div className={cn("p-6", className)}>{children}</div>;
 }
 
-interface StatusBadgeProps {
-  status: "Confirmed" | "Pending" | "Declined";
-}
-
-function StatusBadge({ status }: StatusBadgeProps) {
+function StatusBadge({
+  status,
+}: {
+  status: "confirmed" | "declined" | "pending";
+}) {
   return (
     <span
       className={cn(
         "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-        {
-          "bg-green-100 text-green-800": status === "Confirmed",
-          "bg-yellow-100 text-yellow-800": status === "Pending",
-          "bg-red-100 text-red-800": status === "Declined",
-        }
+        statusColors[
+          status.toLowerCase() as "confirmed" | "pending" | "declined"
+        ] || "bg-gray-100 text-gray-800"
       )}
     >
       {status}

@@ -11,17 +11,8 @@ import {
   YAxis,
 } from "recharts";
 
-const data = [
-  { day: "Sunday", value: 650 },
-  { day: "Monday", value: 680 },
-  { day: "Tuesday", value: 720 },
-  { day: "Wednesday", value: 760 },
-  { day: "Thursday", value: 790 },
-  { day: "Friday", value: 820 },
-  { day: "Saturday", value: 880 },
-];
-
-export function EarningsChart() {
+export function EarningsChart({ earningsData }: { earningsData: any }) {
+  // console.log(earningsData);
   return (
     <Card className="mb-6">
       <CardHeader className="border-b mb-3">
@@ -31,7 +22,7 @@ export function EarningsChart() {
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
-              data={data}
+              data={earningsData}
               margin={{
                 top: 10,
                 right: 30,

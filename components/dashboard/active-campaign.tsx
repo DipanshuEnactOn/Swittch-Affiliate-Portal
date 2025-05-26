@@ -1,24 +1,31 @@
-"use client";
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  getAffiliateCampaignGoalById,
+  getAffiliateCampaignGoalsByAffiliateId,
+} from "@/models/affiliate-campaign-goal-model";
+import { getAuthSession } from "@/models/auth-models";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
 
-export function ActiveCampaign() {
-  const campaignGoals = [
-    {
-      title: "Download the App",
-      earnings: "$5",
-    },
-    {
-      title: "Create an Account",
-      earnings: "$10",
-    },
-    {
-      title: "Complete the On-Boarding Process",
-      earnings: "$12",
-    },
-  ];
+export async function ActiveCampaign() {
+  const user = await getAuthSession();
+  const campaignGoals = await getAffiliateCampaignGoalsByAffiliateId(
+    user.user.id
+  );
+  // const campaignGoals = [
+  //   {
+  //     title: "Download the App",
+  //     earnings: "$5",
+  //   },
+  //   {
+  //     title: "Create an Account",
+  //     earnings: "$10",
+  //   },
+  //   {
+  //     title: "Complete the On-Boarding Process",
+  //     earnings: "$12",
+  //   },
+  // ];
 
   return (
     <Card className="mb-6">
@@ -55,7 +62,7 @@ export function ActiveCampaign() {
                       Campaign Goals
                     </h3>
                     <div className="space-y-3 mt-2">
-                      {campaignGoals.map((goal, index) => (
+                      {/* {campaignGoals.map((goal, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-blue-500" />
                           <span className="text-sm">{goal.title}</span>
@@ -63,7 +70,7 @@ export function ActiveCampaign() {
                             Earn {goal.earnings}
                           </span>
                         </div>
-                      ))}
+                      ))} */}
                     </div>
                   </div>
                 </div>

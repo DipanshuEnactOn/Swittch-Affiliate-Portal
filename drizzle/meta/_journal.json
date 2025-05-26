@@ -29,6 +29,20 @@
       "when": 1748171961040,
       "tag": "0003_cloudy_war_machine",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1748254379841,
+      "tag": "0004_special_hellcat",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1748256618921,
+      "tag": "0005_breezy_joseph",
+      "breakpoints": true
     }
   ]
 }

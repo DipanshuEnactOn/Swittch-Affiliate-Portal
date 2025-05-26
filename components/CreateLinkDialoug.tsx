@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,13 +11,22 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Plus } from "lucide-react";
 
-export function CreateAffiliateLink({ open, setOpen }: any) {
+export function CreateAffiliateLink() {
   const mainUrl = "http://localhost:3000";
   const [link, setLink] = useState("algo-crane");
-
+  const [open, setOpen] = useState(false);
   return (
     <>
+      <Button
+        className=" bg-blue-600 hover:bg-blue-700 max-w-sm px-2 w-auto gap-2 m-0"
+        onClick={() => setOpen(true)}
+      >
+        <Plus className="h-4 w-4" />
+        Create New Affiliate Link
+      </Button>
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>

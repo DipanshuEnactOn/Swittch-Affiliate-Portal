@@ -11,6 +11,7 @@ import {
   SignInSchema,
   SignUpSchema,
 } from "@/utils/validation";
+import { useState } from "react";
 
 interface AuthFormProps {
   type: "signin" | "signup" | "forgot-password";
@@ -19,6 +20,7 @@ interface AuthFormProps {
 
 export default function AuthForm({ type, onSubmit }: AuthFormProps) {
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
 
   const initialValues = {
     ...(type === "signup" && { name: "" }),
@@ -38,10 +40,12 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
       }
       onSubmit={async (values, { setSubmitting }) => {
         try {
+          setIsLoading(true);
           await onSubmit(values);
         } catch (error) {
           console.error("Form submission error:", error);
         } finally {
+          setIsLoading(false);
           setSubmitting(false);
         }
       }}
@@ -144,19 +148,18 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
           <Button
             type="submit"
             className="w-full bg-brand-500 text-white hover:bg-brand-700 rounded-md"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLoading}
+            isLoading={isLoading}
           >
-            {isSubmitting
-              ? t("common.loading")
-              : t(
-                  `auth.${
-                    type === "signin"
-                      ? "signIn"
-                      : type === "signup"
-                      ? "signUp"
-                      : "forgotPassword"
-                  }.submit`
-                )}
+            {t(
+              `auth.${
+                type === "signin"
+                  ? "signIn"
+                  : type === "signup"
+                  ? "signUp"
+                  : "forgotPassword"
+              }.submit`
+            )}
           </Button>
         </form>
       )}
