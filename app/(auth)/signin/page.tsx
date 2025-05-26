@@ -6,6 +6,7 @@ import AuthForm from "@/components/AuthForm";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/client";
+import { toast } from "@/hooks/use-toast";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -17,8 +18,19 @@ export default function SignInPage() {
       redirect: false,
     });
 
-    if (result?.ok) {
-      router.push("/pending");
+    if (result?.error) {
+      toast({
+        title: t("error"),
+        description: t(result.error),
+      });
+    } else {
+      toast({
+        title: t("success"),
+        description: t("auth.login.success"),
+      });
+      setTimeout(() => {
+        window.location.href = window.location.origin + "/pending";
+      }, 1500);
     }
   };
 

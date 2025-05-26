@@ -2,9 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import AuthLayout from "../../components/layouts/AuthLayout";
 import { createTranslation } from "@/i18n/server";
+import { getAffiliateStatus } from "@/models/affiliates-model";
+import { getAuthSession } from "@/models/auth-models";
 
 export default async function PendingPage() {
+  const session = await getAuthSession();
   const { t } = await createTranslation();
+  console.log(session);
+  // const status = await getAffiliateStatus()
 
   return (
     <AuthLayout>

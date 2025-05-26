@@ -1,26 +1,39 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/i18n/client";
 import AuthForm from "@/components/AuthForm";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import Link from "next/link";
 import { AppRoutes } from "@/utils/routes";
+import { Api } from "@/services/api-services";
+import { toast } from "@/hooks/use-toast";
 
 export default function SignUpPage() {
   const router = useRouter();
   const { t } = useTranslation();
 
   const handleSubmit = async (values: any) => {
-    const result = values !== null;
-    // const result = await signIn("credentials", {
-    //   ...values,
-    //   redirect: false,
-    // });
-
-    if (result) {
+    try {
+      const result = await Api.post({ path: "/api/sign-up", body: values });
+      if (!result || result.status === "error") {
+        toast({
+          title: t("validation.errorCreatingUser"),
+          description: result?.message || t("validation.invalidData"),
+        });
+        return;
+      }
+      toast({
+        title: t("validation.userCreatedSuccessfully"),
+        description: t("validation.checkEmailForVerification"),
+      });
       router.push(AppRoutes.auth.signIn);
+    } catch (error) {
+      console.error("Error during sign up:", error);
+      toast({
+        title: t("validation.errorCreatingUser"),
+        description: t("validation.invalidData"),
+      });
     }
   };
 

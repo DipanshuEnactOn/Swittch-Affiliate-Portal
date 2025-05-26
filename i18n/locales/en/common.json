@@ -42,6 +42,10 @@
   "validation": {
     "required": "This field is required",
     "email": "Please enter a valid email address",
-    "password": "Password must be at least 8 characters"
+    "password": "Password must be at least 8 characters",
+    "errorCreatingUser":"Error signing up. Please try again.",
+    "errorSigningIn": "Error signing in. Please check your credentials and try again.",
+    "userCreatedSuccessfully":"Sign up successful!",
+    "checkEmailForVerification": "Please check your email for verification instructions."
   }
 }

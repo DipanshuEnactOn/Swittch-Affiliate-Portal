@@ -1,0 +1,1 @@
+ALTER TABLE "affiliates" RENAME COLUMN "password_hash" TO "password";

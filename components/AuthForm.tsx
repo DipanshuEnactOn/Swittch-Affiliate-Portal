@@ -1,32 +1,24 @@
 "use client";
 
 import { Formik } from "formik";
-import * as Yup from "yup";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/i18n/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import {
+  ForgotPasswordSchema,
+  SignInSchema,
+  SignUpSchema,
+} from "@/utils/validation";
 
 interface AuthFormProps {
   type: "signin" | "signup" | "forgot-password";
-  onSubmit: (values: any) => void;
+  onSubmit: (values: any) => void | Promise<void>;
 }
 
 export default function AuthForm({ type, onSubmit }: AuthFormProps) {
   const { t } = useTranslation();
-
-  const validationSchema = Yup.object().shape({
-    ...(type === "signup" && {
-      name: Yup.string().required(t("validation.required")),
-    }),
-    email: Yup.string()
-      .email(t("validation.email"))
-      .required(t("validation.required")),
-    password: Yup.string()
-      .min(8, t("validation.password"))
-      .required(t("validation.required")),
-  });
 
   const initialValues = {
     ...(type === "signup" && { name: "" }),
@@ -37,8 +29,22 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      validationSchema={
+        type === "signup"
+          ? SignUpSchema
+          : type === "signin"
+          ? SignInSchema
+          : ForgotPasswordSchema
+      }
+      onSubmit={async (values, { setSubmitting }) => {
+        try {
+          await onSubmit(values);
+        } catch (error) {
+          console.error("Form submission error:", error);
+        } finally {
+          setSubmitting(false);
+        }
+      }}
     >
       {({
         values,
@@ -47,6 +53,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
         handleChange,
         handleBlur,
         handleSubmit,
+        isSubmitting,
       }) => (
         <form onSubmit={handleSubmit} className="space-y-6 w-full">
           {type === "signup" && (
@@ -137,16 +144,19 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
           <Button
             type="submit"
             className="w-full bg-brand-500 text-white hover:bg-brand-700 rounded-md"
+            disabled={isSubmitting}
           >
-            {t(
-              `auth.${
-                type === "signin"
-                  ? "signIn"
-                  : type === "signup"
-                  ? "signUp"
-                  : "forgotPassword"
-              }.submit`
-            )}
+            {isSubmitting
+              ? t("common.loading")
+              : t(
+                  `auth.${
+                    type === "signin"
+                      ? "signIn"
+                      : type === "signup"
+                      ? "signUp"
+                      : "forgotPassword"
+                  }.submit`
+                )}
           </Button>
         </form>
       )}

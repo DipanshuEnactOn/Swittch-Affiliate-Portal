@@ -1,6 +1,6 @@
 import { Config } from "@/utils/config";
 
-export const api = {
+export const Api = {
   get: async ({
     path,
     externalDomain,

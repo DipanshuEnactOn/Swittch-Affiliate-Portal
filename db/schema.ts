@@ -1,0 +1,223 @@
+import {
+  pgTable,
+  serial,
+  varchar,
+  text,
+  numeric,
+  timestamp,
+  bigint,
+  boolean,
+  char,
+  jsonb,
+  pgEnum,
+} from "drizzle-orm/pg-core";
+
+export const approvalStatusEnum = pgEnum("approval_status", [
+  "approved",
+  "declined",
+  "pending",
+]);
+export const statusEnum = pgEnum("status", [
+  "approved",
+  "declined",
+  "pending",
+  "active",
+  "inactive",
+]);
+
+// Affiliates table
+export const affiliates = pgTable("affiliates", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
+  approvalStatus: approvalStatusEnum("approval_status").default("pending"),
+  paypalAddress: varchar("paypal_address", { length: 255 }),
+  bankDetails: jsonb("bank_details"),
+  address: jsonb("address"),
+  taxId: varchar("tax_id", { length: 255 }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Campaigns table
+export const campaigns = pgTable("campaigns", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  logoUrl: varchar("logo_url", { length: 255 }),
+  campaignType: varchar("campaign_type", { length: 255 }).notNull(),
+  status: statusEnum("status").notNull().default("active"),
+  termsAndConditions: text("terms_and_conditions"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Campaign goals table
+export const campaignGoals = pgTable("campaign_goals", {
+  id: serial("id").primaryKey(),
+  campaignId: bigint("campaign_id", { mode: "number" }).notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: varchar("description", { length: 255 }).notNull(),
+  commissionType: varchar("commission_type", { length: 255 }).notNull(),
+  commissionAmount: numeric("commission_amount", {
+    precision: 10,
+    scale: 2,
+  }).notNull(),
+  trackingCode: char("tracking_code", { length: 10 }).notNull().unique(),
+  status: statusEnum("status").notNull().default("active"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Affiliate campaign goals table
+export const affiliateCampaignGoals = pgTable("affiliate_campaign_goals", {
+  id: serial("id").primaryKey(),
+  affiliateId: bigint("affiliate_id", { mode: "number" }).notNull(),
+  campaignId: bigint("campaign_id", { mode: "number" }).notNull(),
+  campaignGoalId: bigint("campaign_goal_id", { mode: "number" }).notNull(),
+  customCommissionRate: numeric("custom_commission_rate", {
+    precision: 5,
+    scale: 2,
+  }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Affiliate links table
+export const affiliateLinks = pgTable("affiliate_links", {
+  id: serial("id").primaryKey(),
+  campaignId: bigint("campaign_id", { mode: "number" }).notNull(),
+  affiliateId: bigint("affiliate_id", { mode: "number" }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  destinationUrl: varchar("destination_url", { length: 1000 }).notNull(),
+  sub1: varchar("sub1", { length: 255 }),
+  sub2: varchar("sub2", { length: 255 }),
+  sub3: varchar("sub3", { length: 255 }),
+  totalClicks: bigint("total_clicks", { mode: "number" }).notNull().default(0),
+  totalEarnings: numeric("total_earnings", { precision: 12, scale: 2 })
+    .notNull()
+    .default("0"),
+  status: statusEnum("status").notNull().default("active"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Clicks table
+export const clicks = pgTable("clicks", {
+  id: serial("id").primaryKey(),
+  campaignId: bigint("campaign_id", { mode: "number" }).notNull(),
+  affiliateLinkId: bigint("affiliate_link_id", { mode: "number" }).notNull(),
+  affiliateId: bigint("affiliate_id", { mode: "number" }).notNull(),
+  clickCode: varchar("click_code", { length: 255 }).notNull().unique(),
+  ipAddress: varchar("ip_address", { length: 255 }).notNull(),
+  userAgent: varchar("user_agent", { length: 1000 }).notNull(),
+  referrer: varchar("referrer", { length: 255 }),
+  country: varchar("country", { length: 255 }),
+  city: varchar("city", { length: 255 }),
+  deviceType: varchar("device_type", { length: 255 }),
+  sub1: varchar("sub1", { length: 255 }),
+  sub2: varchar("sub2", { length: 255 }),
+  sub3: varchar("sub3", { length: 255 }),
+  isConverted: boolean("is_converted").notNull().default(false),
+  clickedAt: timestamp("clicked_at", { mode: "string" }).notNull(),
+});
+
+// Postback logs table
+export const postbackLogs = pgTable("postback_logs", {
+  id: serial("id").primaryKey(),
+  rawPostbackData: jsonb("raw_postback_data").notNull(),
+  transactionId: varchar("transaction_id", { length: 255 }).notNull(),
+  status: statusEnum("status").notNull(),
+  statusMessages: jsonb("status_messages"),
+  receivedAt: timestamp("received_at", { mode: "string" }).notNull(),
+  processedAt: timestamp("processed_at", { mode: "string" }),
+});
+
+// Payouts table
+export const payouts = pgTable("payouts", {
+  id: serial("id").primaryKey(),
+  affiliateId: bigint("affiliate_id", { mode: "number" }).notNull(),
+  requestedAmount: numeric("requested_amount", {
+    precision: 12,
+    scale: 2,
+  }).notNull(),
+  status: statusEnum("status").notNull().default("pending"),
+  paymentMethod: varchar("payment_method", { length: 50 }).notNull(),
+  paymentAccount: varchar("payment_account", { length: 255 }).notNull(),
+  paymentDetails: jsonb("payment_details"),
+  adminNotes: varchar("admin_notes", { length: 500 }),
+  transactionId: varchar("transaction_id", { length: 255 }),
+  apiResponse: jsonb("api_response"),
+  paidAt: timestamp("paid_at", { mode: "string" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Conversions table
+export const conversions = pgTable("conversions", {
+  id: serial("id").primaryKey(),
+  campaignId: bigint("campaign_id", { mode: "number" }).notNull(),
+  postbackLogId: bigint("postback_log_id", { mode: "number" }).notNull(),
+  clickCode: varchar("click_code", { length: 255 }).notNull(),
+  campaignGoalId: bigint("campaign_goal_id", { mode: "number" }).notNull(),
+  affiliateId: bigint("affiliate_id", { mode: "number" }).notNull(),
+  transactionId: varchar("transaction_id", { length: 255 }).notNull().unique(),
+  conversionValue: numeric("conversion_value", {
+    precision: 12,
+    scale: 2,
+  }).notNull(),
+  commission: numeric("commission", { precision: 12, scale: 2 }).notNull(),
+  sub1: varchar("sub1", { length: 255 }),
+  sub2: varchar("sub2", { length: 255 }),
+  sub3: varchar("sub3", { length: 255 }),
+  status: statusEnum("status").notNull().default("pending"),
+  payoutId: bigint("payout_id", { mode: "number" }),
+  adminNotes: varchar("admin_notes", { length: 500 }),
+  convertedAt: timestamp("converted_at", { mode: "string" }).notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Affiliate postbacks table
+export const affiliatePostbacks = pgTable("affiliate_postbacks", {
+  id: serial("id").primaryKey(),
+  affiliateId: bigint("affiliate_id", { mode: "number" }).notNull(),
+  campaignId: bigint("campaign_id", { mode: "number" }).notNull(),
+  campaignGoalId: bigint("campaign_goal_id", { mode: "number" }),
+  postbackUrl: varchar("postback_url", { length: 1500 }).notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Type exports for convenience
+export type Affiliate = typeof affiliates.$inferSelect;
+export type NewAffiliate = typeof affiliates.$inferInsert;
+
+export type Campaign = typeof campaigns.$inferSelect;
+export type NewCampaign = typeof campaigns.$inferInsert;
+
+export type CampaignGoal = typeof campaignGoals.$inferSelect;
+export type NewCampaignGoal = typeof campaignGoals.$inferInsert;
+
+export type AffiliateCampaignGoal = typeof affiliateCampaignGoals.$inferSelect;
+export type NewAffiliateCampaignGoal =
+  typeof affiliateCampaignGoals.$inferInsert;
+
+export type AffiliateLink = typeof affiliateLinks.$inferSelect;
+export type NewAffiliateLink = typeof affiliateLinks.$inferInsert;
+
+export type Click = typeof clicks.$inferSelect;
+export type NewClick = typeof clicks.$inferInsert;
+
+export type PostbackLog = typeof postbackLogs.$inferSelect;
+export type NewPostbackLog = typeof postbackLogs.$inferInsert;
+
+export type Payout = typeof payouts.$inferSelect;
+export type NewPayout = typeof payouts.$inferInsert;
+
+export type Conversion = typeof conversions.$inferSelect;
+export type NewConversion = typeof conversions.$inferInsert;
+
+export type AffiliatePostback = typeof affiliatePostbacks.$inferSelect;
+export type NewAffiliatePostback = typeof affiliatePostbacks.$inferInsert;

@@ -2,7 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/i18n/client";
 import AuthForm from "@/components/AuthForm";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import Link from "next/link";
