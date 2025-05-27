@@ -4,13 +4,29 @@ import {
   getAffiliateCampaignGoalsByAffiliateId,
 } from "@/models/affiliate-campaign-goal-model";
 import { getAuthSession } from "@/models/auth-models";
+import { getCampaignGoalById } from "@/models/campaign-goal-model";
+import { getCampaignById } from "@/models/campaigns-model";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
 
 export async function ActiveCampaign() {
   const user = await getAuthSession();
-  const campaignGoals = await getAffiliateCampaignGoalsByAffiliateId(
-    user.user.id
+  // const campaign = (await getCampaignById(user.user.id))?.data;
+  const campaignGoalsIds =
+    (
+      await getAffiliateCampaignGoalsByAffiliateId(
+        user.user.id // This has to be changed to the campaign ID
+      )
+    ).data || [];
+
+  const campaignGoals = await Promise.all(
+    campaignGoalsIds.map(async (goal) => {
+      const campaignGoal = await getCampaignGoalById(goal.id);
+      return {
+        title: campaignGoal.data?.name || "Unknown Goal",
+        earnings: campaignGoal.data?.commissionAmount || "$0",
+      };
+    })
   );
   // const campaignGoals = [
   //   {
@@ -39,6 +55,7 @@ export async function ActiveCampaign() {
               <div className="flex-shrink-0">
                 <Image
                   src="/images/swittch.png"
+                  // src={campaign?.logoUrl}
                   width={100}
                   height={100}
                   alt="Campaign"
@@ -52,9 +69,13 @@ export async function ActiveCampaign() {
                       Campaign Details
                     </h3>
                     <h4 className="text-lg font-medium mt-2">Campaign Title</h4>
+                    {/* <h4 className="text-lg font-medium mt-2">{campaign?.name}</h4> */}
                     <p className="text-sm text-gray-500">
                       Campaign Description
                     </p>
+                    {/* <p className="text-sm text-gray-500">
+                      {campaign?.description}
+                    </p> */}
                   </div>
 
                   <div>
@@ -62,7 +83,7 @@ export async function ActiveCampaign() {
                       Campaign Goals
                     </h3>
                     <div className="space-y-3 mt-2">
-                      {/* {campaignGoals.map((goal, index) => (
+                      {campaignGoals.map((goal, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-blue-500" />
                           <span className="text-sm">{goal.title}</span>
@@ -70,7 +91,7 @@ export async function ActiveCampaign() {
                             Earn {goal.earnings}
                           </span>
                         </div>
-                      ))} */}
+                      ))}
                     </div>
                   </div>
                 </div>

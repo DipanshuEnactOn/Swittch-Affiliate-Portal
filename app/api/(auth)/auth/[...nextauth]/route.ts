@@ -34,6 +34,7 @@ export const {
   session: {
     strategy: "jwt",
     maxAge: Config.env.app.jwt_login_expiry,
+    // maxAge: 20,
     updateAge: 5 * 60,
   },
   providers: [
@@ -92,6 +93,7 @@ export const {
             const affiliate = await getAffiliateStatus(token.email);
             if (affiliate && affiliate.data) {
               token.status = affiliate.data.status || "pending";
+              // console.log("[JWT Callback] Changed Token status:", token.status);
             }
           } catch (error) {
             console.log(error);
@@ -106,10 +108,50 @@ export const {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.status = token.status as string;
+        // console.log("[Session Callback] User ID:", session.user.id);
+        // console.log("[Session Callback] User Status:", session.user.status);
       }
       return session;
     },
   },
+  // cookies: {
+  //   sessionToken: {
+  //     name:
+  //       Config.env.app.environment === "PRODUCTION" ||
+  //       Config.env.app.environment === "STAGING"
+  //         ? `__Secure-next-auth.session-token`
+  //         : `next-auth.session-token`,
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure:
+  //         Config.env.app.environment === "PRODUCTION" ||
+  //         Config.env.app.environment === "STAGING",
+  //       domain: Config.env.app.root_domain.startsWith(".")
+  //         ? Config.env.app.root_domain
+  //         : "." + Config.env.app.root_domain,
+  //     },
+  //   },
+  //   // callbackUrl: {
+  //   //   name:
+  //   //     Config.env.app.environment === "PRODUCTION" ||
+  //   //     Config.env.app.environment === "STAGING"
+  //   //       ? `__Secure-authjs.callback-url`
+  //   //       : `authjs.callback-url`,
+  //   //   options: {
+  //   //     httpOnly: true,
+  //   //     sameSite: "lax",
+  //   //     path: "/",
+  //   //     secure:
+  //   //       Config.env.app.environment === "PRODUCTION" ||
+  //   //       Config.env.app.environment === "STAGING",
+  //   //     domain: Config.env.app.root_domain.startsWith(".")
+  //   //       ? Config.env.app.root_domain
+  //   //       : "." + Config.env.app.root_domain,
+  //   //   },
+  //   // },
+  // },
 
   secret: process.env.NEXTAUTH_SECRET,
   debug: false,

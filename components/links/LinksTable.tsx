@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CreateAffiliateLink } from "@/components/CreateLinkDialoug";
+import { CreateAffiliateLink } from "@/components/links/CreateLinkDialoug";
 import Link from "next/link";
 import {
   useReactTable,
@@ -139,7 +139,7 @@ export default function LinksTable({ data }: { data: any }) {
       <CardHeader className="flex flex-col gap-2 px-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 py-4 border-b space-y-0">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Recent Transactions
+            Links
           </h3>
         </div>
         <CreateAffiliateLink />
@@ -147,7 +147,7 @@ export default function LinksTable({ data }: { data: any }) {
       <CardContent className="px-6 pt-6">
         <div className="space-y-4">
           {/* Search/Filter Input */}
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <Input
               placeholder="Filter links..."
               value={
@@ -158,7 +158,7 @@ export default function LinksTable({ data }: { data: any }) {
               }
               className="max-w-sm"
             />
-          </div>
+          </div> */}
 
           {/* Table */}
           <div className="rounded-md border">

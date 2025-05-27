@@ -60,3 +60,18 @@ export const PersonalInformationSchema = Yup.object().shape({
     .email("Invalid email address")
     .required("Email is required"),
 });
+
+export const AffiliateLinkSchema = Yup.object({
+  link: Yup.string()
+    .required("URL is required")
+    .min(3, "URL must be at least 3 characters")
+    .max(50, "URL must be less than 50 characters")
+    .matches(
+      /^[a-zA-Z0-9-_]+$/,
+      "URL can only contain letters, numbers, hyphens, and underscores"
+    ),
+  name: Yup.string()
+    .required("Name is required")
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters"),
+});

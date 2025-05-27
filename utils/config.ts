@@ -10,11 +10,13 @@ import { AppRoutes } from "./routes";
 export const Config = {
   env: {
     app: {
+      root_domain: process.env.ROOT_DOMAIN || "localhost",
       app_url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
       api_url: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
       auth_url:
         process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3002/auth",
-      jwt_login_expiry: 3600,
+      environment: process.env.ENVIRONMENT || "DEVELOPMENT",
+      jwt_login_expiry: 86400,
       sidebar: [
         {
           name: "Dashboard",

@@ -8,9 +8,16 @@ import {
   getConversionsByAffiliate,
   getWeeklyCommissionDataByAffiliateId,
 } from "@/models/conversions-model";
+import { redirect } from "next/navigation";
+import { AppRoutes } from "@/utils/routes";
 
 export default async function DashboardPage() {
   const user = await getAuthSession();
+  const userStatus = user?.user?.status;
+
+  if (userStatus === "pending") {
+    return redirect(AppRoutes.auth.pending);
+  }
   const transactions =
     (await getConversionsByAffiliate(user.user.id))?.data || [];
   const earningsData = await getWeeklyCommissionDataByAffiliateId(user.user.id);

@@ -2,10 +2,10 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { AppRoutes } from "./utils/routes";
-import { getAffiliateStatus } from "./models/affiliates-model";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  // console.log(`Middleware triggered for path: ${pathname}`);
 
   const skipPaths = [
     "/_next",
@@ -38,45 +38,26 @@ export async function middleware(req: NextRequest) {
     authPaths.forgotPassword,
   ].includes(pathname);
 
-  const isPendingPath = pathname === authPaths.pending;
-
   if (!token) {
     if (isAuthPath) return NextResponse.next();
     return NextResponse.redirect(new URL(authPaths.signIn, req.url));
   }
 
-  const userStatus = token.status as string;
-  const token1 = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  // console.log("[Middleware] Token1 status:", token1?.status);
-
-  // console.log("Token Status:", userStatus);
-  // const userEmail = token.email;
-  // if (!userEmail)
-  //   return NextResponse.redirect(new URL(authPaths.signIn, req.url));
-  // const statusResult = await getAffiliateStatus(userEmail);
-  // const userStatus = statusResult.data?.status;
-
-  if (userStatus === "pending") {
-    if (isAuthPath) {
-      return NextResponse.redirect(new URL(authPaths.pending, req.url));
-    }
-    if (isPendingPath) {
-      return NextResponse.next();
-    }
-    return NextResponse.redirect(new URL(authPaths.pending, req.url));
+  if (isAuthPath) {
+    // console.log(
+    //   `User is authenticated, redirecting from auth path: ${pathname}`
+    // );
+    return NextResponse.redirect(new URL(AppRoutes.dashboard, req.url));
   }
 
-  if (userStatus === "approved") {
-    if (isAuthPath || isPendingPath) {
-      return NextResponse.redirect(new URL(AppRoutes.dashboard, req.url));
-    }
-    if (pathname === "/") {
-      return NextResponse.redirect(new URL(AppRoutes.dashboard, req.url));
-    }
-    return NextResponse.next();
+  if (pathname === "/") {
+    // console.log(
+    //   `User is authenticated, redirecting from auth path: ${pathname}`
+    // );
+    return NextResponse.redirect(new URL(AppRoutes.dashboard, req.url));
   }
 
-  return NextResponse.redirect(new URL(authPaths.signIn, req.url));
+  return NextResponse.next();
 }
 
 export const config = {
