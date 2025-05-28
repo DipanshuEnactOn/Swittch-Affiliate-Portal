@@ -26,7 +26,7 @@ export async function MetricsCards() {
       />
       <MetricCard
         title="Total Earnings"
-        value={userAllEarnings?.totalValue?.toLocaleString() || "0"}
+        value={userAllEarnings?.totalCommission?.toLocaleString() || "0"}
         icon={<DollarSign className="h-6 w-6 text-blue-500" />}
       />
     </div>

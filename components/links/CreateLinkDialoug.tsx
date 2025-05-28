@@ -1,30 +1,33 @@
 "use client";
 
-import { Formik } from "formik";
-import { useTranslation } from "@/i18n/client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus } from "lucide-react";
-import * as Yup from "yup";
-import { useState } from "react";
-import { AffiliateLinkSchema } from "@/utils/validation";
-import { Api } from "@/services/api-services";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "@/i18n/client";
+import { Api } from "@/services/api-services";
+import { AffiliateLinkSchema } from "@/utils/validation";
+import { Formik } from "formik";
+import { Plus } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 // Validation schema
 
 export function CreateAffiliateLink() {
   const { t } = useTranslation();
+  const user = useSession().data?.user;
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   const mainUrl = "http://localhost:3000";
 
   const initialValues = {
@@ -35,7 +38,23 @@ export function CreateAffiliateLink() {
   const onSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
     try {
       setIsLoading(true);
-      const response = await Api.post({ path: "/insert-link", body: values });
+      const data = {
+        campaignId: 1,
+        affiliateId: user?.id || 1,
+        name: values.name,
+        slug: values.link,
+        destinationUrl: `${mainUrl}/${values.link}`,
+        sub1: "",
+        sub2: "",
+        sub3: "",
+        totalClicks: 0,
+        totalEarnings: 0,
+        status: "active",
+      };
+      const response = await Api.post({
+        path: "/links/insert-link",
+        body: data,
+      });
       if (response.status === "error") {
         toast({
           title: t("validation.errorCreatingLink"),
@@ -51,6 +70,7 @@ export function CreateAffiliateLink() {
         }),
       });
       resetForm();
+      router.refresh();
       setOpen(false);
     } catch (error) {
       console.error("Form submission error:", error);

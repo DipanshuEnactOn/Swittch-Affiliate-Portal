@@ -10,6 +10,7 @@ import {
 } from "@/models/conversions-model";
 import { redirect } from "next/navigation";
 import { AppRoutes } from "@/utils/routes";
+import { getCampaignById } from "@/models/campaigns-model";
 
 export default async function DashboardPage() {
   const user = await getAuthSession();
@@ -18,14 +19,18 @@ export default async function DashboardPage() {
   if (userStatus === "pending") {
     return redirect(AppRoutes.auth.pending);
   }
+
+  const campaignDetails = (await getCampaignById(1))?.data;
+
   const transactions =
-    (await getConversionsByAffiliate(user.user.id))?.data || [];
+    (await getConversionsByAffiliate(user.user.id, 10))?.data || [];
+
   const earningsData = await getWeeklyCommissionDataByAffiliateId(user.user.id);
 
   return (
     <DashboardLayout>
       <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
-      <ActiveCampaign />
+      <ActiveCampaign campaign={campaignDetails} />
       <MetricsCards />
       <EarningsChart earningsData={earningsData} />
       <TransactionsTable transactions={transactions} />

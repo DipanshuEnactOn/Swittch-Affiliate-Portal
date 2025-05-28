@@ -22,7 +22,7 @@ interface ClientTablePaginationProps<TData> {
   table: Table<TData>;
   pagination: any;
 }
-export default function ClientTablePagination<TData>({
+export default function TablePagination<TData>({
   table,
   pagination,
 }: ClientTablePaginationProps<TData>) {

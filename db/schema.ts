@@ -14,15 +14,36 @@ import {
 
 export const approvalStatusEnum = pgEnum("approval_status", [
   "approved",
-  "declined",
+  "rejected",
+  "suspended",
   "pending",
 ]);
-export const statusEnum = pgEnum("status", [
-  "confirmed",
-  "declined",
-  "pending",
+
+export const statusEnum = pgEnum("status", ["active", "inactive"]);
+
+export const campaignStatusEnum = pgEnum("campaign_status", [
   "active",
-  "inactive",
+  "paused",
+  "ended",
+]);
+
+export const conversionStatusEnum = pgEnum("conversion_status", [
+  "pending",
+  "approved",
+  "declined",
+  "paid",
+]);
+
+export const payoutStatusEnum = pgEnum("payout_status", [
+  "pending",
+  "processing",
+  "rejected",
+  "paid",
+]);
+
+export const postbackStatusEnum = pgEnum("postback_status", [
+  "success",
+  "failure",
 ]);
 
 // Affiliates table
@@ -30,7 +51,7 @@ export const affiliates = pgTable("affiliates", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
-  password: varchar("password", { length: 255 }).notNull(),
+  password: varchar("password_hash", { length: 255 }).notNull(),
   approvalStatus: approvalStatusEnum("approval_status").default("pending"),
   paypalAddress: varchar("paypal_address", { length: 255 }),
   bankDetails: jsonb("bank_details"),
@@ -47,7 +68,7 @@ export const campaigns = pgTable("campaigns", {
   description: text("description").notNull(),
   logoUrl: varchar("logo_url", { length: 255 }),
   campaignType: varchar("campaign_type", { length: 255 }).notNull(),
-  status: statusEnum("status").notNull().default("active"),
+  status: campaignStatusEnum("campaign_status").notNull().default("active"),
   termsAndConditions: text("terms_and_conditions"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -129,7 +150,7 @@ export const postbackLogs = pgTable("postback_logs", {
   id: serial("id").primaryKey(),
   rawPostbackData: jsonb("raw_postback_data").notNull(),
   transactionId: varchar("transaction_id", { length: 255 }).notNull(),
-  status: statusEnum("status").notNull(),
+  status: postbackStatusEnum("postback_status").notNull(),
   statusMessages: jsonb("status_messages"),
   receivedAt: timestamp("received_at", { mode: "string" }).notNull(),
   processedAt: timestamp("processed_at", { mode: "string" }),
@@ -143,7 +164,7 @@ export const payouts = pgTable("payouts", {
     precision: 12,
     scale: 2,
   }).notNull(),
-  status: statusEnum("status").notNull().default("pending"),
+  status: payoutStatusEnum("payout_status").notNull().default("pending"),
   paymentMethod: varchar("payment_method", { length: 50 }).notNull(),
   paymentAccount: varchar("payment_account", { length: 255 }).notNull(),
   paymentDetails: jsonb("payment_details"),
@@ -172,7 +193,9 @@ export const conversions = pgTable("conversions", {
   sub1: varchar("sub1", { length: 255 }),
   sub2: varchar("sub2", { length: 255 }),
   sub3: varchar("sub3", { length: 255 }),
-  status: statusEnum("status").notNull().default("pending"),
+  status: conversionStatusEnum("conversion_status")
+    .notNull()
+    .default("pending"),
   payoutId: bigint("payout_id", { mode: "number" }),
   adminNotes: varchar("admin_notes", { length: 500 }),
   convertedAt: timestamp("converted_at", { mode: "string" }).notNull(),

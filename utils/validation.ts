@@ -75,3 +75,26 @@ export const AffiliateLinkSchema = Yup.object({
     .min(2, "Name must be at least 2 characters")
     .max(100, "Name must be less than 100 characters"),
 });
+
+export const PayPalSchema = Yup.object().shape({
+  paypalId: Yup.string()
+    .email("Please enter a valid email address")
+    .required("PayPal ID is required"),
+});
+
+export const BankDetailsSchema = Yup.object().shape({
+  bankName: Yup.string().required("Bank name is required"),
+  accountNumber: Yup.string()
+    .matches(/^\d+$/, "Account number must contain only digits")
+    .min(8, "Account number must be at least 8 digits")
+    .required("Account number is required"),
+  ifscBicCode: Yup.string()
+    .matches(/^[A-Z0-9]+$/, "Please enter a valid IFSC/BIC code")
+    .min(4, "Code must be at least 4 characters")
+    .required("IFSC/BIC code is required"),
+  accountHolderName: Yup.string().required("Account holder name is required"),
+  accountType: Yup.string().required("Account type is required"),
+  swiftCode: Yup.string()
+    .matches(/^[A-Z0-9]{8,11}$/, "SWIFT code must be 8-11 characters")
+    .optional(),
+});

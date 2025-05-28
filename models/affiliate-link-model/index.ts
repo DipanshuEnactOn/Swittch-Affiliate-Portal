@@ -222,6 +222,7 @@ export const getAffiliateLinksByAffiliateId = async (
       .select({
         id: affiliateLinks.id,
         campaignId: affiliateLinks.campaignId,
+        name: affiliateLinks.name,
         slug: affiliateLinks.slug,
         destinationUrl: affiliateLinks.destinationUrl,
         sub1: affiliateLinks.sub1,
@@ -269,35 +270,6 @@ export const getAffiliateLinksByAffiliateId = async (
 
 export const insertAffiliateLink = async (linkData: any) => {
   try {
-    // Validate required fields
-    if (
-      !linkData.campaignId ||
-      !linkData.affiliateId ||
-      !linkData.slug ||
-      !linkData.destinationUrl
-    ) {
-      return {
-        data: null,
-        message:
-          "Campaign ID, Affiliate ID, slug, and destination URL are required",
-        status: "error",
-      };
-    }
-
-    // Check if slug already exists
-    const existingSlug = await db
-      .select()
-      .from(affiliateLinks)
-      .where(eq(affiliateLinks.slug, linkData.slug));
-
-    if (existingSlug.length > 0) {
-      return {
-        data: null,
-        message: "Slug already exists. Please choose a different slug.",
-        status: "error",
-      };
-    }
-
     const result = await db.transaction(async (tx) => {
       const inserted = await tx
         .insert(affiliateLinks)
@@ -313,7 +285,7 @@ export const insertAffiliateLink = async (linkData: any) => {
     };
   } catch (error: any) {
     return {
-      data: null,
+      data: error,
       message: error.message || "An error occurred",
       status: "error",
     };
@@ -507,6 +479,42 @@ export const getAllAffiliateLinksEarnings = async (affiliateId: number) => {
     return {
       data: result[0] || null,
       message: "ok",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const updateAffiliateLinkStatus = async (
+  id: number,
+  status: "active" | "inactive"
+) => {
+  try {
+    const result = await db.transaction(async (tx) => {
+      const updated = await tx
+        .update(affiliateLinks)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(affiliateLinks.id, id))
+        .returning();
+      return updated[0];
+    });
+
+    if (!result) {
+      return {
+        data: null,
+        message: "Affiliate link not found",
+        status: "error",
+      };
+    }
+
+    return {
+      data: result,
+      message: "Affiliate link status updated successfully",
       status: "success",
     };
   } catch (error: any) {

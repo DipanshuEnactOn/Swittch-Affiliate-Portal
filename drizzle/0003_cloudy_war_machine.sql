@@ -1,1 +1,0 @@
-ALTER TABLE "affiliates" ALTER COLUMN "approval_status" DROP NOT NULL;

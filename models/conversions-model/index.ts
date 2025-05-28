@@ -1,7 +1,8 @@
 import { db } from "@/db";
 import { conversions } from "@/db/schema";
-import { and, count, desc, eq, gte, sql, sum } from "drizzle-orm";
+import { and, count, desc, eq, gte, or, sql, sum } from "drizzle-orm";
 import moment from "moment";
+
 export const insertConversion = async (conversionData: any) => {
   try {
     const result = await db.transaction(async (tx) => {
@@ -209,7 +210,7 @@ export const getConversionByTransactionId = async (transactionId: string) => {
 
 export const updateConversionStatus = async (
   id: number,
-  status: "confirmed" | "declined" | "pending" | "active" | "inactive"
+  status: "approved" | "declined" | "pending" | "paid"
 ) => {
   try {
     const result = await db.transaction(async (tx) => {
@@ -255,7 +256,7 @@ export const getConversionStatsForAffiliate = async (affiliateId: number) => {
       .where(
         and(
           eq(conversions.affiliateId, affiliateId),
-          eq(conversions.status, "confirmed")
+          or(eq(conversions.status, "approved"), eq(conversions.status, "paid"))
         )
       );
 
@@ -299,7 +300,7 @@ export async function getWeeklyCommissionDataByAffiliateId(
       .where(
         and(
           eq(conversions.affiliateId, affiliate_id),
-          eq(conversions.status, "confirmed"),
+          eq(conversions.status, "approved"),
           gte(conversions.updatedAt, startDate),
           gte(conversions.updatedAt, endDate)
         )

@@ -28,22 +28,52 @@ import {
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Copy, Plus } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import moment from "moment";
+import { Api } from "@/services/api-services";
+import { useRouter } from "next/navigation";
 
 export default function LinksTable({ data }: { data: any }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const router = useRouter();
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Success",
+      description: "Link copied to clipboard",
+    });
+  };
 
-  //   const copyToClipboard = (text: string) => {
-  //     navigator.clipboard.writeText(text);
-  //   };
-
-  //   const toggleActive = (id: string) => {
-  //     setLinks((prevLinks) =>
-  //       prevLinks.map((link) =>
-  //         link.id === id ? { ...link, active: !link.active } : link
-  //       )
-  //     );
-  //   };
+  const hanldeStatusChange = async (id: string, status: string) => {
+    try {
+      const newStatus = status === "active" ? "inactive" : "active";
+      const response = await Api.post({
+        path: "/links/update-status",
+        body: { id, status: newStatus },
+      });
+      if (response.status === "error") {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to update link status",
+        });
+        return;
+      }
+      toast({
+        title: "Success",
+        description: `Link Status Updated`,
+      });
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating link status:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update link status",
+      });
+    }
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -52,7 +82,9 @@ export default function LinksTable({ data }: { data: any }) {
       cell: ({ row }) => {
         const rowValue = row.original;
         return (
-          <div className="flex items-center text-gray-500">{rowValue.date}</div>
+          <div className="flex items-center text-gray-500">
+            {moment(rowValue.createdAt).format("DD-MM-YYYY")}
+          </div>
         );
       },
     },
@@ -63,12 +95,15 @@ export default function LinksTable({ data }: { data: any }) {
         const rowValue = row.original;
         return (
           <div className="flex items-center gap-3 max-w-xs">
-            <Link className="truncate hover:underline" href={rowValue.link}>
-              {rowValue.link}
+            <Link
+              className="truncate hover:underline"
+              href={rowValue.destinationUrl || "#"}
+            >
+              {rowValue.destinationUrl || "No URL"}
             </Link>
             <Copy
               className="h-4 w-4 p-0 text-blue-600 hover:bg-blue-50 cursor-pointer"
-              //   onClick={() => copyToClipboard(rowValue.link)}
+              onClick={() => copyToClipboard(rowValue.destinationUrl)}
             />
           </div>
         );
@@ -91,7 +126,7 @@ export default function LinksTable({ data }: { data: any }) {
         const rowValue = row.original;
         return (
           <div className="flex items-center text-gray-700">
-            {rowValue.clicks}
+            {rowValue.totalClicks || 0}
           </div>
         );
       },
@@ -104,9 +139,11 @@ export default function LinksTable({ data }: { data: any }) {
         return (
           <div className="flex items-center">
             <Switch
-              checked={rowValue.active}
+              checked={rowValue.status === "active"}
               className="data-[state=checked]:bg-brand-500"
-              //   onCheckedChange={() => toggleActive(rowValue.id)}
+              onCheckedChange={() =>
+                hanldeStatusChange(rowValue.id, rowValue.status)
+              }
             />
           </div>
         );
@@ -115,7 +152,7 @@ export default function LinksTable({ data }: { data: any }) {
   ];
 
   const table = useReactTable({
-    data: data,
+    data: data.result,
     columns,
     state: {
       sorting,
@@ -147,18 +184,6 @@ export default function LinksTable({ data }: { data: any }) {
       <CardContent className="px-6 pt-6">
         <div className="space-y-4">
           {/* Search/Filter Input */}
-          {/* <div className="flex items-center space-x-2">
-            <Input
-              placeholder="Filter links..."
-              value={
-                (table.getColumn("name")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("name")?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-          </div> */}
 
           {/* Table */}
           <div className="rounded-md border">

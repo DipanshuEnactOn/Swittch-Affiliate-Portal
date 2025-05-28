@@ -59,10 +59,7 @@ export const {
           return null;
         }
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.data.password
-        );
+        const isValid = await bcrypt.compare(password, user.data.password);
 
         if (!isValid) {
           return null;

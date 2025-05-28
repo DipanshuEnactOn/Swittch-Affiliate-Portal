@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+# drizzle
+/drizzle
+
 # next.js
 /.next/
 /out/

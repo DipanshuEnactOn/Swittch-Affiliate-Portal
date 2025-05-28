@@ -1,1 +1,0 @@
-ALTER TABLE "affiliate_links" ADD COLUMN "name" varchar(255) NOT NULL;

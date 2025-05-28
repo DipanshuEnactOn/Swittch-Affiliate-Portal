@@ -1,14 +1,14 @@
 "use client";
 
-import React from "react";
-import { Formik, Form } from "formik";
 import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import bcrypt from "bcrypt";
 import { toast } from "@/hooks/use-toast";
 import { ChangePasswordSchema } from "@/utils/validation";
+import { Form, Formik } from "formik";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Api } from "@/services/api-services";
+
 export default function PasswordChange({ affiliateUser }: any) {
   const userPassword = affiliateUser?.password || "";
   const initialValues = {
@@ -17,7 +17,19 @@ export default function PasswordChange({ affiliateUser }: any) {
     confirmPassword: "",
   };
 
-  const handleSubmit = (values: typeof initialValues) => {
+  const handleSubmit = async (
+    values: typeof initialValues,
+    { setSubmitting, resetForm }: any
+  ) => {
+    setSubmitting(true);
+    if (values.currentPassword !== userPassword) {
+      toast({
+        title: "Error",
+        description: "Current password is incorrect.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (values.newPassword !== values.confirmPassword) {
       toast({
         title: "Error",
@@ -26,6 +38,21 @@ export default function PasswordChange({ affiliateUser }: any) {
       });
       return;
     }
+    const response = await Api.post({ path: "/change-password", body: values });
+    if (response.status === "success") {
+      toast({
+        title: "Success",
+        description: "Password changed successfully.",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: response.data?.message || "Failed to change password.",
+        variant: "destructive",
+      });
+    }
+    resetForm();
+    setSubmitting(false);
   };
 
   return (

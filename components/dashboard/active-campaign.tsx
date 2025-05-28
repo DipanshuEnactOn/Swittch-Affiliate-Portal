@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Campaign } from "@/db/schema";
 import {
   getAffiliateCampaignGoalById,
   getAffiliateCampaignGoalsByAffiliateId,
@@ -9,15 +10,15 @@ import { getCampaignById } from "@/models/campaigns-model";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
 
-export async function ActiveCampaign() {
+export async function ActiveCampaign({
+  campaign,
+}: {
+  campaign: Campaign | null;
+}) {
   const user = await getAuthSession();
-  // const campaign = (await getCampaignById(user.user.id))?.data;
   const campaignGoalsIds =
-    (
-      await getAffiliateCampaignGoalsByAffiliateId(
-        user.user.id // This has to be changed to the campaign ID
-      )
-    ).data || [];
+    (await getAffiliateCampaignGoalsByAffiliateId(campaign?.id || 1)).data ||
+    [];
 
   const campaignGoals = await Promise.all(
     campaignGoalsIds.map(async (goal) => {
@@ -54,8 +55,7 @@ export async function ActiveCampaign() {
             <div className="flex items-center gap-6">
               <div className="flex-shrink-0">
                 <Image
-                  src="/images/swittch.png"
-                  // src={campaign?.logoUrl}
+                  src={campaign?.logoUrl || "/images/swittch.png"}
                   width={100}
                   height={100}
                   alt="Campaign"
@@ -68,14 +68,12 @@ export async function ActiveCampaign() {
                     <h3 className="text-sm font-medium text-gray-500">
                       Campaign Details
                     </h3>
-                    <h4 className="text-lg font-medium mt-2">Campaign Title</h4>
-                    {/* <h4 className="text-lg font-medium mt-2">{campaign?.name}</h4> */}
+                    <h4 className="text-lg font-medium mt-2">
+                      {campaign?.name || "Campaign Title"}
+                    </h4>
                     <p className="text-sm text-gray-500">
-                      Campaign Description
+                      {campaign?.description || "Campaign Description."}
                     </p>
-                    {/* <p className="text-sm text-gray-500">
-                      {campaign?.description}
-                    </p> */}
                   </div>
 
                   <div>

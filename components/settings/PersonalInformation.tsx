@@ -55,7 +55,7 @@ export default function PersonalInformation({ affiliateUser }: any) {
                   </Label>
                   <Input
                     id="email"
-                    className="bg-slate-100"
+                    className="bg-slate-100 hover:cursor-not-allowed"
                     disabled
                     value={values.email}
                   />

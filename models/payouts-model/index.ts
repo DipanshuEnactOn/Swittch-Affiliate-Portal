@@ -199,7 +199,7 @@ export const approvePayoutRequest = async (
       const updated = await tx
         .update(payouts)
         .set({
-          status: "approved",
+          status: "paid",
           transactionId,
           apiResponse,
           paidAt,
@@ -238,7 +238,7 @@ export const declinePayoutRequest = async (id: number, adminNotes: string) => {
       const updated = await tx
         .update(payouts)
         .set({
-          status: "declined",
+          status: "rejected",
           adminNotes,
           updatedAt: new Date(),
         })

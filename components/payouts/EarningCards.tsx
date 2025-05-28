@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Database, CreditCard, Clock, Wallet } from "lucide-react";
 import { Button } from "../ui/button";
-import { PayoutRequest } from "../PayoutRequestDialoug";
+import { PayoutRequest } from "./PayoutRequestDialoug";
 
 export default function EarningCards({ earningsData }: any) {
   const [open, setOpen] = useState(false);
@@ -50,7 +50,7 @@ export default function EarningCards({ earningsData }: any) {
                 </div>
                 {hasButton && (
                   <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm w-[10rem]"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm max-w-md"
                     onClick={() => setOpen(true)}
                   >
                     Withdraw

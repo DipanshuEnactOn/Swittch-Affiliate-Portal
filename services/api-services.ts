@@ -10,7 +10,7 @@ export const Api = {
   }) => {
     try {
       const response = await fetch(
-        `${externalDomain || Config.env.app.app_url}${path}`,
+        `${externalDomain || Config.env.app.api_url}${path}`,
         {
           method: "GET",
         }
@@ -33,7 +33,7 @@ export const Api = {
   }) => {
     try {
       const res = await fetch(
-        `${externalDomain || Config.env.app.app_url}${path}`,
+        `${externalDomain || Config.env.app.api_url}${path}`,
         {
           method: "POST",
           headers: {
