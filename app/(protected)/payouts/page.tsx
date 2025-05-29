@@ -1,129 +1,64 @@
-"use client";
-
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import EarningCards from "@/components/payouts/EarningCards";
 import PaymentInformation from "@/components/payouts/PaymentInformation";
+import PayoutsTable from "@/components/payouts/PayoutsTable";
+import { getAffiliateById } from "@/models/affiliates-model";
+import { getAuthSession } from "@/models/auth-models";
+import { getEarningsDataForAffiliate } from "@/models/conversions-model";
+import {
+  getApprovedPayoutsByAffiliateId,
+  getPayoutsByAffiliateId,
+} from "@/models/payouts-model";
+import { createTranslation } from "@/i18n/server";
 
-export default function PayoutsPage() {
-  const payouts = [
-    {
-      id: "1",
-      date: "08-05-2025",
-      earnings: "$2399.00",
-      status: "Confirmed",
-    },
-    {
-      id: "2",
-      date: "08-05-2025",
-      earnings: "$2399.00",
-      status: "Pending",
-    },
-    {
-      id: "3",
-      date: "08-05-2025",
-      earnings: "$2399.00",
-      status: "Confirmed",
-    },
-    {
-      id: "4",
-      date: "08-05-2025",
-      earnings: "$2399.00",
-      status: "Declined",
-    },
-    {
-      id: "5",
-      date: "08-05-2025",
-      earnings: "$2399.00",
-      status: "Confirmed",
-    },
-  ];
+export default async function PayoutsPage({ searchParams }: any) {
+  const { t } = await createTranslation();
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Confirmed":
-        return "text-green-600";
-      case "Pending":
-        return "text-orange-600";
-      case "Declined":
-        return "text-red-600";
-      default:
-        return "text-gray-600";
-    }
+  const user = await getAuthSession();
+  const { rows_per_page, page } = searchParams;
+  const affilite = (await getAffiliateById(user.user.id))?.data || null;
+  const paymentInfo = {
+    paypalId: affilite?.paypalAddress || null,
+    bankInfo: affilite?.bankDetails || null,
+  };
+  const payouts =
+    (
+      await getPayoutsByAffiliateId(user.user.id, {
+        filters: { rows_per_page, page },
+      })
+    )?.data || [];
+
+  const affiliatePaidAmount =
+    (await getApprovedPayoutsByAffiliateId(user.user.id))?.data?.amount || 0;
+
+  const affiliateEarnings = await getEarningsDataForAffiliate(user.user.id);
+
+  const data = {
+    totalEarnings: affiliateEarnings.totalEarnings || 0,
+    pendingEarnings: affiliateEarnings.pendingEarning || 0,
+    paidEarnings: affiliatePaidAmount || 0,
+    availableAmount:
+      (affiliateEarnings.totalEarnings || 0) - (affiliatePaidAmount || 0),
   };
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-800">Payouts</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">
+            {t("payouts.title")}
+          </h1>
         </div>
 
-        <div className="text-sm text-gray-600 mb-6">Affiliate Earnings</div>
+        <div className="text-sm text-gray-600 mb-6">
+          {t("payouts.subtitle")}
+        </div>
 
-        <EarningCards />
+        <EarningCards earningsData={data} />
 
-        <PaymentInformation />
+        <PaymentInformation paymentInfo={paymentInfo} />
 
-        <Card className="bg-white">
-          <CardHeader>
-            <CardTitle className="text-lg font-medium text-gray-800">
-              Payout History
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-gray-600 font-medium">
-                    Date
-                  </TableHead>
-                  <TableHead className="text-gray-600 font-medium">
-                    Earnings
-                  </TableHead>
-                  <TableHead className="text-gray-600 font-medium text-right">
-                    Status
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {payouts.map((payout) => (
-                  <TableRow
-                    key={payout.id}
-                    className="border-b border-gray-100"
-                  >
-                    <TableCell className="text-gray-600">
-                      {payout.date}
-                    </TableCell>
-                    <TableCell className="text-gray-900 font-medium">
-                      {payout.earnings}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <span
-                        className={`font-medium ${getStatusColor(
-                          payout.status
-                        )}`}
-                      >
-                        {payout.status}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <PayoutsTable data={payouts} />
       </div>
     </DashboardLayout>
   );

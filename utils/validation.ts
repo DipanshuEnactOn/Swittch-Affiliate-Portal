@@ -98,3 +98,41 @@ export const BankDetailsSchema = Yup.object().shape({
     .matches(/^[A-Z0-9]{8,11}$/, "SWIFT code must be 8-11 characters")
     .optional(),
 });
+
+export const postbackSchema = Yup.object().shape({
+  postbackType: Yup.string().required("Please select a postback type"),
+  globalUrl: Yup.string().when("postbackType", {
+    is: "global",
+    then: (schema) =>
+      schema
+        .required("Global URL is required")
+        .test("is-url", "Please enter a valid URL", (value) => {
+          try {
+            new URL(value);
+            return true;
+          } catch {
+            return false;
+          }
+        }),
+  }),
+  selectedGoal: Yup.string().when("postbackType", {
+    is: "goal",
+    then: (schema) => schema.required("Please select a goal"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  goalUrl: Yup.string().when("postbackType", {
+    is: "goal",
+    then: (schema) =>
+      schema
+        .required("Goal URL is required")
+        .test("is-url", "Please enter a valid URL", (value) => {
+          try {
+            new URL(value);
+            return true;
+          } catch {
+            return false;
+          }
+        }),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+});

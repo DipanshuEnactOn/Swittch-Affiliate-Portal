@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { conversions } from "@/db/schema";
-import { and, count, desc, eq, gte, or, sql, sum } from "drizzle-orm";
+import { and, count, desc, eq, gte, lte, or, sql, sum } from "drizzle-orm";
+import { date } from "drizzle-orm/mysql-core";
 import moment from "moment";
 
 export const insertConversion = async (conversionData: any) => {
@@ -124,20 +125,58 @@ export const getConversionById = async (id: number) => {
 
 export const getConversionsByAffiliate = async (
   affiliateId: number,
-  limit: number = 50,
-  offset: number = 0
+  rows_per_page: number = 10,
+  page: number = 1,
+  status?: "pending" | "approved" | "declined" | "paid",
+  from?: string,
+  to?: string
 ) => {
   try {
+    const defaultTo = new Date();
+    const defaultFrom = new Date();
+    defaultFrom.setMonth(defaultFrom.getMonth() - 1);
+
+    const fromDate = from ? new Date(from) : defaultFrom;
+    const toDate = to ? new Date(to) : defaultTo;
+
+    let whereConditions = [
+      eq(conversions.affiliateId, affiliateId),
+      gte(conversions.createdAt, fromDate),
+      lte(conversions.createdAt, toDate),
+    ];
+
+    if (status) {
+      whereConditions.push(eq(conversions.status, status));
+    }
+
+    const offset = (page - 1) * rows_per_page;
+
+    const countResult = await db
+      .select({
+        count: sql<number>`COUNT(DISTINCT ${conversions.id})`,
+      })
+      .from(conversions)
+      .where(and(...whereConditions));
+
+    const totalCount = countResult[0]?.count || 0;
+    const totalPages = Math.ceil(totalCount / rows_per_page);
+
     const result = await db
       .select()
       .from(conversions)
-      .where(eq(conversions.affiliateId, affiliateId))
-      .limit(limit)
+      .where(and(...whereConditions))
+      .limit(rows_per_page)
       .offset(offset)
       .orderBy(desc(conversions.createdAt));
 
     return {
       data: result,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        rowsPerPage: rows_per_page,
+      },
       message: "Conversions retrieved successfully",
       status: "success",
     };
@@ -333,3 +372,22 @@ export async function getWeeklyCommissionDataByAffiliateId(
     // throw new Error("Failed to fetch weekly commission data");
   }
 }
+
+export const getEarningsDataForAffiliate = async (affiliateId: number) => {
+  const earningsData = await db.execute(
+    sql.raw(`
+      SELECT
+        COALESCE(SUM(CASE WHEN status IN ('approved', 'paid') THEN commission ELSE 0 END), 0) AS total_earnings,
+        COALESCE(SUM(CASE WHEN status = 'pending' THEN commission ELSE 0 END), 0) AS pending_earning
+      FROM
+        conversions
+      WHERE
+        affiliate_id = ${affiliateId}
+    `)
+  );
+
+  return {
+    totalEarnings: (earningsData[0]?.total_earnings as number) || 0,
+    pendingEarning: (earningsData[0]?.pending_earning as number) || 0,
+  };
+};

@@ -58,9 +58,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const Comp = asChild ? Slot : "button";
+    const disabledClass = props.disabled ? "cursor-not-allowed" : "";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          disabledClass
+        )}
         ref={ref}
         disabled={isLoading || props.disabled}
         {...props}

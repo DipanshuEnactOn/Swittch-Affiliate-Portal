@@ -20,8 +20,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-// Validation schema
-
 export function CreateAffiliateLink() {
   const { t } = useTranslation();
   const user = useSession().data?.user;
@@ -40,7 +38,7 @@ export function CreateAffiliateLink() {
       setIsLoading(true);
       const data = {
         campaignId: 1,
-        affiliateId: user?.id || 1,
+        affiliateId: Number(user?.id || 1),
         name: values.name,
         slug: values.link,
         destinationUrl: `${mainUrl}/${values.link}`,
@@ -57,7 +55,7 @@ export function CreateAffiliateLink() {
       });
       if (response.status === "error") {
         toast({
-          title: t("validation.errorCreatingLink"),
+          title: t("error"),
           description: response.message || t("validation.unknownError"),
           variant: "destructive",
         });
@@ -65,9 +63,7 @@ export function CreateAffiliateLink() {
       }
       toast({
         title: t("validation.linkCreated"),
-        description: t("validation.linkCreatedDescription", {
-          link: `${mainUrl}/${values.link}`,
-        }),
+        description: t("validation.linkCreatedDescription"),
       });
       resetForm();
       router.refresh();
@@ -87,15 +83,15 @@ export function CreateAffiliateLink() {
         onClick={() => setOpen(true)}
       >
         <Plus className="h-4 w-4" />
-        Create New Affiliate Link
+        {t("affiliateLink.create")}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Create Your Affiliate Link</DialogTitle>
+            <DialogTitle>{t("affiliateLink.dialogTitle")}</DialogTitle>
             <p className="text-sm text-muted-foreground">
-              Once Created, URLs Cannot be Changed.
+              {t("affiliateLink.dialogDescription")}
             </p>
           </DialogHeader>
 
@@ -116,7 +112,7 @@ export function CreateAffiliateLink() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="link">
-                    URL
+                    {t("affiliateLink.urlLabel")}
                     <span className="text-red-500"> *</span>
                   </Label>
                   <div className="relative w-full">
@@ -130,7 +126,7 @@ export function CreateAffiliateLink() {
                       id="link"
                       name="link"
                       type="text"
-                      placeholder="your-affiliate-link"
+                      placeholder={t("affiliateLink.urlPlaceholder")}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.link}
@@ -145,14 +141,14 @@ export function CreateAffiliateLink() {
 
                 <div className="space-y-2">
                   <Label htmlFor="name">
-                    Name
+                    {t("affiliateLink.nameLabel")}
                     <span className="text-red-500"> *</span>
                   </Label>
                   <Input
                     id="name"
                     name="name"
                     type="text"
-                    placeholder="Enter affiliate name"
+                    placeholder={t("affiliateLink.namePlaceholder")}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
@@ -170,7 +166,7 @@ export function CreateAffiliateLink() {
                     className="text-black"
                     disabled={isSubmitting || isLoading}
                   >
-                    Cancel
+                    {t("affiliateLink.cancel")}
                   </Button>
                   <Button
                     type="submit"
@@ -178,7 +174,9 @@ export function CreateAffiliateLink() {
                     disabled={isSubmitting || isLoading}
                     isLoading={isLoading}
                   >
-                    {isLoading ? "Creating..." : "Save"}
+                    {isLoading
+                      ? t("affiliateLink.creating")
+                      : t("affiliateLink.save")}
                   </Button>
                 </DialogFooter>
               </form>

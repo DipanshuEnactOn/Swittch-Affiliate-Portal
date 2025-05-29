@@ -5,40 +5,51 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Database, CreditCard, Clock, Wallet } from "lucide-react";
 import { Button } from "../ui/button";
 import { PayoutRequest } from "./PayoutRequestDialoug";
+import { useTranslation } from "@/i18n/client";
 
 export default function EarningCards({ earningsData }: any) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   const cards = [
     {
       icon: Database,
-      label: "Total Earnings",
-      amount: "$5,359",
+      label: t("earnings.total"),
+      amount: earningsData.totalEarnings,
       color: "blue",
+      bgColor: "bg-blue-100",
     },
-    { icon: CreditCard, label: "Paid", amount: "$1,100", color: "cyan" },
+    {
+      icon: CreditCard,
+      label: t("earnings.paid"),
+      amount: earningsData.paidEarnings,
+      color: "cyan",
+      bgColor: "bg-cyan-100",
+    },
     {
       icon: Clock,
-      label: "Pending Earnings",
-      amount: "$3,782",
+      label: t("earnings.pending"),
+      amount: earningsData.pendingEarnings,
       color: "orange",
+      bgColor: "bg-orange-100",
     },
     {
       icon: Wallet,
-      label: "Available",
-      amount: "$1,230",
+      label: t("earnings.available"),
+      amount: earningsData.availableAmount,
       color: "green",
       hasButton: true,
+      bgColor: "bg-green-100",
     },
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      {cards.map(({ icon: Icon, label, amount, color, hasButton }) => (
+      {cards.map(({ icon: Icon, label, amount, color, bgColor, hasButton }) => (
         <Card key={label} className="bg-white">
           <CardContent className="p-6">
             <div className="flex flex-col items-start space-y-3">
-              <div className={`p-2 bg-${color}-100 rounded-lg`}>
+              <div className={`p-2 ${bgColor} rounded-lg`}>
                 <Icon className={`h-5 w-5 text-${color}-600`} />
               </div>
               <div className="flex items-center justify-between w-full">
@@ -50,10 +61,15 @@ export default function EarningCards({ earningsData }: any) {
                 </div>
                 {hasButton && (
                   <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm max-w-md"
+                    className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm max-w-md ${
+                      earningsData.availableAmount <= 0
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
                     onClick={() => setOpen(true)}
+                    disabled={earningsData.availableAmount <= 0}
                   >
-                    Withdraw
+                    {t("earnings.withdraw")}
                   </Button>
                 )}
               </div>
@@ -61,7 +77,11 @@ export default function EarningCards({ earningsData }: any) {
           </CardContent>
         </Card>
       ))}
-      <PayoutRequest open={open} setOpen={setOpen} />
+      <PayoutRequest
+        open={open}
+        setOpen={setOpen}
+        amount={earningsData.availableAmount}
+      />
     </div>
   );
 }

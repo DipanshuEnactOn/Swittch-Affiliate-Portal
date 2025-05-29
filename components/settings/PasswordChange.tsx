@@ -8,9 +8,14 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Api } from "@/services/api-services";
+import { useState } from "react";
+import { useTranslation } from "@/i18n/client";
 
 export default function PasswordChange({ affiliateUser }: any) {
+  const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
   const userPassword = affiliateUser?.password || "";
+
   const initialValues = {
     currentPassword: "",
     newPassword: "",
@@ -22,47 +27,58 @@ export default function PasswordChange({ affiliateUser }: any) {
     { setSubmitting, resetForm }: any
   ) => {
     setSubmitting(true);
-    if (values.currentPassword !== userPassword) {
+    setIsLoading(true);
+
+    try {
+      if (values.newPassword !== values.confirmPassword) {
+        toast({
+          title: t("password.toast.errorTitle"),
+          description: t("password.toast.errorMismatch"),
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const data = {
+        ...values,
+        id: affiliateUser.id,
+      };
+      const response = await Api.post({ path: "/change-password", body: data });
+
+      if (response.status === "success") {
+        toast({
+          title: t("password.toast.successTitle"),
+          description: t("password.toast.successMessage"),
+        });
+      } else {
+        toast({
+          title: t("password.toast.errorTitle"),
+          description:
+            response.data?.message || t("password.toast.errorGeneric"),
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Current password is incorrect.",
+        title: t("password.toast.errorTitle"),
+        description: error || t("password.toast.errorGeneric"),
         variant: "destructive",
       });
-      return;
+    } finally {
+      resetForm();
+      setSubmitting(false);
+      setIsLoading(false);
     }
-    if (values.newPassword !== values.confirmPassword) {
-      toast({
-        title: "Error",
-        description: "New password and confirm password do not match.",
-        variant: "destructive",
-      });
-      return;
-    }
-    const response = await Api.post({ path: "/change-password", body: values });
-    if (response.status === "success") {
-      toast({
-        title: "Success",
-        description: "Password changed successfully.",
-      });
-    } else {
-      toast({
-        title: "Error",
-        description: response.data?.message || "Failed to change password.",
-        variant: "destructive",
-      });
-    }
-    resetForm();
-    setSubmitting(false);
   };
 
   return (
     <Card>
       <CardContent className="p-6">
-        <h2 className="text-lg font-medium mb-6">Change Password</h2>
+        <h2 className="text-lg font-medium mb-6">{t("password.title")}</h2>
         <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
-          enableReinitialize={true}
+          enableReinitialize
           validationSchema={ChangePasswordSchema}
         >
           {({ values, handleChange, handleBlur, touched, errors }) => (
@@ -73,80 +89,81 @@ export default function PasswordChange({ affiliateUser }: any) {
                     htmlFor="currentPassword"
                     className="text-sm text-gray-600"
                   >
-                    Current Password
+                    {t("password.fields.current")}
                   </Label>
-                  <div className="relative">
-                    <Input
-                      id="currentPassword"
-                      name="currentPassword"
-                      type="password"
-                      placeholder="Enter your current password"
-                      className="bg-white pr-10"
-                      value={values.currentPassword}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {touched.currentPassword && errors.currentPassword && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.currentPassword}
-                      </p>
-                    )}
-                  </div>
+                  <Input
+                    id="currentPassword"
+                    name="currentPassword"
+                    type="password"
+                    placeholder={t("password.fields.placeholder.current")}
+                    className="bg-white pr-10"
+                    value={values.currentPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.currentPassword && errors.currentPassword && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.currentPassword}
+                    </p>
+                  )}
                 </div>
+
                 <div className="space-y-2">
                   <Label
                     htmlFor="newPassword"
                     className="text-sm text-gray-600"
                   >
-                    New Password
+                    {t("password.fields.new")}
                   </Label>
-                  <div className="relative">
-                    <Input
-                      id="newPassword"
-                      name="newPassword"
-                      type="password"
-                      placeholder="Enter your new password"
-                      className="bg-white pr-10"
-                      value={values.newPassword}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {touched.newPassword && errors.newPassword && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.newPassword}
-                      </p>
-                    )}
-                  </div>
+                  <Input
+                    id="newPassword"
+                    name="newPassword"
+                    type="password"
+                    placeholder={t("password.fields.placeholder.new")}
+                    className="bg-white pr-10"
+                    value={values.newPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.newPassword && errors.newPassword && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.newPassword}
+                    </p>
+                  )}
                 </div>
+
                 <div className="space-y-2">
                   <Label
                     htmlFor="confirmPassword"
                     className="text-sm text-gray-600"
                   >
-                    Confirm Password
+                    {t("password.fields.confirm")}
                   </Label>
-                  <div className="relative">
-                    <Input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      placeholder="Re-enter your new password"
-                      className="bg-white pr-10"
-                      value={values.confirmPassword}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {touched.confirmPassword && errors.confirmPassword && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.confirmPassword}
-                      </p>
-                    )}
-                  </div>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    placeholder={t("password.fields.placeholder.confirm")}
+                    className="bg-white pr-10"
+                    value={values.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.confirmPassword && errors.confirmPassword && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.confirmPassword}
+                    </p>
+                  )}
                 </div>
               </div>
+
               <div className="flex justify-end mt-6">
-                <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                  Save
+                <Button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700"
+                  isLoading={isLoading}
+                >
+                  {t("password.button")}
                 </Button>
               </div>
             </Form>

@@ -7,19 +7,37 @@ import { getAffiliateByEmail } from "@/models/affiliates-model";
 import { getAuthSession } from "@/models/auth-models";
 import { redirect } from "next/navigation";
 import { AppRoutes } from "@/utils/routes";
+import { createTranslation } from "@/i18n/server";
+import { getAffiliateCampaignGoalsByAffiliateId } from "@/models/affiliate-campaign-goal-model";
+import { getCampaignGoalById } from "@/models/campaign-goal-model";
 
 export default async function SettingsPage() {
   const user = await getAuthSession();
+  const { t } = await createTranslation();
   if (!user) {
     return redirect(AppRoutes.auth.signIn);
   }
   const affiliate = (await getAffiliateByEmail(user.user.email as string))
     ?.data;
-  // console.log(affiliate);
+
+  const campaignGoalsIds =
+    (await getAffiliateCampaignGoalsByAffiliateId(1)).data || [];
+
+  const campaignGoals = await Promise.all(
+    campaignGoalsIds.map(async (goal) => {
+      const campaignGoal = await getCampaignGoalById(goal.campaignGoalId);
+      return {
+        title: campaignGoal.data?.name || "Unknown Goal",
+        earnings: campaignGoal.data?.commissionAmount || "$0",
+        id: goal.campaignGoalId || 0,
+      };
+    })
+  );
+
   return (
     <DashboardLayout>
       <div className="mx-auto space-y-8">
-        <h1 className="text-2xl font-semibold">Settings</h1>
+        <h1 className="text-2xl font-semibold">{t("settings.title")}</h1>
 
         {/* Personal Information */}
         <PersonalInformation affiliateUser={affiliate} />
@@ -28,7 +46,7 @@ export default async function SettingsPage() {
         <PasswordChange affiliateUser={affiliate} />
 
         {/* Configure Postback */}
-        <ConfigurePostback />
+        <ConfigurePostback goals={campaignGoals} />
 
         {/* Postback Documentation */}
         <Card>

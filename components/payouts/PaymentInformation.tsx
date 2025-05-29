@@ -1,11 +1,9 @@
 "use client";
 
-import { Formik } from "formik";
-import { useTranslation } from "@/i18n/client";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -13,36 +11,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import * as Yup from "yup";
-import { useState } from "react";
-import { BankDetailsSchema, PayPalSchema } from "@/utils/validation";
-import { Api } from "@/services/api-services";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "@/i18n/client";
+import { Api } from "@/services/api-services";
+import { BankDetailsSchema, PayPalSchema } from "@/utils/validation";
+import { Formik } from "formik";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-interface PaymentInformationProps {
-  onPayPalSubmit: (values: any) => void | Promise<void>;
-  onBankDetailsSubmit: (values: any) => void | Promise<void>;
-}
-
-export default function PaymentInformation({
-  onPayPalSubmit,
-  onBankDetailsSubmit,
-}: PaymentInformationProps) {
+export default function PaymentInformation({ paymentInfo }: any) {
   const { t } = useTranslation();
+  const router = useRouter();
+  const user = useSession().data?.user;
   const [paypalLoading, setPaypalLoading] = useState(false);
   const [bankLoading, setBankLoading] = useState(false);
+  const [currentPaymentInfo, setCurrentPaymentInfo] = useState(
+    paymentInfo ?? {}
+  );
+
+  useEffect(() => {
+    setCurrentPaymentInfo(paymentInfo);
+  }, [paymentInfo]);
 
   const paypalInitialValues = {
-    paypalId: "",
+    paypalId: currentPaymentInfo?.paypalId || "",
   };
 
   const bankInitialValues = {
-    bankName: "",
-    accountNumber: "",
-    ifscBicCode: "",
-    accountHolderName: "",
-    accountType: "",
-    swiftCode: "",
+    bankName: currentPaymentInfo?.bankInfo?.bankName || "",
+    accountNumber: currentPaymentInfo?.bankInfo?.accountNumber || "",
+    ifscBicCode: currentPaymentInfo?.bankInfo?.ifscBicCode || "",
+    accountHolderName: currentPaymentInfo?.bankInfo?.accountHolderName || "",
+    accountType: currentPaymentInfo?.bankInfo?.accountType || "",
+    swiftCode: currentPaymentInfo?.bankInfo?.swiftCode || "",
   };
 
   const handlePaypalSubmit = async (
@@ -51,20 +53,24 @@ export default function PaymentInformation({
   ) => {
     try {
       setPaypalLoading(true);
-      const response = await Api.post({ path: "/update-paypal", body: values });
+      const data = {
+        ...values,
+        id: user?.id,
+      };
+      const response = await Api.post({ path: "/update-paypal", body: data });
       if (response.status === "error") {
         toast({
           variant: "destructive",
-          title: t("common.error"),
-          description: response.message || t("common.somethingWentWrong"),
+          title: t("error"),
+          description: response.message || t("somethingWentWrong"),
         });
       } else {
         toast({
-          title: t("common.success"),
+          title: t("success"),
           description: t("payouts.paypalUpdated"),
         });
       }
-      resetForm();
+      router.refresh();
     } catch (error) {
       console.error("PayPal form submission error:", error);
     } finally {
@@ -79,23 +85,28 @@ export default function PaymentInformation({
   ) => {
     try {
       setBankLoading(true);
+      const data = {
+        bankDetails: { ...values },
+        id: user?.id,
+      };
       const response = await Api.post({
         path: "/update-bank-details",
-        body: values,
+        body: data,
       });
       if (response.status === "error") {
         toast({
           variant: "destructive",
-          title: t("common.error"),
-          description: response.message || t("common.somethingWentWrong"),
+          title: t("error"),
+          description: response.message || t("somethingWentWrong"),
         });
       } else {
         toast({
-          title: t("common.success"),
+          title: t("success"),
           description: t("payouts.bankDetailsUpdated"),
         });
       }
-      resetForm();
+      // resetForm();
+      router.refresh();
     } catch (error) {
       console.error("Bank details form submission error:", error);
     } finally {
@@ -106,11 +117,10 @@ export default function PaymentInformation({
 
   return (
     <div className="space-y-6">
-      {/* PayPal Form */}
       <Card className="bg-white">
         <CardHeader className="border-b">
           <CardTitle className="text-lg font-medium text-gray-800">
-            PayPal Information
+            {t("payouts.paypalTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="mt-4">
@@ -131,8 +141,8 @@ export default function PaymentInformation({
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="paypalId">
-                    PayPal ID
-                    <span className="text-red-500"> *</span>
+                    {t("payouts.paypalId")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="flex space-x-3 mt-2">
                     <div className="flex-1">
@@ -140,14 +150,14 @@ export default function PaymentInformation({
                         id="paypalId"
                         name="paypalId"
                         type="text"
-                        placeholder="Enter your PayPal email address"
+                        placeholder={t("payouts.paypalPlaceholder")}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.paypalId}
                       />
                       {touched.paypalId && errors.paypalId && (
                         <p className="text-sm text-red-500 mt-1">
-                          {errors.paypalId}
+                          {errors.paypalId as any}
                         </p>
                       )}
                     </div>
@@ -157,7 +167,7 @@ export default function PaymentInformation({
                       disabled={isSubmitting || paypalLoading}
                       isLoading={paypalLoading}
                     >
-                      Save PayPal
+                      {t("payouts.paypalSave")}
                     </Button>
                   </div>
                 </div>
@@ -167,11 +177,10 @@ export default function PaymentInformation({
         </CardContent>
       </Card>
 
-      {/* Bank Details Form */}
       <Card className="bg-white">
         <CardHeader className="border-b">
           <CardTitle className="text-lg font-medium text-gray-800">
-            Bank Account Details
+            {t("payouts.bankTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="mt-4">
@@ -194,75 +203,77 @@ export default function PaymentInformation({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="bankName">
-                      Bank Name
-                      <span className="text-red-500"> *</span>
+                      {t("payouts.bankName")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="bankName"
                       name="bankName"
                       type="text"
-                      placeholder="Enter bank name"
+                      placeholder={t("payouts.bankNamePlaceholder")}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.bankName}
                     />
                     {touched.bankName && errors.bankName && (
-                      <p className="text-sm text-red-500">{errors.bankName}</p>
+                      <p className="text-sm text-red-500">
+                        {errors.bankName as any}
+                      </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="accountHolderName">
-                      Account Holder Name
-                      <span className="text-red-500"> *</span>
+                      {t("payouts.accountHolderName")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="accountHolderName"
                       name="accountHolderName"
                       type="text"
-                      placeholder="Enter account holder name"
+                      placeholder={t("payouts.accountHolderNamePlaceholder")}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.accountHolderName}
                     />
                     {touched.accountHolderName && errors.accountHolderName && (
                       <p className="text-sm text-red-500">
-                        {errors.accountHolderName}
+                        {errors.accountHolderName as any}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="accountNumber">
-                      Account Number
-                      <span className="text-red-500"> *</span>
+                      {t("payouts.accountNumber")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="accountNumber"
                       name="accountNumber"
                       type="text"
-                      placeholder="Enter account number"
+                      placeholder={t("payouts.accountNumberPlaceholder")}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.accountNumber}
                     />
                     {touched.accountNumber && errors.accountNumber && (
                       <p className="text-sm text-red-500">
-                        {errors.accountNumber}
+                        {errors.accountNumber as any}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="ifscBicCode">
-                      IFSC/BIC Code
-                      <span className="text-red-500"> *</span>
+                      {t("payouts.ifsc")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="ifscBicCode"
                       name="ifscBicCode"
                       type="text"
-                      placeholder="Enter IFSC/BIC code"
+                      placeholder={t("payouts.ifscPlaceholder")}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.ifscBicCode}
@@ -270,15 +281,15 @@ export default function PaymentInformation({
                     />
                     {touched.ifscBicCode && errors.ifscBicCode && (
                       <p className="text-sm text-red-500">
-                        {errors.ifscBicCode}
+                        {errors.ifscBicCode as any}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="accountType">
-                      Account Type
-                      <span className="text-red-500"> *</span>
+                      {t("payouts.accountType")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Select
                       value={values.accountType}
@@ -287,7 +298,9 @@ export default function PaymentInformation({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select account type" />
+                        <SelectValue
+                          placeholder={t("payouts.accountTypePlaceholder")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="savings">Savings Account</SelectItem>
@@ -302,25 +315,27 @@ export default function PaymentInformation({
                     </Select>
                     {touched.accountType && errors.accountType && (
                       <p className="text-sm text-red-500">
-                        {errors.accountType}
+                        {errors.accountType as any}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="swiftCode">SWIFT Code (Optional)</Label>
+                    <Label htmlFor="swiftCode">{t("payouts.swift")}</Label>
                     <Input
                       id="swiftCode"
                       name="swiftCode"
                       type="text"
-                      placeholder="Enter SWIFT code"
+                      placeholder={t("payouts.swiftPlaceholder")}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.swiftCode}
                       style={{ textTransform: "uppercase" }}
                     />
                     {touched.swiftCode && errors.swiftCode && (
-                      <p className="text-sm text-red-500">{errors.swiftCode}</p>
+                      <p className="text-sm text-red-500">
+                        {errors.swiftCode as any}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -332,7 +347,7 @@ export default function PaymentInformation({
                     disabled={isSubmitting || bankLoading}
                     isLoading={bankLoading}
                   >
-                    Save Bank Details
+                    {t("payouts.bankSave")}
                   </Button>
                 </div>
               </form>

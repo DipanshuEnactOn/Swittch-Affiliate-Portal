@@ -1,9 +1,8 @@
 "use client";
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { CreateAffiliateLink } from "@/components/links/CreateLinkDialoug";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -12,36 +11,32 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CreateAffiliateLink } from "@/components/links/CreateLinkDialoug";
-import Link from "next/link";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  flexRender,
-  ColumnDef,
-  SortingState,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
-import { useState } from "react";
-import { Switch } from "@/components/ui/switch";
-import { Copy, Plus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import moment from "moment";
+import { useTranslation } from "@/i18n/client";
 import { Api } from "@/services/api-services";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Copy } from "lucide-react";
+import moment from "moment";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import TablePagination from "../TablePagination";
 
 export default function LinksTable({ data }: { data: any }) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const { t } = useTranslation();
   const router = useRouter();
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: "Success",
-      description: "Link copied to clipboard",
+      title: t("success"),
+      description: t("links.copySuccess"),
     });
   };
 
@@ -55,22 +50,22 @@ export default function LinksTable({ data }: { data: any }) {
       if (response.status === "error") {
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to update link status",
+          title: t("error"),
+          description: t("links.updateError"),
         });
         return;
       }
       toast({
-        title: "Success",
-        description: `Link Status Updated`,
+        title: t("success"),
+        description: t("links.updateSuccess"),
       });
       router.refresh();
     } catch (error) {
       console.error("Error updating link status:", error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to update link status",
+        title: t("error"),
+        description: t("links.updateError"),
       });
     }
   };
@@ -78,32 +73,30 @@ export default function LinksTable({ data }: { data: any }) {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: "date",
-      header: "Date",
+      header: t("links.date"),
       cell: ({ row }) => {
-        const rowValue = row.original;
         return (
           <div className="flex items-center text-gray-500">
-            {moment(rowValue.createdAt).format("DD-MM-YYYY")}
+            {moment(row.original.createdAt).format("DD-MM-YYYY")}
           </div>
         );
       },
     },
     {
       accessorKey: "link",
-      header: "Links",
+      header: t("links.url"),
       cell: ({ row }) => {
-        const rowValue = row.original;
         return (
           <div className="flex items-center gap-3 max-w-xs">
             <Link
               className="truncate hover:underline"
-              href={rowValue.destinationUrl || "#"}
+              href={row.original.destinationUrl || "#"}
             >
-              {rowValue.destinationUrl || "No URL"}
+              {row.original.destinationUrl || "No URL"}
             </Link>
             <Copy
               className="h-4 w-4 p-0 text-blue-600 hover:bg-blue-50 cursor-pointer"
-              onClick={() => copyToClipboard(rowValue.destinationUrl)}
+              onClick={() => copyToClipboard(row.original.destinationUrl)}
             />
           </div>
         );
@@ -111,38 +104,37 @@ export default function LinksTable({ data }: { data: any }) {
     },
     {
       accessorKey: "name",
-      header: "Name",
+      header: t("links.name"),
       cell: ({ row }) => {
-        const rowValue = row.original;
         return (
-          <div className="flex items-center text-gray-700">{rowValue.name}</div>
+          <div className="flex items-center text-gray-700">
+            {row.original.name}
+          </div>
         );
       },
     },
     {
       accessorKey: "clicks",
-      header: "Clicks",
+      header: t("links.clicks"),
       cell: ({ row }) => {
-        const rowValue = row.original;
         return (
           <div className="flex items-center text-gray-700">
-            {rowValue.totalClicks || 0}
+            {row.original.totalClicks || 0}
           </div>
         );
       },
     },
     {
       accessorKey: "active",
-      header: "Actions",
+      header: t("links.actions"),
       cell: ({ row }) => {
-        const rowValue = row.original;
         return (
           <div className="flex items-center">
             <Switch
-              checked={rowValue.status === "active"}
+              checked={row.original.status === "active"}
               className="data-[state=checked]:bg-brand-500"
               onCheckedChange={() =>
-                hanldeStatusChange(rowValue.id, rowValue.status)
+                hanldeStatusChange(row.original.id, row.original.status)
               }
             />
           </div>
@@ -152,18 +144,11 @@ export default function LinksTable({ data }: { data: any }) {
   ];
 
   const table = useReactTable({
-    data: data.result,
+    data: data?.result || [],
     columns,
-    state: {
-      sorting,
-      columnFilters,
-    },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
         pageSize: 10,
@@ -176,16 +161,13 @@ export default function LinksTable({ data }: { data: any }) {
       <CardHeader className="flex flex-col gap-2 px-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 py-4 border-b space-y-0">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Links
+            {t("links.table_title")}
           </h3>
         </div>
         <CreateAffiliateLink />
       </CardHeader>
       <CardContent className="px-6 pt-6">
         <div className="space-y-4">
-          {/* Search/Filter Input */}
-
-          {/* Table */}
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -231,13 +213,14 @@ export default function LinksTable({ data }: { data: any }) {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No links found.
+                      {t("links.noLinks")}
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
           </div>
+          <TablePagination table={table} pagination={data.pagination} />
         </div>
       </CardContent>
     </Card>

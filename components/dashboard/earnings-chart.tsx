@@ -10,13 +10,15 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslation } from "@/i18n/client";
 
 export function EarningsChart({ earningsData }: { earningsData: any }) {
-  // console.log(earningsData);
+  const { t } = useTranslation();
+
   return (
     <Card className="mb-6">
       <CardHeader className="border-b mb-3">
-        <CardTitle>Total Earnings ($)</CardTitle>
+        <CardTitle>{t("earnings.chartTitle")}</CardTitle>
       </CardHeader>
       <CardContent className="mt-5">
         <div className="h-[300px]">

@@ -15,7 +15,7 @@ export default function SignUpPage() {
 
   const handleSubmit = async (values: any) => {
     try {
-      const result = await Api.post({ path: "/api/sign-up", body: values });
+      const result = await Api.post({ path: "/sign-up", body: values });
       if (!result || result.status === "error") {
         toast({
           title: t("validation.errorCreatingUser"),

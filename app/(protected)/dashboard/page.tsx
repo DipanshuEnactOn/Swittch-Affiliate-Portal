@@ -11,8 +11,11 @@ import {
 import { redirect } from "next/navigation";
 import { AppRoutes } from "@/utils/routes";
 import { getCampaignById } from "@/models/campaigns-model";
+import { createTranslation } from "@/i18n/server";
 
 export default async function DashboardPage() {
+  const { t } = await createTranslation();
+
   const user = await getAuthSession();
   const userStatus = user?.user?.status;
 
@@ -29,7 +32,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-semibold mb-6">{t("dashboard.title")}</h1>
       <ActiveCampaign campaign={campaignDetails} />
       <MetricsCards />
       <EarningsChart earningsData={earningsData} />

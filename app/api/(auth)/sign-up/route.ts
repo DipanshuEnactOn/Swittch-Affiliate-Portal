@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       return commonResponse({
         data: null,
         status: "error",
-        message: t("validation.emailAlreadyExists"),
+        message: t("auth.signup.emailAlreadyExists"),
       });
     }
 
@@ -41,19 +41,19 @@ export async function POST(request: NextRequest) {
       return commonResponse({
         data: null,
         status: "error",
-        message: t("validation.errorCreatingUser"),
+        message: t("auth.signup.errorCreatingUser"),
       });
     }
     return commonResponse({
       data: newAffiliate.data,
       status: "success",
-      message: t("validation.userCreatedSuccessfully"),
+      message: t("auth.signup.userCreatedSuccessfully"),
     });
   } catch (error) {
     return commonResponse({
       data: error,
       status: "error",
-      message: t("validation.invalidData"),
+      message: t("auth.signup.invalidData"),
     });
   }
 }

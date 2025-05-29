@@ -1,8 +1,8 @@
 import { createTranslation } from "@/i18n/server";
 import {
-  getAffiliateLinkBySlug,
-  insertAffiliateLink,
-} from "@/models/affiliate-link-model";
+  getAffiliatePostbackByAffiliateAndCampaign,
+  insertAffiliatePostback,
+} from "@/models/affiliate-postaback-model";
 import { commonResponse } from "@/utils/response-format";
 import { NextRequest } from "next/server";
 
@@ -11,14 +11,20 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const existingAffiliateLink = (await getAffiliateLinkBySlug(body.slug))
-      ?.data;
+    const { affiliateId, campaignId, campaignGoalId, postbackUrl } = body;
 
-    if (existingAffiliateLink) {
+    const existingAffiliatePostback =
+      await getAffiliatePostbackByAffiliateAndCampaign(
+        affiliateId,
+        campaignId,
+        campaignGoalId
+      );
+
+    if (existingAffiliatePostback.data) {
       return commonResponse({
         data: "",
         status: "error",
-        message: t("affiliateLink.linkAlreadyExists"),
+        message: t("postback.postbackAlreadyExists"),
       });
     }
 
@@ -28,26 +34,26 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     };
 
-    const result = await insertAffiliateLink(data);
+    const result = await insertAffiliatePostback(data);
 
     if (result.status === "error") {
       return commonResponse({
         data: result.data,
         status: "error",
-        message: t("affiliateLink.errorCreatingLink"),
+        message: t("postback.errorCreatingPostback"),
       });
     }
 
     return commonResponse({
       data: result.data?.id,
       status: "success",
-      message: t("affiliateLink.linkCreated"),
+      message: t("postback.postbackCreated"),
     });
   } catch (error) {
     return commonResponse({
       data: error,
       status: "error",
-      message: t("affiliateLink.invalidData"),
+      message: t("postback.invalidData"),
     });
   }
 }

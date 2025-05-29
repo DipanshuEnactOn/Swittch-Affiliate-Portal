@@ -1,6 +1,13 @@
 "use client";
 
-import React from "react";
+import {
+  DoubleArrowLeftIcon,
+  DoubleArrowRightIcon,
+} from "@radix-ui/react-icons";
+import { Table } from "@tanstack/react-table";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Button } from "./ui/button";
 import {
   Select,
   SelectContent,
@@ -8,24 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Table } from "@tanstack/react-table";
-import { Button } from "./ui/button";
-import {
-  DoubleArrowLeftIcon,
-  DoubleArrowRightIcon,
-} from "@radix-ui/react-icons";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Config } from "@/utils/config";
 
-interface ClientTablePaginationProps<TData> {
+interface TablePaginationProps<TData> {
   table: Table<TData>;
   pagination: any;
 }
 export default function TablePagination<TData>({
   table,
   pagination,
-}: ClientTablePaginationProps<TData>) {
+}: TablePaginationProps<TData>) {
   const pathname = usePathname();
   const router = useRouter();
   const params = useSearchParams();
@@ -63,7 +61,7 @@ export default function TablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center md:space-x-2  ">
+        <div className="flex items-center md:space-x-2">
           <Button
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"

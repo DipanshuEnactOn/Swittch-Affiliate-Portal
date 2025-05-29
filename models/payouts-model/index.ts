@@ -91,8 +91,37 @@ export const getPayoutById = async (id: number) => {
   }
 };
 
-export const getPayoutsByAffiliateId = async (affiliateId: number) => {
+export const getPayoutsByAffiliateId = async (
+  affiliateId: number,
+  filters: any
+) => {
   try {
+    let rows_per_page = 10;
+    let page = 1;
+
+    if (filters?.rows_per_page) {
+      rows_per_page = parseInt(filters.rows_per_page);
+    }
+
+    if (filters?.page) {
+      page = parseInt(filters.page);
+    }
+
+    const offset = (page - 1) * rows_per_page;
+    const whereConditions = [eq(payouts.affiliateId, affiliateId)];
+
+    const whereClause = and(...whereConditions);
+
+    const countResult = await db
+      .select({
+        count: sql<number>`count(*)`,
+      })
+      .from(payouts)
+      .where(whereClause);
+
+    const totalCount = countResult[0]?.count || 0;
+    const totalPages = Math.ceil(totalCount / rows_per_page);
+
     const result = await db
       .select()
       .from(payouts)
@@ -100,7 +129,39 @@ export const getPayoutsByAffiliateId = async (affiliateId: number) => {
       .orderBy(payouts.createdAt);
 
     return {
-      data: result,
+      data: {
+        result,
+        pagination: {
+          totalCount,
+          totalPages,
+          currentPage: page,
+          rows_per_page,
+        },
+        countResult: countResult[0]?.count || 0,
+      },
+      message: "ok",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+export const getApprovedPayoutsByAffiliateId = async (affiliateId: number) => {
+  try {
+    const result = await db
+      .select({ amount: sql<number>`sum(${payouts.requestedAmount})` })
+      .from(payouts)
+      .where(
+        and(eq(payouts.affiliateId, affiliateId), eq(payouts.status, "paid"))
+      )
+      .orderBy(payouts.createdAt);
+
+    return {
+      data: result[0] || 0,
       message: "ok",
       status: "success",
     };

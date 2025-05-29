@@ -1,12 +1,9 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Campaign } from "@/db/schema";
-import {
-  getAffiliateCampaignGoalById,
-  getAffiliateCampaignGoalsByAffiliateId,
-} from "@/models/affiliate-campaign-goal-model";
+import { createTranslation } from "@/i18n/server";
+import { getAffiliateCampaignGoalsByAffiliateId } from "@/models/affiliate-campaign-goal-model";
 import { getAuthSession } from "@/models/auth-models";
 import { getCampaignGoalById } from "@/models/campaign-goal-model";
-import { getCampaignById } from "@/models/campaigns-model";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
 
@@ -15,39 +12,30 @@ export async function ActiveCampaign({
 }: {
   campaign: Campaign | null;
 }) {
+  const { t } = await createTranslation();
   const user = await getAuthSession();
   const campaignGoalsIds =
     (await getAffiliateCampaignGoalsByAffiliateId(campaign?.id || 1)).data ||
     [];
 
+  // console.log("Campaign Goals Ids", campaignGoalsIds);
+
   const campaignGoals = await Promise.all(
     campaignGoalsIds.map(async (goal) => {
-      const campaignGoal = await getCampaignGoalById(goal.id);
+      const campaignGoal = await getCampaignGoalById(goal.campaignGoalId);
       return {
         title: campaignGoal.data?.name || "Unknown Goal",
         earnings: campaignGoal.data?.commissionAmount || "$0",
       };
     })
   );
-  // const campaignGoals = [
-  //   {
-  //     title: "Download the App",
-  //     earnings: "$5",
-  //   },
-  //   {
-  //     title: "Create an Account",
-  //     earnings: "$10",
-  //   },
-  //   {
-  //     title: "Complete the On-Boarding Process",
-  //     earnings: "$12",
-  //   },
-  // ];
 
   return (
     <Card className="mb-6">
       <CardHeader className="border-b">
-        <h2 className="text-xl font-semibold">Active Campaign</h2>
+        <h2 className="text-xl font-semibold">
+          {t("campaign.activeCampaign")}
+        </h2>
       </CardHeader>
       <CardContent className="p-0">
         <div className="p-6">
@@ -66,19 +54,20 @@ export async function ActiveCampaign({
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">
-                      Campaign Details
+                      {t("campaign.details")}
                     </h3>
                     <h4 className="text-lg font-medium mt-2">
-                      {campaign?.name || "Campaign Title"}
+                      {campaign?.name || t("campaign.fallbackTitle")}
                     </h4>
                     <p className="text-sm text-gray-500">
-                      {campaign?.description || "Campaign Description."}
+                      {campaign?.description ||
+                        t("campaign.fallbackDescription")}
                     </p>
                   </div>
 
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">
-                      Campaign Goals
+                      {t("campaign.goals")}
                     </h3>
                     <div className="space-y-3 mt-2">
                       {campaignGoals.map((goal, index) => (
@@ -86,7 +75,10 @@ export async function ActiveCampaign({
                           <CheckCircle className="h-4 w-4 text-blue-500" />
                           <span className="text-sm">{goal.title}</span>
                           <span className="text-sm font-medium ml-auto">
-                            Earn {goal.earnings}
+                            {t("campaign.earn").replace(
+                              "{amount}",
+                              goal.earnings
+                            )}
                           </span>
                         </div>
                       ))}

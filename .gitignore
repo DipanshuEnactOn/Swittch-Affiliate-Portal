@@ -9,7 +9,7 @@
 /coverage
 
 # drizzle
-/drizzle
+/drizzle/
 
 # next.js
 /.next/

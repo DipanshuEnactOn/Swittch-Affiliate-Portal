@@ -111,6 +111,38 @@ export const updateAffiliate = async (id: number, updateData: any) => {
     };
   }
 };
+export const updateAffiliateProfile = async (id: number, updateData: any) => {
+  try {
+    const result = await db.transaction(async (tx) => {
+      const updated = await tx
+        .update(affiliates)
+        .set({ name: updateData, updatedAt: new Date() })
+        .where(eq(affiliates.id, id))
+        .returning();
+      return updated[0];
+    });
+
+    if (!result) {
+      return {
+        data: null,
+        message: "Affiliate not found",
+        status: "error",
+      };
+    }
+
+    return {
+      data: result,
+      message: "Affiliate updated successfully",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
 
 export const deleteAffiliate = async (id: number) => {
   try {
@@ -144,6 +176,26 @@ export const deleteAffiliate = async (id: number) => {
   }
 };
 
+export const getAffiliateById = async (id: number) => {
+  try {
+    const result = await db
+      .select()
+      .from(affiliates)
+      .where(eq(affiliates.id, id));
+
+    return {
+      data: result[0] || null,
+      message: "ok",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
 export const getAffiliateByEmail = async (email: string) => {
   try {
     const result = await db
@@ -175,6 +227,108 @@ export const getAffiliateStatus = async (email: string) => {
     return {
       data: result[0] || null,
       message: "ok",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const updateAffiliatePassword = async (id: number, updateData: any) => {
+  try {
+    const result = await db.transaction(async (tx) => {
+      const updated = await tx
+        .update(affiliates)
+        .set({ password: updateData, updatedAt: new Date() })
+        .where(eq(affiliates.id, id))
+        .returning();
+      return updated[0];
+    });
+
+    if (!result) {
+      return {
+        data: null,
+        message: "Affiliate not found",
+        status: "error",
+      };
+    }
+
+    return {
+      data: result,
+      message: "Affiliate password updated successfully",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const updateAffiliatePaypalId = async (id: number, updateData: any) => {
+  try {
+    const result = await db.transaction(async (tx) => {
+      const updated = await tx
+        .update(affiliates)
+        .set({ paypalAddress: updateData, updatedAt: new Date() })
+        .where(eq(affiliates.id, id))
+        .returning();
+      return updated[0];
+    });
+
+    if (!result) {
+      return {
+        data: null,
+        message: "Affiliate not found",
+        status: "error",
+      };
+    }
+
+    return {
+      data: result,
+      message: "Affiliate password updated successfully",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const updateAffiliateBankDetails = async (
+  id: number,
+  updateData: any
+) => {
+  try {
+    const result = await db.transaction(async (tx) => {
+      const updated = await tx
+        .update(affiliates)
+        .set({ bankDetails: updateData, updatedAt: new Date() })
+        .where(eq(affiliates.id, id))
+        .returning();
+      return updated[0];
+    });
+
+    if (!result) {
+      return {
+        data: null,
+        message: "Affiliate not found",
+        status: "error",
+      };
+    }
+
+    return {
+      data: result,
+      message: "Affiliate password updated successfully",
       status: "success",
     };
   } catch (error: any) {

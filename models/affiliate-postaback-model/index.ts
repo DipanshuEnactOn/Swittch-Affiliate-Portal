@@ -177,19 +177,12 @@ export const getAffiliatePostbackByAffiliateAndCampaign = async (
       .where(
         and(
           eq(affiliatePostbacks.affiliateId, affiliateId),
-          eq(affiliatePostbacks.campaignId, campaignId)
+          eq(affiliatePostbacks.campaignId, campaignId),
+          campaignGoalId
+            ? eq(affiliatePostbacks.campaignGoalId, campaignGoalId)
+            : undefined
         )
       );
-
-    // if (campaignGoalId) {
-    //   query = query.where(
-    //     and(
-    //       eq(affiliatePostbacks.affiliateId, affiliateId),
-    //       eq(affiliatePostbacks.campaignId, campaignId),
-    //       eq(affiliatePostbacks.campaignGoalId, campaignGoalId)
-    //     )
-    //   );
-    // }
 
     const result = await query.limit(1);
 

@@ -1,5 +1,5 @@
 {
-  "id": "d1bba24b-b44d-4fd4-8f09-05c420c36ed8",
+  "id": "0cee4e19-11ac-4d41-b316-365deb6283db",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -439,8 +439,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "campaign_status": {
-          "name": "campaign_status",
+        "status": {
+          "name": "status",
           "type": "campaign_status",
           "typeSchema": "public",
           "primaryKey": false,
@@ -670,8 +670,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "conversion_status": {
-          "name": "conversion_status",
+        "status": {
+          "name": "status",
           "type": "conversion_status",
           "typeSchema": "public",
           "primaryKey": false,
@@ -749,8 +749,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "payout_status": {
-          "name": "payout_status",
+        "status": {
+          "name": "status",
           "type": "payout_status",
           "typeSchema": "public",
           "primaryKey": false,
@@ -844,8 +844,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "postback_status": {
-          "name": "postback_status",
+        "status": {
+          "name": "status",
           "type": "postback_status",
           "typeSchema": "public",
           "primaryKey": false,
