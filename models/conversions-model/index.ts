@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { conversions } from "@/db/schema";
+import { affiliateConversionsSummary, conversions } from "@/db/schema";
 import { and, count, desc, eq, gte, lte, or, sql, sum } from "drizzle-orm";
 import { date } from "drizzle-orm/mysql-core";
 import moment from "moment";
@@ -168,6 +168,8 @@ export const getConversionsByAffiliate = async (
       .limit(rows_per_page)
       .offset(offset)
       .orderBy(desc(conversions.createdAt));
+
+    // console.log(result);
 
     return {
       data: result,
@@ -390,4 +392,79 @@ export const getEarningsDataForAffiliate = async (affiliateId: number) => {
     totalEarnings: (earningsData[0]?.total_earnings as number) || 0,
     pendingEarning: (earningsData[0]?.pending_earning as number) || 0,
   };
+};
+
+export const getAllAffiliateTransactions = async (
+  affiliateId: number,
+  rows_per_page: number = 10,
+  page: number = 1,
+  status?: "pending" | "approved" | "declined" | "paid",
+  from?: string,
+  to?: string
+) => {
+  try {
+    const defaultTo = new Date();
+    const defaultFrom = new Date();
+    defaultFrom.setMonth(defaultFrom.getMonth() - 1);
+
+    const fromDate = from ? new Date(from) : defaultFrom;
+    const toDate = to ? new Date(to) : defaultTo;
+    toDate.setHours(23, 59, 59, 999);
+
+    let whereConditions = [
+      eq(affiliateConversionsSummary.affiliateId, affiliateId),
+      gte(
+        affiliateConversionsSummary.conversionCreatedAt,
+        fromDate.toISOString()
+      ),
+      lte(
+        affiliateConversionsSummary.conversionCreatedAt,
+        toDate.toISOString()
+      ),
+    ];
+
+    if (status) {
+      whereConditions.push(
+        eq(affiliateConversionsSummary.conversionStatus, status)
+      );
+    }
+
+    const offset = (page - 1) * rows_per_page;
+
+    const countResult = await db
+      .select({
+        count: sql<number>`COUNT(DISTINCT ${affiliateConversionsSummary.clickCode})`,
+      })
+      .from(affiliateConversionsSummary)
+      .where(and(...whereConditions));
+
+    const totalCount = countResult[0]?.count || 0;
+    const totalPages = Math.ceil(totalCount / rows_per_page);
+
+    const result = await db
+      .select()
+      .from(affiliateConversionsSummary)
+      .where(and(...whereConditions))
+      .limit(rows_per_page)
+      .offset(offset)
+      .orderBy(desc(affiliateConversionsSummary.conversionCreatedAt));
+
+    return {
+      data: result,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        rowsPerPage: rows_per_page,
+      },
+      message: "Conversions retrieved successfully",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: error,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
 };

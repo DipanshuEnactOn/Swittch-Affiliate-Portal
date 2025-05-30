@@ -164,8 +164,8 @@ export default function ConfigurePostback({ goals }: any) {
                         </SelectTrigger>
                         <SelectContent>
                           {goals.map((goal: any) => (
-                            <SelectItem key={goal} value={goal?.title || ""}>
-                              {goal?.title}
+                            <SelectItem key={goal.id} value={goal?.name || ""}>
+                              {goal?.name}
                             </SelectItem>
                           ))}
                         </SelectContent>

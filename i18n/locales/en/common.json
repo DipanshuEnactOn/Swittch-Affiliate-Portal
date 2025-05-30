@@ -112,6 +112,7 @@
  "recent_title": "Recent Transactions",
   "date": "Date",
   "link": "Link",
+  "campaign": "Campaign",
   "goal": "Goal",
   "sub1": "SubId1",
   "sub2": "SubId2",
@@ -254,6 +255,8 @@
     "label": "Status",
     "all": "All statuses",
     "confirmed": "Confirmed",
+    "paid": "Paid",
+    "approved": "Approved",
     "pending": "Pending",
     "declined": "Declined"
   },

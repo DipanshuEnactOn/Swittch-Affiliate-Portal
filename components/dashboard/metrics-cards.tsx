@@ -15,8 +15,6 @@ export async function MetricsCards() {
   const userAllEarnings = (await getConversionStatsForAffiliate(user.user.id))
     ?.data;
 
-  console.log(userAllClicks, userAllLinks, userAllEarnings);
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <MetricCard

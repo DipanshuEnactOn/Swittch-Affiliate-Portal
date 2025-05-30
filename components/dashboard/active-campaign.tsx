@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Campaign } from "@/db/schema";
 import { createTranslation } from "@/i18n/server";
-import { getAffiliateCampaignGoalsByAffiliateId } from "@/models/affiliate-campaign-goal-model";
+import { getAffiliateCampaignGoalsByCampaignId } from "@/models/affiliate-campaign-goal-model";
 import { getAuthSession } from "@/models/auth-models";
-import { getCampaignGoalById } from "@/models/campaign-goal-model";
+import { getCampaignGoalsByCampaignId } from "@/models/campaign-goal-model";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
 
@@ -14,21 +14,26 @@ export async function ActiveCampaign({
 }) {
   const { t } = await createTranslation();
   const user = await getAuthSession();
-  const campaignGoalsIds =
-    (await getAffiliateCampaignGoalsByAffiliateId(campaign?.id || 1)).data ||
-    [];
+  const campaignGoals =
+    (await getCampaignGoalsByCampaignId(campaign?.id || 1)).data || [];
 
-  // console.log("Campaign Goals Ids", campaignGoalsIds);
+  const affiliateCampaignGoals =
+    (await getAffiliateCampaignGoalsByCampaignId(campaign?.id || 1)).data || [];
 
-  const campaignGoals = await Promise.all(
-    campaignGoalsIds.map(async (goal) => {
-      const campaignGoal = await getCampaignGoalById(goal.campaignGoalId);
+  const finalGoals = campaignGoals
+    .filter((goal) => goal.status === "active")
+    .map((goal) => {
+      const affiliateGoal = affiliateCampaignGoals.find(
+        (affiliate) => affiliate.campaignGoalId == goal.id
+      );
+
       return {
-        title: campaignGoal.data?.name || "Unknown Goal",
-        earnings: campaignGoal.data?.commissionAmount || "$0",
+        name: goal.name,
+        amount: affiliateGoal
+          ? affiliateGoal.customCommissionRate
+          : goal.commissionAmount,
       };
-    })
-  );
+    });
 
   return (
     <Card className="mb-6">
@@ -70,14 +75,14 @@ export async function ActiveCampaign({
                       {t("campaign.goals")}
                     </h3>
                     <div className="space-y-3 mt-2">
-                      {campaignGoals.map((goal, index) => (
+                      {finalGoals.map((goal, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-blue-500" />
-                          <span className="text-sm">{goal.title}</span>
+                          <span className="text-sm">{goal.name}</span>
                           <span className="text-sm font-medium ml-auto">
                             {t("campaign.earn").replace(
                               "{amount}",
-                              goal.earnings
+                              String(goal.amount ?? 0)
                             )}
                           </span>
                         </div>

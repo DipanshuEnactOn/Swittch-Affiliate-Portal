@@ -97,8 +97,8 @@ export default function FilterComponent() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("filters.status.all")}</SelectItem>
-                  <SelectItem value="confirmed">
-                    {t("filters.status.confirmed")}
+                  <SelectItem value="approved">
+                    {t("filters.status.approved")}
                   </SelectItem>
                   <SelectItem value="pending">
                     {t("filters.status.pending")}

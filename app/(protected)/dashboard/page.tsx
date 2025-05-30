@@ -1,17 +1,17 @@
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { ActiveCampaign } from "@/components/dashboard/active-campaign";
-import { MetricsCards } from "@/components/dashboard/metrics-cards";
 import { EarningsChart } from "@/components/dashboard/earnings-chart";
+import { MetricsCards } from "@/components/dashboard/metrics-cards";
 import { TransactionsTable } from "@/components/dashboard/transactions-table";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { createTranslation } from "@/i18n/server";
 import { getAuthSession } from "@/models/auth-models";
+import { getCampaignById } from "@/models/campaigns-model";
 import {
-  getConversionsByAffiliate,
+  getAllAffiliateTransactions,
   getWeeklyCommissionDataByAffiliateId,
 } from "@/models/conversions-model";
-import { redirect } from "next/navigation";
 import { AppRoutes } from "@/utils/routes";
-import { getCampaignById } from "@/models/campaigns-model";
-import { createTranslation } from "@/i18n/server";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const { t } = await createTranslation();
@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   const campaignDetails = (await getCampaignById(1))?.data;
 
   const transactions =
-    (await getConversionsByAffiliate(user.user.id, 10))?.data || [];
+    (await getAllAffiliateTransactions(user.user.id, 10)) || [];
 
   const earningsData = await getWeeklyCommissionDataByAffiliateId(user.user.id);
 

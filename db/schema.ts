@@ -10,6 +10,7 @@ import {
   char,
   jsonb,
   pgEnum,
+  integer,
 } from "drizzle-orm/pg-core";
 
 export const approvalStatusEnum = pgEnum("approval_status", [
@@ -211,6 +212,72 @@ export const affiliatePostbacks = pgTable("affiliate_postbacks", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const affiliateConversionsSummary = pgTable("vw_affiliate_conversions", {
+  conversionId: integer("conversion_id").notNull(),
+  transactionId: varchar("transaction_id", { length: 255 }),
+  clickCode: varchar("click_code", { length: 255 }).notNull(),
+  conversionValue: numeric("conversion_value", { precision: 12, scale: 2 }),
+  commission: numeric("commission", { precision: 12, scale: 2 }),
+  conversionStatus: varchar("conversion_status", { length: 255 }).notNull(),
+  convertedAt: timestamp("converted_at", { mode: "string" }).notNull(),
+  conversionCreatedAt: timestamp("conversion_created_at", {
+    mode: "string",
+  }).notNull(),
+  conversionSub1: varchar("conversion_sub1", { length: 255 }),
+  conversionSub2: varchar("conversion_sub2", { length: 255 }),
+  conversionSub3: varchar("conversion_sub3", { length: 255 }),
+  adminNotes: varchar("admin_notes", { length: 500 }),
+  payoutId: integer("payout_id"),
+
+  campaignId: integer("campaign_id").notNull(),
+  campaignName: varchar("campaign_name", { length: 255 }).notNull(),
+  campaignType: varchar("campaign_type", { length: 255 }).notNull(),
+  campaignStatus: varchar("campaign_status", { length: 255 }).notNull(),
+
+  campaignGoalId: integer("campaign_goal_id").notNull(),
+  goalName: varchar("goal_name", { length: 255 }).notNull(),
+  commissionType: varchar("commission_type", { length: 255 }).notNull(),
+  goalCommissionAmount: numeric("goal_commission_amount", {
+    precision: 12,
+    scale: 2,
+  }),
+  trackingCode: varchar("tracking_code", { length: 10 }).notNull(),
+  goalStatus: varchar("goal_status", { length: 255 }).notNull(),
+
+  affiliateId: integer("affiliate_id").notNull(),
+  affiliateName: varchar("affiliate_name", { length: 255 }).notNull(),
+  affiliateEmail: varchar("affiliate_email", { length: 255 }).notNull(),
+  affiliateStatus: varchar("affiliate_status", { length: 255 }).notNull(),
+
+  affiliateLinkId: integer("affiliate_link_id").notNull(),
+  linkSlug: varchar("link_slug", { length: 255 }).notNull(),
+  destinationUrl: varchar("destination_url", { length: 1000 }).notNull(),
+  linkStatus: varchar("link_status", { length: 255 }).notNull(),
+  linkSub1: varchar("link_sub1", { length: 255 }),
+  linkSub2: varchar("link_sub2", { length: 255 }),
+  linkSub3: varchar("link_sub3", { length: 255 }),
+
+  clickId: integer("click_id").notNull(),
+  ipAddress: varchar("ip_address", { length: 255 }).notNull(),
+  country: varchar("country", { length: 255 }),
+  city: varchar("city", { length: 255 }),
+  deviceType: varchar("device_type", { length: 255 }),
+  referrer: varchar("referrer", { length: 255 }),
+  clickedAt: timestamp("clicked_at", { mode: "string" }).notNull(),
+  clickSub1: varchar("click_sub1", { length: 255 }),
+  clickSub2: varchar("click_sub2", { length: 255 }),
+  clickSub3: varchar("click_sub3", { length: 255 }),
+
+  hoursToConversion: numeric("hours_to_conversion", {
+    precision: 10,
+    scale: 2,
+  }),
+  conversionYear: timestamp("conversion_year", { mode: "string" }).notNull(),
+});
+
+export type AffiliateConversionsSummary =
+  typeof affiliateConversionsSummary.$inferSelect;
 
 // Type exports for convenience
 export type Affiliate = typeof affiliates.$inferSelect;

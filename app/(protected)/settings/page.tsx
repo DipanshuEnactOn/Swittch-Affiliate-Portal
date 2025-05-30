@@ -1,15 +1,15 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { Card, CardContent } from "@/components/ui/card";
-import PersonalInformation from "@/components/settings/PersonalInformation";
-import PasswordChange from "@/components/settings/PasswordChange";
 import ConfigurePostback from "@/components/settings/ConfigurePostback";
+import PasswordChange from "@/components/settings/PasswordChange";
+import PersonalInformation from "@/components/settings/PersonalInformation";
+import { Card, CardContent } from "@/components/ui/card";
+import { createTranslation } from "@/i18n/server";
+import { getAffiliateCampaignGoalsByCampaignId } from "@/models/affiliate-campaign-goal-model";
 import { getAffiliateByEmail } from "@/models/affiliates-model";
 import { getAuthSession } from "@/models/auth-models";
-import { redirect } from "next/navigation";
+import { getCampaignGoalsByCampaignId } from "@/models/campaign-goal-model";
 import { AppRoutes } from "@/utils/routes";
-import { createTranslation } from "@/i18n/server";
-import { getAffiliateCampaignGoalsByAffiliateId } from "@/models/affiliate-campaign-goal-model";
-import { getCampaignGoalById } from "@/models/campaign-goal-model";
+import { redirect } from "next/navigation";
 
 export default async function SettingsPage() {
   const user = await getAuthSession();
@@ -20,19 +20,26 @@ export default async function SettingsPage() {
   const affiliate = (await getAffiliateByEmail(user.user.email as string))
     ?.data;
 
-  const campaignGoalsIds =
-    (await getAffiliateCampaignGoalsByAffiliateId(1)).data || [];
+  const campaignGoals = (await getCampaignGoalsByCampaignId(1)).data || [];
 
-  const campaignGoals = await Promise.all(
-    campaignGoalsIds.map(async (goal) => {
-      const campaignGoal = await getCampaignGoalById(goal.campaignGoalId);
+  const affiliateCampaignGoals =
+    (await getAffiliateCampaignGoalsByCampaignId(1)).data || [];
+
+  const finalGoals = campaignGoals
+    .filter((goal) => goal.status === "active")
+    .map((goal) => {
+      const affiliateGoal = affiliateCampaignGoals.find(
+        (affiliate) => affiliate.campaignGoalId == goal.id
+      );
+
       return {
-        title: campaignGoal.data?.name || "Unknown Goal",
-        earnings: campaignGoal.data?.commissionAmount || "$0",
-        id: goal.campaignGoalId || 0,
+        id: goal.id,
+        name: goal.name,
+        amount: affiliateGoal
+          ? affiliateGoal.customCommissionRate
+          : goal.commissionAmount,
       };
-    })
-  );
+    });
 
   return (
     <DashboardLayout>
@@ -46,7 +53,7 @@ export default async function SettingsPage() {
         <PasswordChange affiliateUser={affiliate} />
 
         {/* Configure Postback */}
-        <ConfigurePostback goals={campaignGoals} />
+        <ConfigurePostback goals={finalGoals} />
 
         {/* Postback Documentation */}
         <Card>

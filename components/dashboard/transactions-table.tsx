@@ -9,77 +9,120 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoveRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { useTranslation } from "@/i18n/client";
 import { cn } from "@/lib/utils";
 import { transactionStatusColors } from "@/utils/get-color-for-status";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  flexRender,
-  ColumnDef,
-  SortingState,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
-import { useState } from "react";
-import Link from "next/link";
 import { AppRoutes } from "@/utils/routes";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { ArrowDown, ArrowUp, ArrowUpDown, MoveRight } from "lucide-react";
+import moment from "moment";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import TablePagination from "../TablePagination";
-import { useTranslation } from "@/i18n/client";
 
 interface Transaction {
-  id: string;
-  createdAt: string;
-  campaignId: string;
-  campaignGoalId: string;
-  sub1: string;
-  sub2: string;
-  commission: number;
-  status: "confirmed" | "declined" | "pending";
+  conversionId: number;
+  transactionId: string | null;
+  clickCode: string;
+  conversionValue: string | null;
+  commission: string | null;
+  conversionStatus: "pending" | "approved" | "declined" | "paid";
+  convertedAt: string;
+  conversionCreatedAt: string;
+  conversionSub1: string | null;
+  conversionSub2: string | null;
+  conversionSub3: string | null;
+  adminNotes: string | null;
+  payoutId: number | null;
+
+  campaignId: number;
+  campaignName: string;
+  campaignType: string;
+  campaignStatus: string;
+
+  campaignGoalId: number;
+  goalName: string;
+  commissionType: string;
+  goalCommissionAmount: string | null;
+  trackingCode: string;
+  goalStatus: string;
+
+  affiliateId: number;
+  affiliateName: string;
+  affiliateEmail: string;
+  affiliateStatus: string;
+
+  affiliateLinkId: number;
+  linkSlug: string;
+  destinationUrl: string;
+  linkStatus: string;
+  linkSub1: string | null;
+  linkSub2: string | null;
+  linkSub3: string | null;
+
+  clickId: number;
+  ipAddress: string;
+  country: string | null;
+  city: string | null;
+  deviceType: string | null;
+  referrer: string | null;
+  clickedAt: string;
+  clickSub1: string | null;
+  clickSub2: string | null;
+  clickSub3: string | null;
 }
 
 export function TransactionsTable({ transactions }: any) {
   const { t } = useTranslation();
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const currentPath = usePathname();
 
   const columns: ColumnDef<Transaction>[] = [
     {
-      accessorKey: "createdAt",
+      accessorKey: "conversionCreatedAt",
       header: t("transactions.date"),
       cell: ({ row }) => (
-        <div className="flex items-center">{row.original.createdAt}</div>
+        <div className="flex items-center">
+          {moment(row.original.conversionCreatedAt).format("YYYY-MM-DD")}
+        </div>
       ),
     },
     {
-      accessorKey: "campaignId",
-      header: t("transactions.link"),
+      accessorKey: "campaignName",
+      header: t("transactions.campaign"),
       cell: ({ row }) => (
-        <div className="flex items-center">{row.original.campaignId}</div>
+        <div className="flex items-center">{row.original.campaignName}</div>
       ),
     },
     {
-      accessorKey: "campaignGoalId",
+      accessorKey: "goalName",
       header: t("transactions.goal"),
       cell: ({ row }) => (
-        <div className="flex items-center">{row.original.campaignGoalId}</div>
+        <div className="flex items-center">{row.original.goalName}</div>
       ),
     },
     {
-      accessorKey: "sub1",
+      accessorKey: "conversionSub1",
       header: t("transactions.sub1"),
       cell: ({ row }) => (
-        <div className="flex items-center">{row.original.sub1}</div>
+        <div className="flex items-center">
+          {row.original.conversionSub1 || "-"}
+        </div>
       ),
     },
     {
-      accessorKey: "sub2",
+      accessorKey: "conversionSub2",
       header: t("transactions.sub2"),
       cell: ({ row }) => (
-        <div className="flex items-center">{row.original.sub2}</div>
+        <div className="flex items-center">
+          {row.original.conversionSub2 || "-"}
+        </div>
       ),
     },
     {
@@ -87,16 +130,16 @@ export function TransactionsTable({ transactions }: any) {
       header: t("transactions.earning"),
       cell: ({ row }) => (
         <div className="flex items-center">
-          ${row.original.commission.toFixed(2)}
+          ${Number(row.original.commission || 0).toFixed(2)}
         </div>
       ),
     },
     {
-      accessorKey: "status",
+      accessorKey: "conversionStatus",
       header: t("transactions.status"),
       cell: ({ row }) => (
         <div className="flex items-center">
-          <StatusBadge status={row.original.status} />
+          <StatusBadge status={row.original.conversionStatus} />
         </div>
       ),
     },
@@ -105,12 +148,6 @@ export function TransactionsTable({ transactions }: any) {
   const table = useReactTable({
     data: transactions?.data || [],
     columns,
-    state: {
-      sorting,
-      columnFilters,
-    },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -253,18 +290,18 @@ function CardContent({
 function StatusBadge({
   status,
 }: {
-  status: "confirmed" | "declined" | "pending";
+  status: "approved" | "pending" | "declined" | "paid";
 }) {
+  const statusColor =
+    transactionStatusColors[
+      status.toLowerCase() as "approved" | "pending" | "declined" | "paid"
+    ];
+
   return (
     <span
-      className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-        transactionStatusColors[
-          status.toLowerCase() as "approved" | "pending" | "declined" | "paid"
-        ] || "bg-gray-100 text-gray-800"
-      )}
+      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor}`}
     >
-      {status}
+      {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   );
 }

@@ -3,14 +3,14 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import FilterComponent from "@/components/transactions/FilterComponent";
 import { createTranslation } from "@/i18n/server";
 import { getAuthSession } from "@/models/auth-models";
-import { getConversionsByAffiliate } from "@/models/conversions-model";
+import { getAllAffiliateTransactions } from "@/models/conversions-model";
 
 export default async function TransactionsPage({ searchParams }: any) {
   const { from, to, status, rows_per_page, page } = searchParams;
   const user = await getAuthSession();
   const { t } = await createTranslation();
   const transactions =
-    (await getConversionsByAffiliate(
+    (await getAllAffiliateTransactions(
       user.user.id,
       rows_per_page,
       page,
