@@ -331,6 +331,8 @@ export async function getWeeklyCommissionDataByAffiliateId(
   const startDate = startOfWeek.toDate();
   const endDate = endOfWeek.toDate();
 
+  console.log(startDate, endDate);
+
   try {
     const result = await db
       .select({
@@ -343,11 +345,13 @@ export async function getWeeklyCommissionDataByAffiliateId(
           eq(conversions.affiliateId, affiliate_id),
           eq(conversions.status, "approved"),
           gte(conversions.updatedAt, startDate),
-          gte(conversions.updatedAt, endDate)
+          lte(conversions.updatedAt, endDate)
         )
       )
       .groupBy(sql`EXTRACT(DOW FROM ${conversions.updatedAt})`)
       .orderBy(sql`EXTRACT(DOW FROM ${conversions.updatedAt})`);
+
+    console.log(result);
 
     const chartData = [
       { day: "Sunday", value: 0 },

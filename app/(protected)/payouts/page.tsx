@@ -56,7 +56,10 @@ export default async function PayoutsPage({ searchParams }: any) {
 
         <EarningCards earningsData={data} />
 
-        <PaymentInformation paymentInfo={paymentInfo} />
+        <PaymentInformation
+          paymentInfo={paymentInfo}
+          amount={data.availableAmount}
+        />
 
         <PayoutsTable data={payouts} />
       </div>

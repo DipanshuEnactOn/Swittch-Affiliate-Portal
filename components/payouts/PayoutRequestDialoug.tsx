@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 
-export function PayoutRequest({ open, setOpen, amount }: any) {
+export function PayoutRequest({ open, setOpen, amount, type }: any) {
   const { t } = useTranslation();
   const user = useSession().data?.user;
   const router = useRouter();
@@ -24,27 +24,28 @@ export function PayoutRequest({ open, setOpen, amount }: any) {
       const data = {
         id: user?.id,
         amount,
+        type,
       };
       const response = await Api.post({ path: "/payout-request", body: data });
       if (response.status === "error") {
         toast({
           variant: "destructive",
           title: t("payout.errorTitle"),
-          description: response.message || t("payout.errorMessage"),
+          description: response.message || t("payouts.errorMessage"),
         });
         return;
       }
       toast({
-        title: t("payout.successTitle"),
-        description: t("payout.successMessage"),
+        title: t("payouts.successTitle"),
+        description: t("payouts.successMessage"),
       });
       router.refresh();
       setOpen(false);
     } catch (error) {
       toast({
         variant: "destructive",
-        title: t("payout.errorTitle"),
-        description: t("payout.errorMessage"),
+        title: t("payouts.errorTitle"),
+        description: t("payouts.errorMessage"),
       });
     }
   };
@@ -53,12 +54,12 @@ export function PayoutRequest({ open, setOpen, amount }: any) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t("payout.payout_title")}</DialogTitle>
+          <DialogTitle>{t("payouts.payout_title")}</DialogTitle>
         </DialogHeader>
 
         <div>
-          <h3>{t("payout.confirmation")}</h3>
-          <h5>{t("payout.amountText").replace("{amount}", amount)}</h5>
+          <h3>{t("payouts.confirmation")}</h3>
+          <h5>{t("payouts.amountText").replace("{amount}", amount)}</h5>
         </div>
 
         <DialogFooter>
@@ -67,14 +68,14 @@ export function PayoutRequest({ open, setOpen, amount }: any) {
             onClick={() => setOpen(false)}
             className="text-black"
           >
-            {t("payout.cancel")}
+            {t("payouts.cancel")}
           </Button>
           <Button
             type="submit"
             className="bg-brand-500 hover:bg-brand-600"
             onClick={() => handleRequest(amount)}
           >
-            {t("payout.confirm")}
+            {t("payouts.confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

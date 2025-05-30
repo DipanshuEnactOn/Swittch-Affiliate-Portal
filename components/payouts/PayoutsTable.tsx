@@ -23,6 +23,7 @@ import {
 import { payoutStatusColors } from "@/utils/get-color-for-status";
 import TablePagination from "../TablePagination";
 import { useTranslation } from "@/i18n/client";
+import moment from "moment";
 
 type PayoutStatus = "paid" | "pending" | "rejected" | "processing";
 
@@ -38,7 +39,9 @@ export default function PayoutsTable({ data }: any) {
       cell: ({ row }) => {
         const rowValue = row.original;
         return (
-          <div className="flex items-center text-gray-600">{rowValue.date}</div>
+          <div className="flex items-center text-gray-600">
+            {moment(rowValue.createdAt).format("YYYY-MM-DD")}
+          </div>
         );
       },
     },
@@ -49,7 +52,7 @@ export default function PayoutsTable({ data }: any) {
         const rowValue = row.original;
         return (
           <div className="flex items-center text-gray-900 font-medium">
-            {rowValue.earnings}
+            {rowValue.requestedAmount}
           </div>
         );
       },
@@ -59,15 +62,10 @@ export default function PayoutsTable({ data }: any) {
       header: t("payouts.table.status"),
       cell: ({ row }) => {
         const rowValue = row.original;
+        const statusColor = payoutStatusColors[rowValue.status as PayoutStatus];
         return (
-          <div className="flex items-center justify-end">
-            <span
-              className={`font-medium ${
-                payoutStatusColors[rowValue.status as PayoutStatus]
-              }`}
-            >
-              {rowValue.status}
-            </span>
+          <div className="flex items-center">
+            <StatusBadge status={rowValue.status} />
           </div>
         );
       },
@@ -161,5 +159,24 @@ export default function PayoutsTable({ data }: any) {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function StatusBadge({
+  status,
+}: {
+  status: "processing" | "pending" | "rejected" | "paid";
+}) {
+  const statusColor =
+    payoutStatusColors[
+      status.toLowerCase() as "processing" | "pending" | "rejected" | "paid"
+    ];
+
+  return (
+    <span
+      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor}`}
+    >
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </span>
   );
 }

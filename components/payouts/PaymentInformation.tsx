@@ -19,8 +19,9 @@ import { Formik } from "formik";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { PayoutRequest } from "./PayoutRequestDialoug";
 
-export default function PaymentInformation({ paymentInfo }: any) {
+export default function PaymentInformation({ paymentInfo, amount }: any) {
   const { t } = useTranslation();
   const router = useRouter();
   const user = useSession().data?.user;
@@ -29,6 +30,8 @@ export default function PaymentInformation({ paymentInfo }: any) {
   const [currentPaymentInfo, setCurrentPaymentInfo] = useState(
     paymentInfo ?? {}
   );
+  const [open, setOpen] = useState(false);
+  const [type, setType] = useState("");
 
   useEffect(() => {
     setCurrentPaymentInfo(paymentInfo);
@@ -163,12 +166,27 @@ export default function PaymentInformation({ paymentInfo }: any) {
                     </div>
                     <Button
                       type="submit"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 min-w-[120px]"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 min-w-[120px] h-auto"
                       disabled={isSubmitting || paypalLoading}
                       isLoading={paypalLoading}
                     >
                       {t("payouts.paypalSave")}
                     </Button>
+                    {paypalInitialValues.paypalId && (
+                      <Button
+                        className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm max-w-md h-auto ${
+                          amount <= 0 ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        onClick={() => {
+                          setOpen(true);
+                          setType("paypal");
+                        }}
+                        disabled={amount <= 0}
+                        type="button"
+                      >
+                        {t("earnings.withdraw")}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </form>
@@ -340,7 +358,7 @@ export default function PaymentInformation({ paymentInfo }: any) {
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-4">
+                <div className="flex justify-end pt-4 gap-3">
                   <Button
                     type="submit"
                     className="text-white px-8 min-w-[140px]"
@@ -349,12 +367,33 @@ export default function PaymentInformation({ paymentInfo }: any) {
                   >
                     {t("payouts.bankSave")}
                   </Button>
+                  {bankInitialValues.accountNumber && (
+                    <Button
+                      className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm max-w-md h-auto ${
+                        amount <= 0 ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                      onClick={() => {
+                        setOpen(true);
+                        setType("bank");
+                      }}
+                      disabled={amount <= 0}
+                      type="button"
+                    >
+                      {t("earnings.withdraw")}
+                    </Button>
+                  )}
                 </div>
               </form>
             )}
           </Formik>
         </CardContent>
       </Card>
+      <PayoutRequest
+        open={open}
+        setOpen={setOpen}
+        amount={amount}
+        type={type}
+      />
     </div>
   );
 }

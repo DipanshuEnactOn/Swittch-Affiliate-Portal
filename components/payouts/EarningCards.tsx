@@ -9,7 +9,6 @@ import { useTranslation } from "@/i18n/client";
 
 export default function EarningCards({ earningsData }: any) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
 
   const cards = [
     {
@@ -38,14 +37,13 @@ export default function EarningCards({ earningsData }: any) {
       label: t("earnings.available"),
       amount: earningsData.availableAmount,
       color: "green",
-      hasButton: true,
       bgColor: "bg-green-100",
     },
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      {cards.map(({ icon: Icon, label, amount, color, bgColor, hasButton }) => (
+      {cards.map(({ icon: Icon, label, amount, color, bgColor }) => (
         <Card key={label} className="bg-white">
           <CardContent className="p-6">
             <div className="flex flex-col items-start space-y-3">
@@ -56,32 +54,14 @@ export default function EarningCards({ earningsData }: any) {
                 <div className="flex flex-col">
                   <p className="text-sm text-gray-600 mb-1">{label}</p>
                   <p className={`text-2xl font-semibold text-${color}-600`}>
-                    {amount}
+                    {Number(amount).toFixed(2)}
                   </p>
                 </div>
-                {hasButton && (
-                  <Button
-                    className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm max-w-md ${
-                      earningsData.availableAmount <= 0
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                    onClick={() => setOpen(true)}
-                    disabled={earningsData.availableAmount <= 0}
-                  >
-                    {t("earnings.withdraw")}
-                  </Button>
-                )}
               </div>
             </div>
           </CardContent>
         </Card>
       ))}
-      <PayoutRequest
-        open={open}
-        setOpen={setOpen}
-        amount={earningsData.availableAmount}
-      />
     </div>
   );
 }

@@ -30,6 +30,8 @@ export default async function DashboardPage() {
 
   const earningsData = await getWeeklyCommissionDataByAffiliateId(user.user.id);
 
+  console.log(earningsData);  
+
   return (
     <DashboardLayout>
       <h1 className="text-2xl font-semibold mb-6">{t("dashboard.title")}</h1>
