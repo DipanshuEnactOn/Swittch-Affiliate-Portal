@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { payouts } from "@/db/schema";
-import { and, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 
 export const getAllPayouts = async ({ filters }: any) => {
   try {
@@ -126,7 +126,7 @@ export const getPayoutsByAffiliateId = async (
       .select()
       .from(payouts)
       .where(eq(payouts.affiliateId, affiliateId))
-      .orderBy(payouts.createdAt);
+      .orderBy(desc(payouts.createdAt));
 
     return {
       data: {

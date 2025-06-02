@@ -91,6 +91,7 @@ export default function LinksTable({ data }: { data: any }) {
             <Link
               className="truncate hover:underline"
               href={row.original.destinationUrl || "#"}
+              target="_blank"
             >
               {row.original.destinationUrl || "No URL"}
             </Link>

@@ -13,7 +13,7 @@ import { NextRequest } from "next/server";
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(3, "15 m"),
+  limiter: Ratelimit.fixedWindow(1, "1 m"),
   analytics: true,
 });
 

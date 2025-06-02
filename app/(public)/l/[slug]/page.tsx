@@ -1,7 +1,10 @@
 import { UAParser } from "ua-parser-js";
 import { headers } from "next/headers";
 import { generateClickCode } from "@/utils/generateClickCode";
-import { getAffiliateLinkBySlug } from "@/models/affiliate-link-model";
+import {
+  getAffiliateLinkBySlug,
+  updateAffiliateLinkStats,
+} from "@/models/affiliate-link-model";
 import { insertClick } from "@/models/clicks-model";
 import { NewClick } from "@/db/schema";
 
@@ -49,6 +52,11 @@ export default async function Page({
   };
 
   const result = await insertClick(data);
+  const newClickCount = affiliateLink.totalClicks + 1;
+  const updateClicks = await updateAffiliateLinkStats(
+    affiliateLink.id,
+    newClickCount
+  );
 
   return (
     <div>

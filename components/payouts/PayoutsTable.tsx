@@ -155,7 +155,7 @@ export default function PayoutsTable({ data }: any) {
               </TableBody>
             </Table>
           </div>
-          <TablePagination table={data.result} pagination={data.pagination} />
+          <TablePagination table={table} pagination={data.pagination} />
         </div>
       </CardContent>
     </Card>
@@ -172,10 +172,10 @@ function StatusBadge({
       status.toLowerCase() as "processing" | "pending" | "rejected" | "paid"
     ];
 
+  const className = `inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor}`;
+
   return (
-    <span
-      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor}`}
-    >
+    <span className={`${className}`}>
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   );

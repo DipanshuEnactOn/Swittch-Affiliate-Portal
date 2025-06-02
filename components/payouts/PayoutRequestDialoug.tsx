@@ -13,13 +13,16 @@ import { Api } from "@/services/api-services";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
+import { useState } from "react";
 
 export function PayoutRequest({ open, setOpen, amount, type }: any) {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const user = useSession().data?.user;
   const router = useRouter();
 
   const handleRequest = async (amount: number) => {
+    setLoading(true);
     try {
       const data = {
         id: user?.id,
@@ -30,7 +33,7 @@ export function PayoutRequest({ open, setOpen, amount, type }: any) {
       if (response.status === "error") {
         toast({
           variant: "destructive",
-          title: t("payout.errorTitle"),
+          title: t("payouts.errorTitle"),
           description: response.message || t("payouts.errorMessage"),
         });
         return;
@@ -47,6 +50,8 @@ export function PayoutRequest({ open, setOpen, amount, type }: any) {
         title: t("payouts.errorTitle"),
         description: t("payouts.errorMessage"),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,6 +79,8 @@ export function PayoutRequest({ open, setOpen, amount, type }: any) {
             type="submit"
             className="bg-brand-500 hover:bg-brand-600"
             onClick={() => handleRequest(amount)}
+            isLoading={loading}
+            disabled={loading}
           >
             {t("payouts.confirm")}
           </Button>

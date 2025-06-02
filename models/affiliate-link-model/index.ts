@@ -387,11 +387,11 @@ export const updateAffiliateLinkStats = async (
     const updateData: any = { updatedAt: new Date() };
 
     if (clickCount !== undefined) {
-      updateData.totalClicks = sql`${affiliateLinks.totalClicks} + ${clickCount}`;
+      updateData.totalClicks = Number(clickCount);
     }
 
     if (earnings !== undefined) {
-      updateData.totalEarnings = sql`${affiliateLinks.totalEarnings} + ${earnings}`;
+      updateData.totalEarnings = Number(earnings).toFixed(2);
     }
 
     const result = await db.transaction(async (tx) => {
