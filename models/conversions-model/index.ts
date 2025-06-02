@@ -326,12 +326,8 @@ export const getConversionStatsForAffiliate = async (affiliateId: number) => {
 export async function getWeeklyCommissionDataByAffiliateId(
   affiliate_id: number
 ) {
-  const startOfWeek = moment().startOf("week");
-  const endOfWeek = moment().endOf("week");
-  const startDate = startOfWeek.toDate();
-  const endDate = endOfWeek.toDate();
-
-  console.log(startDate, endDate);
+  const endDate = moment().endOf("day").toDate();
+  const startDate = moment().subtract(6, "days").startOf("day").toDate();
 
   try {
     const result = await db
@@ -351,31 +347,46 @@ export async function getWeeklyCommissionDataByAffiliateId(
       .groupBy(sql`EXTRACT(DOW FROM ${conversions.updatedAt})`)
       .orderBy(sql`EXTRACT(DOW FROM ${conversions.updatedAt})`);
 
-    console.log(result);
-
-    const chartData = [
-      { day: "Sunday", value: 0 },
-      { day: "Monday", value: 0 },
-      { day: "Tuesday", value: 0 },
-      { day: "Wednesday", value: 0 },
-      { day: "Thursday", value: 0 },
-      { day: "Friday", value: 0 },
-      { day: "Saturday", value: 0 },
+    const dayNames = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
     ];
+    const chartData: any = [];
 
-    result.forEach((row) => {
-      const dayIndex = row.dayOfWeek;
+    for (let i = 6; i >= 0; i--) {
+      const date = moment().subtract(i, "days");
+      const dayOfWeek = date.day();
+      const dayName = dayNames[dayOfWeek];
+
+      chartData.push({
+        day: dayName,
+        amount: 0,
+        date: date.format("YYYY-MM-DD"),
+      });
+    }
+
+    result.forEach((row: any) => {
+      const dayIndex = parseInt(row.dayOfWeek);
       const commission = parseFloat(row.totalCommission) || 0;
 
-      if (dayIndex >= 0 && dayIndex <= 6) {
-        chartData[dayIndex].value = commission;
+      const chartItem = chartData.find((item: any) => {
+        const itemDayIndex = dayNames.indexOf(item.day);
+        return itemDayIndex === dayIndex;
+      });
+
+      if (chartItem) {
+        chartItem.amount = commission;
       }
     });
 
     return chartData;
   } catch (error) {
     console.error("Error fetching weekly commission data:", error);
-    // throw new Error("Failed to fetch weekly commission data");
   }
 }
 

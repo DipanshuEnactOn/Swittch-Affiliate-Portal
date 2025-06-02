@@ -30,7 +30,7 @@ export default async function DashboardPage() {
 
   const earningsData = await getWeeklyCommissionDataByAffiliateId(user.user.id);
 
-  console.log(earningsData);  
+  // console.log(earningsData);
 
   return (
     <DashboardLayout>

@@ -26,11 +26,11 @@ export function CreateAffiliateLink() {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const mainUrl = "http://localhost:3000";
+  const mainUrl = "http://localhost:3000/l";
 
   const initialValues = {
-    link: "algo-crane",
-    name: "EnactOn",
+    link: "",
+    name: "",
   };
 
   const onSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
@@ -131,7 +131,7 @@ export function CreateAffiliateLink() {
                       onBlur={handleBlur}
                       value={values.link}
                       className="pl-[calc( (100%) / 3 )] pr-3"
-                      style={{ paddingLeft: `${mainUrl.length - 1}ch` }}
+                      style={{ paddingLeft: `${mainUrl.length - 2}ch` }}
                     />
                   </div>
                   {touched.link && errors.link && (

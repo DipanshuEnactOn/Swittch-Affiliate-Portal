@@ -59,7 +59,7 @@ export function EarningsChart({ earningsData }: { earningsData: any }) {
               <Tooltip />
               <Area
                 type="monotone"
-                dataKey="value"
+                dataKey="amount"
                 stroke="#4F46E5"
                 fillOpacity={1}
                 fill="url(#colorValue)"
