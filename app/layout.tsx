@@ -1,8 +1,7 @@
 import MainProgressBar from "@/components/MainProgressBar";
-import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { SessionProvider } from "next-auth/react";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,9 +21,7 @@ export default function RootLayout({
         <link rel="icon" href="/images/favicon.png" />
       </head>
       <body className={inter.className}>
-        <MainProgressBar>
-          <SessionProvider>{children}</SessionProvider>
-        </MainProgressBar>
+        <MainProgressBar>{children}</MainProgressBar>
       </body>
     </html>
   );

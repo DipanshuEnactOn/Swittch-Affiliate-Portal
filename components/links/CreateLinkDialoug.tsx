@@ -31,6 +31,9 @@ export function CreateAffiliateLink() {
   const initialValues = {
     link: "",
     name: "",
+    sub1: "",
+    sub2: "",
+    sub3: "",
   };
 
   const onSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
@@ -42,9 +45,9 @@ export function CreateAffiliateLink() {
         name: values.name,
         slug: values.link,
         destinationUrl: `${mainUrl}/${values.link}`,
-        sub1: "",
-        sub2: "",
-        sub3: "",
+        sub1: values.sub1 || null,
+        sub2: values.sub2 || null,
+        sub3: values.sub3 || null,
         totalClicks: 0,
         totalEarnings: 0,
         status: "active",
@@ -79,7 +82,7 @@ export function CreateAffiliateLink() {
   return (
     <>
       <Button
-        className="bg-blue-600 hover:bg-blue-700 max-w-sm px-2 w-auto gap-2 m-0"
+        className="bg-blue-600 hover:bg-blue-700 max-w-sm px-3 w-auto gap-2 m-0 max-sm:ml-auto"
         onClick={() => setOpen(true)}
       >
         <Plus className="h-4 w-4" />
@@ -155,6 +158,54 @@ export function CreateAffiliateLink() {
                   />
                   {touched.name && errors.name && (
                     <p className="text-sm text-red-500">{errors.name}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="sub1">{t("affiliateLink.sub1Label")}</Label>
+                  <Input
+                    id="sub1"
+                    name="sub1"
+                    type="text"
+                    placeholder={t("affiliateLink.sub1Placeholder")}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name}
+                  />
+                  {touched.sub1 && errors.sub1 && (
+                    <p className="text-sm text-red-500">{errors.sub1}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="sub2">{t("affiliateLink.sub2Label")}</Label>
+                  <Input
+                    id="sub2"
+                    name="sub2"
+                    type="text"
+                    placeholder={t("affiliateLink.sub2Placeholder")}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name}
+                  />
+                  {touched.sub2 && errors.sub2 && (
+                    <p className="text-sm text-red-500">{errors.sub2}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="sub3">{t("affiliateLink.sub3Label")}</Label>
+                  <Input
+                    id="sub3"
+                    name="sub3"
+                    type="text"
+                    placeholder={t("affiliateLink.sub3Placeholder")}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name}
+                  />
+                  {touched.sub3 && errors.sub3 && (
+                    <p className="text-sm text-red-500">{errors.sub3}</p>
                   )}
                 </div>
 

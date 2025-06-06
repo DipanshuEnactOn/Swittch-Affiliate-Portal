@@ -18,6 +18,8 @@ export default function PersonalInformation({ affiliateUser }: any) {
   const initialValues = {
     name: affiliateUser?.name || "",
     email: affiliateUser?.email || "affiliate@reaction.com",
+    addressLine1: affiliateUser?.address?.address_1 || "",
+    addressLine2: affiliateUser?.address?.address_2 || "",
   };
 
   const handleSubmit = async (values: typeof initialValues) => {
@@ -98,6 +100,53 @@ export default function PersonalInformation({ affiliateUser }: any) {
                     disabled
                     value={values.email}
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="addressLine1"
+                    className="text-sm text-gray-600"
+                  >
+                    {t("profile.fields.addressLine1")}
+                  </Label>
+                  <Input
+                    id="addressLine1"
+                    name="addressLine1"
+                    type="text"
+                    placeholder={t("profile.fields.placeholder.addressLine1")}
+                    value={values.addressLine1}
+                    className="bg-white"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.addressLine1 && errors.addressLine1 && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.addressLine1.toString()}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="addressLine2"
+                    className="text-sm text-gray-600"
+                  >
+                    {t("profile.fields.addressLine2")}
+                  </Label>
+                  <Input
+                    id="addressLine2"
+                    name="addressLine2"
+                    type="text"
+                    placeholder={t("profile.fields.placeholder.addressLine2")}
+                    value={values.addressLine2}
+                    className="bg-white"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.addressLine2 && errors.addressLine2 && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.addressLine2.toString()}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex justify-end mt-6">

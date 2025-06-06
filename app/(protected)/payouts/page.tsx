@@ -28,8 +28,11 @@ export default async function PayoutsPage({ searchParams }: any) {
       })
     )?.data || [];
 
-  const affiliatePaidAmount =
-    (await getApprovedPayoutsByAffiliateId(user.user.id))?.data?.amount || 0;
+  const affiliatePaidAmount = (
+    await getApprovedPayoutsByAffiliateId(user.user.id)
+  )?.data?.amount;
+
+  console.log("Affiliate Paid Amount:", affiliatePaidAmount);
 
   const affiliateEarnings = await getEarningsDataForAffiliate(user.user.id);
 

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
-import AuthLayout from "../../components/layouts/AuthLayout";
+import AuthLayout from "@/components/layouts/AuthLayout";
 import { createTranslation } from "@/i18n/server";
 import { getAffiliateStatus } from "@/models/affiliates-model";
 import { getAuthSession } from "@/models/auth-models";

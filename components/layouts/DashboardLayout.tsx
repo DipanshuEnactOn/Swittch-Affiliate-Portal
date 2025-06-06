@@ -1,3 +1,4 @@
+import Header from "../Header";
 import { Sidebar } from "../Sidebar";
 
 interface DashboardLayoutProps {
@@ -6,10 +7,13 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-[100dvh] bg-background overflow-hidden">
       <Sidebar />
-      <div className="flex-1 overflow-auto">
-        <main className="p-10 bg-slate-50 h-auto min-h-screen">{children}</main>
+      <div className="w-full flex flex-col">
+        <Header />
+        <main className="main-content px-4 py-6 sm:p-10 bg-slate-50 h-full max-h-full overflow-y-auto">
+          <div className="max-w-[1800px] mx-auto">{children}</div>
+        </main>
       </div>
     </div>
   );

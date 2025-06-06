@@ -27,6 +27,7 @@ export default function ConfigurePostback({ goals }: any) {
     globalUrl: "",
     selectedGoal: "",
     goalUrl: "",
+    methodType: undefined,
   };
 
   const handleSubmit = async (
@@ -71,6 +72,8 @@ export default function ConfigurePostback({ goals }: any) {
       setSubmitting(false);
     }
   };
+
+  // TODO: Show Postabhck Table for the User here even for same ids and give delete option
 
   return (
     <Card>
@@ -202,6 +205,37 @@ export default function ConfigurePostback({ goals }: any) {
                     </div>
                   )}
                 </>
+              )}
+
+              {values.postbackType !== "" && (
+                <div className="space-y-2">
+                  <Label htmlFor="methodType" className="text-sm text-gray-600">
+                    {t("postback.methodType.label")}
+                  </Label>
+                  <Select
+                    value={values.methodType}
+                    onValueChange={(value) =>
+                      setFieldValue("methodType", value)
+                    }
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue
+                        placeholder={t("postback.methodType.placeholder")}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="GET">
+                        {t("postback.methodType.get")}
+                      </SelectItem>
+                      <SelectItem value="POST">
+                        {t("postback.methodType.post")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.methodType && touched.methodType && (
+                    <p className="text-sm text-red-600">{errors.methodType}</p>
+                  )}
+                </div>
               )}
 
               <div className="flex justify-end mt-6">

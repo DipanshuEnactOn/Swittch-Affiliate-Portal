@@ -86,7 +86,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-hidden;
   }
 }
 
@@ -96,16 +96,6 @@
     --color-orange-400: #fd853a;
     --color-orange-500: #fb6514;
     --color-blue-500: oklch(0.623 0.214 259.815);
-    --color-gray-50: #f9fafb;
-    --color-gray-100: #f2f4f7;
-    --color-gray-200: #e4e7ec;
-    --color-gray-300: #d0d5dd;
-    --color-gray-400: #98a2b3;
-    --color-gray-500: #667085;
-    --color-gray-600: #475467;
-    --color-gray-700: #344054;
-    --color-gray-800: #1d2939;
-    --color-gray-900: #101828;
     --color-black: #101828;
     --color-white: #ffffff;
     --spacing: 0.25rem;

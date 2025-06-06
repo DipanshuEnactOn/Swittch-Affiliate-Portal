@@ -37,6 +37,8 @@ export default async function Page({
     return <p>Affiliate link is inactive for slug: {slug}</p>;
   }
 
+  // TODO: If no sub Ids from request, use values from affiliate link if availaible
+
   const data: NewClick = {
     campaignId: 1,
     affiliateId: affiliateLink.affiliateId,

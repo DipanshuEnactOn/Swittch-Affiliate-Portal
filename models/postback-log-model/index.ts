@@ -128,7 +128,7 @@ export const insertPostbackLog = async (postbackLogData: any) => {
     };
   } catch (error: any) {
     return {
-      data: null,
+      data: error,
       message: error.message || "An error occurred",
       status: "error",
     };

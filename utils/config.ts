@@ -14,7 +14,9 @@ export const Config = {
       app_url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
       api_url: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
       auth_url:
-        process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3002/auth",
+        process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3000/auth",
+      admin_url:
+        process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3000/admin",
       environment: process.env.ENVIRONMENT || "DEVELOPMENT",
       jwt_login_expiry: 86400,
       sidebar: [

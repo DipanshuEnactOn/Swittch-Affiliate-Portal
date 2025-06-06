@@ -8,9 +8,17 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { id, name, email } = body;
+    const { id, name, email, addressLine1, addressLine2 } = body;
 
-    const result = await updateAffiliateProfile(id, name);
+    const updateData = {
+      name,
+      address: {
+        address_1: addressLine1,
+        address_2: addressLine2,
+      },
+    };
+
+    const result = await updateAffiliateProfile(id, updateData);
 
     if (result.status === "error") {
       return commonResponse({

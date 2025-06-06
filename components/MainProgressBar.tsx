@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
-import { AppProgressBar } from "next-nprogress-bar";
+// import { AppProgressBar } from "next-nprogress-bar";
+import { ProgressProvider } from "@bprogress/next/app";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "./ui/toaster";
 
@@ -66,16 +67,18 @@ import { Toaster } from "./ui/toaster";
 // };
 
 const MainProgressBar = ({ children }: any) => {
-  // useTranslationFix();
-
   return (
-    // <SessionProvider>
-    <>
-      <AppProgressBar options={{ showSpinner: true }} color="#38bdf8" />
-      {children}
+    <SessionProvider>
+      <ProgressProvider
+        height="3px"
+        color="#2563EB"
+        options={{ showSpinner: false }}
+        shallowRouting
+      >
+        {children}
+      </ProgressProvider>
       <Toaster />
-    </>
-    // </SessionProvider>
+    </SessionProvider>
   );
 };
 

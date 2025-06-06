@@ -15,6 +15,16 @@ import { useTranslation } from "@/i18n/client";
 export function EarningsChart({ earningsData }: { earningsData: any }) {
   const { t } = useTranslation();
 
+  const maxValue = Math.max(...earningsData.map((item: any) => item.amount));
+
+  const adjustedMaxValue = maxValue + maxValue * 0.1;
+  const numberOfTicks = 5;
+  const tickInterval = adjustedMaxValue / (numberOfTicks - 1);
+  const ticks = Array.from(
+    { length: numberOfTicks },
+    (_, i) => i * tickInterval
+  );
+
   return (
     <Card className="mb-6">
       <CardHeader className="border-b mb-3">
@@ -53,8 +63,8 @@ export function EarningsChart({ earningsData }: { earningsData: any }) {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fontSize: 12 }}
-                domain={[0, 1000]}
-                ticks={[0, 200, 400, 600, 800, 1000]}
+                domain={[0, adjustedMaxValue]}
+                ticks={ticks}
               />
               <Tooltip />
               <Area

@@ -147,7 +147,7 @@ export default function PaymentInformation({ paymentInfo, amount }: any) {
                     {t("payouts.paypalId")}{" "}
                     <span className="text-red-500">*</span>
                   </Label>
-                  <div className="flex space-x-3 mt-2">
+                  <div className="flex flex-col lg:flex-row space-x-3 mt-2">
                     <div className="flex-1">
                       <Input
                         id="paypalId"
@@ -164,29 +164,32 @@ export default function PaymentInformation({ paymentInfo, amount }: any) {
                         </p>
                       )}
                     </div>
-                    <Button
-                      type="submit"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 min-w-[120px] h-auto"
-                      disabled={isSubmitting || paypalLoading}
-                      isLoading={paypalLoading}
-                    >
-                      {t("payouts.paypalSave")}
-                    </Button>
-                    {paypalInitialValues.paypalId && (
+
+                    <div className="flex items-end gap-2 justify-end mt-3 lg:mt-0">
                       <Button
-                        className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm max-w-md h-auto ${
-                          amount <= 0 ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        onClick={() => {
-                          setOpen(true);
-                          setType("paypal");
-                        }}
-                        disabled={amount <= 0}
-                        type="button"
+                        type="submit"
+                        className="bg-brand-600 hover:bg-brand-700 text-white px-6 min-w-[120px] h-full"
+                        disabled={isSubmitting || paypalLoading}
+                        isLoading={paypalLoading}
                       >
-                        {t("earnings.withdraw")}
+                        {t("payouts.paypalSave")}
                       </Button>
-                    )}
+                      {paypalInitialValues.paypalId && (
+                        <Button
+                          className={`bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm max-w-md h-full ${
+                            amount <= 0 ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                          onClick={() => {
+                            setOpen(true);
+                            setType("paypal");
+                          }}
+                          disabled={amount <= 0}
+                          type="button"
+                        >
+                          {t("earnings.withdraw")}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </form>
@@ -361,7 +364,7 @@ export default function PaymentInformation({ paymentInfo, amount }: any) {
                 <div className="flex justify-end pt-4 gap-3">
                   <Button
                     type="submit"
-                    className="text-white px-8 min-w-[140px]"
+                    className="text-white px-8 min-w-[140px] bg-brand-600 hover:bg-brand-700 rounded-lg"
                     disabled={isSubmitting || bankLoading}
                     isLoading={bankLoading}
                   >
@@ -369,7 +372,7 @@ export default function PaymentInformation({ paymentInfo, amount }: any) {
                   </Button>
                   {bankInitialValues.accountNumber && (
                     <Button
-                      className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm max-w-md h-auto ${
+                      className={`bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm max-w-md h-auto ${
                         amount <= 0 ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                       onClick={() => {

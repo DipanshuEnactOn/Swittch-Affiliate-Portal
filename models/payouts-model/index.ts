@@ -152,6 +152,7 @@ export const getPayoutsByAffiliateId = async (
 };
 export const getApprovedPayoutsByAffiliateId = async (affiliateId: number) => {
   try {
+    console.log("Fetching approved payouts for affiliateId:", affiliateId);
     const result = await db
       .select({ amount: sql<number>`sum(${payouts.requestedAmount})` })
       .from(payouts)
@@ -159,6 +160,8 @@ export const getApprovedPayoutsByAffiliateId = async (affiliateId: number) => {
         and(eq(payouts.affiliateId, affiliateId), eq(payouts.status, "paid"))
       )
       .orderBy(payouts.createdAt);
+
+    console.log("Approved Payouts Result:", result);
 
     return {
       data: result[0] || 0,

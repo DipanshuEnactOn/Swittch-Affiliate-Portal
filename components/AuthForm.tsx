@@ -26,6 +26,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
     ...(type === "signup" && { name: "" }),
     email: "",
     password: "",
+    ...(type === "signin" && { remember: false }),
   };
 
   return (
@@ -123,10 +124,13 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
           {type === "signin" && (
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <input
+                <Input
                   type="checkbox"
                   id="remember"
                   className="h-4 w-4 rounded border-gray-300"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  checked={values.remember}
                 />
                 <Label
                   htmlFor="remember"

@@ -116,7 +116,11 @@ export const updateAffiliateProfile = async (id: number, updateData: any) => {
     const result = await db.transaction(async (tx) => {
       const updated = await tx
         .update(affiliates)
-        .set({ name: updateData, updatedAt: new Date() })
+        .set({
+          name: updateData.name,
+          address: updateData.address,
+          updatedAt: new Date(),
+        })
         .where(eq(affiliates.id, id))
         .returning();
       return updated[0];
@@ -329,6 +333,45 @@ export const updateAffiliateBankDetails = async (
     return {
       data: result,
       message: "Affiliate password updated successfully",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const verifyAffiliateEmail = async (id: number) => {
+  try {
+    const result = await db.transaction(async (tx) => {
+      const updated = await tx
+        .update(affiliates)
+        .set({
+          isEmailVerified: true,
+          emailVerifiedAt: new Date(),
+          updatedAt: new Date(),
+          token: null,
+          tokenExpiry: null,
+        })
+        .where(eq(affiliates.id, id))
+        .returning();
+      return updated[0];
+    });
+
+    if (!result) {
+      return {
+        data: null,
+        message: "Affiliate not found",
+        status: "error",
+      };
+    }
+
+    return {
+      data: result,
+      message: "Affiliate email verified successfully",
       status: "success",
     };
   } catch (error: any) {

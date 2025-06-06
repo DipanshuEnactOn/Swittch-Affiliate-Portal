@@ -59,6 +59,8 @@ export const PersonalInformationSchema = Yup.object().shape({
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
+  addressLine1: Yup.string().required("Address line 1 is required"),
+  addressLine2: Yup.string().optional(),
 });
 
 export const AffiliateLinkSchema = Yup.object({
@@ -74,6 +76,19 @@ export const AffiliateLinkSchema = Yup.object({
     .required("Name is required")
     .min(2, "Name must be at least 2 characters")
     .max(100, "Name must be less than 100 characters"),
+
+  sub1: Yup.string()
+    .min(2, "Sub1 must be at least 2 characters")
+    .max(100, "Sub1 must be less than 100 characters")
+    .optional(),
+  sub2: Yup.string()
+    .min(2, "Sub2 must be at least 2 characters")
+    .max(100, "Sub2 must be less than 100 characters")
+    .optional(),
+  sub3: Yup.string()
+    .min(2, "Sub3 must be at least 2 characters")
+    .max(100, "Sub3 must be less than 100 characters")
+    .optional(),
 });
 
 export const PayPalSchema = Yup.object().shape({
@@ -135,4 +150,5 @@ export const postbackSchema = Yup.object().shape({
         }),
     otherwise: (schema) => schema.notRequired(),
   }),
+  methodType: Yup.string().required("Please select a method type"),
 });

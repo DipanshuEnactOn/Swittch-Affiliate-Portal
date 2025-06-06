@@ -22,6 +22,10 @@ declare module "next-auth" {
     name?: string | null;
     email?: string | null;
     status?: string | null;
+    remember?: boolean; // Add remember field to User interface
+  }
+  interface JWT {
+    remember?: boolean; // Add remember field to JWT interface
   }
 }
 
@@ -33,8 +37,7 @@ export const {
 } = NextAuth({
   session: {
     strategy: "jwt",
-    maxAge: Config.env.app.jwt_login_expiry,
-    // maxAge: 20,
+    // maxAge: Config.env.app.jwt_login_expiry, // Default session duration
     updateAge: 5 * 60,
   },
   providers: [
@@ -43,11 +46,12 @@ export const {
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
+        remember: { label: "Keep Me Signed In", type: "checkbox" },
       },
       async authorize(credentials: any) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const { email, password } = credentials;
+        const { email, password, remember } = credentials;
 
         let user;
         try {
@@ -70,6 +74,7 @@ export const {
           email: user.data.email,
           name: user.data.name || null,
           status: user.data.approvalStatus || "pending",
+          remember: remember === "true" || remember === true,
         };
       },
     }),
@@ -84,17 +89,26 @@ export const {
       if (user) {
         token.id = user.id;
         token.status = user.status;
+        token.remember = user.remember;
+        if (user.remember) {
+          token.exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
+        } else {
+          token.exp =
+            Math.floor(Date.now() / 1000) + Config.env.app.jwt_login_expiry;
+        }
       } else {
         if (token.email) {
           try {
             const affiliate = await getAffiliateStatus(token.email);
             if (affiliate && affiliate.data) {
               token.status = affiliate.data.status || "pending";
-              // console.log("[JWT Callback] Changed Token status:", token.status);
+            }
+
+            if (token.remember && !token.exp) {
+              token.exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
             }
           } catch (error) {
             console.log(error);
-            // token.status = user.status;
           }
         }
       }
@@ -105,12 +119,11 @@ export const {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.status = token.status as string;
-        // console.log("[Session Callback] User ID:", session.user.id);
-        // console.log("[Session Callback] User Status:", session.user.status);
       }
       return session;
     },
   },
+
   // cookies: {
   //   sessionToken: {
   //     name:
@@ -128,30 +141,11 @@ export const {
   //       domain: Config.env.app.root_domain.startsWith(".")
   //         ? Config.env.app.root_domain
   //         : "." + Config.env.app.root_domain,
+  //       // Dynamic maxAge based on remember preference - handled in JWT callback
   //     },
   //   },
-  //   // callbackUrl: {
-  //   //   name:
-  //   //     Config.env.app.environment === "PRODUCTION" ||
-  //   //     Config.env.app.environment === "STAGING"
-  //   //       ? `__Secure-authjs.callback-url`
-  //   //       : `authjs.callback-url`,
-  //   //   options: {
-  //   //     httpOnly: true,
-  //   //     sameSite: "lax",
-  //   //     path: "/",
-  //   //     secure:
-  //   //       Config.env.app.environment === "PRODUCTION" ||
-  //   //       Config.env.app.environment === "STAGING",
-  //   //     domain: Config.env.app.root_domain.startsWith(".")
-  //   //       ? Config.env.app.root_domain
-  //   //       : "." + Config.env.app.root_domain,
-  //   //   },
-  //   // },
   // },
 
   secret: process.env.NEXTAUTH_SECRET,
   debug: false,
 });
-
-// export { handler as GET, handler as POST };

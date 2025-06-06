@@ -184,7 +184,7 @@ export const getAffiliatePostbackByAffiliateAndCampaign = async (
         )
       );
 
-    const result = await query.limit(1);
+    const result = await query;
 
     if (result.length === 0) {
       return {

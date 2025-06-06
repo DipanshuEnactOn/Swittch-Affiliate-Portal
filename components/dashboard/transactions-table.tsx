@@ -126,6 +126,15 @@ export function TransactionsTable({ transactions }: any) {
       ),
     },
     {
+      accessorKey: "conversionSub3",
+      header: t("transactions.sub3"),
+      cell: ({ row }) => (
+        <div className="flex items-center">
+          {row.original.conversionSub3 || "-"}
+        </div>
+      ),
+    },
+    {
       accessorKey: "commission",
       header: t("transactions.earning"),
       cell: ({ row }) => (

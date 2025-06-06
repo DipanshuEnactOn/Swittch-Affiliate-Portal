@@ -42,6 +42,11 @@
       "description": "Your request has been sent to the admin. Once approved, we will notify you via email.",
       "message": "Thank you for signing up! Please check your email for further instructions."
     },
+    "verify_email":{
+      "title":"Your email has been verified",
+      "description":"Thank you for verifying your email address. You can now log in to your account.",
+      "backToSignIn": "Back to Sign In"
+    },
     "placeholder":{
       "name": "Enter your name",
       "email": "Enter your email",
@@ -116,6 +121,7 @@
   "goal": "Goal",
   "sub1": "SubId1",
   "sub2": "SubId2",
+  "sub3": "SubId3",
   "earning": "Earning",
   "status": "Status",
   "noData": "No recent transactions found.",
@@ -130,7 +136,7 @@
 },
 "affiliateLink": {
   "linkCreated": "Affiliate link created successfully",
-  "linkAlreadyExists": "Slug already exists. Please use a different one.",
+  "linkAlreadyExists": "Link already taken. Please use a different one.",
   "errorCreatingLink": "An error occurred while creating the affiliate link",
   "linkStatusUpdated": "Affiliate link status updated successfully",
   "errorUpdatingLink": "An error occurred while updating the affiliate link",
@@ -141,7 +147,13 @@
   "urlLabel": "URL",
   "urlPlaceholder": "your-affiliate-link",
   "nameLabel": "Name",
-  "namePlaceholder": "Enter affiliate name",
+  "namePlaceholder": "Enter link name",
+  "sub1Label": "SubId1",
+  "sub1Placeholder": "Enter SubId1",
+  "sub2Label": "SubId2",
+  "sub2Placeholder": "Enter SubId2",
+  "sub3Label": "SubId3",
+  "sub3Placeholder": "Enter SubId3",
   "cancel": "Cancel",
   "save": "Save",
   "creating": "Creating..."
@@ -166,6 +178,12 @@
     "placeholder": "Select Goal",
     "urlLabel": "Goal URL",
     "urlPlaceholder": "Enter Goal URL"
+  },
+  "methodType":{
+    "label": "Method Type",
+    "placeholder": "Select Method Type",
+    "get": "GET",
+    "post": "POST"
   },
   "placeholderOption": "Select Option",
   "button": {
@@ -195,8 +213,12 @@
   "fields": {
     "name": "Name",
     "email": "Email",
+    "addressLine1": "Address Line 1",
+    "addressLine2": "Address Line 2 (Optional)",
     "placeholder": {
-      "name": "Enter your name"
+      "name": "Enter your name",
+      "addressLine1": "Enter your address line 1",
+      "addressLine2": "Enter your address line 2 (optional)"
     }
   },
   "button": "Save",

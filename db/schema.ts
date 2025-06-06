@@ -45,6 +45,7 @@ export const payoutStatusEnum = pgEnum("payout_status", [
 export const postbackStatusEnum = pgEnum("postback_status", [
   "success",
   "failure",
+  "pending",
 ]);
 
 // Affiliates table
@@ -58,6 +59,10 @@ export const affiliates = pgTable("affiliates", {
   bankDetails: jsonb("bank_details"),
   address: jsonb("address"),
   taxId: varchar("tax_id", { length: 255 }),
+  token: varchar("token", { length: 255 }),
+  tokenExpiry: timestamp("token_expiry"),
+  isEmailVerified: boolean("is_email_verified").notNull().default(false),
+  emailVerifiedAt: timestamp("email_verified_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
