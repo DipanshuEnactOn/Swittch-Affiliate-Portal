@@ -49,4 +49,33 @@ export const Api = {
       return false;
     }
   },
+
+  delete: async ({
+    path,
+    body,
+    headers,
+    externalDomain,
+  }: {
+    path: string;
+    body?: any;
+    headers?: HeadersInit;
+    externalDomain?: string;
+  }) => {
+    try {
+      const res = await fetch(
+        `${externalDomain || Config.env.app.api_url}${path}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-type": "application/json",
+            ...headers,
+          },
+          body: JSON.stringify(body || {}),
+        }
+      ).then((res) => res.json());
+      return res;
+    } catch (error) {
+      return false;
+    }
+  },
 };

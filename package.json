@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "migrate": "drizzle-kit generate --schema=db/schema.ts --dialect=postgresql && node -r esbuild-register db/migration.ts",
-    "studio": "npx drizzle-kit studio"
+    "studio": "npx drizzle-kit studio",
+    "crons": "node -r esbuild-register crons/crons.ts"
   },
   "dependencies": {
     "@bprogress/next": "^3.2.12",
@@ -64,6 +65,7 @@
     "next-intl": "^3.9.4",
     "next-nprogress-bar": "^2.4.7",
     "next-themes": "^0.4.6",
+    "node-cron": "^4.1.0",
     "pg": "^8.16.0",
     "postgres": "^3.4.7",
     "react": "18.2.0",

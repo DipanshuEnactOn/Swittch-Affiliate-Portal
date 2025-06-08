@@ -42,12 +42,13 @@ export default function PaymentInformation({ paymentInfo, amount }: any) {
   };
 
   const bankInitialValues = {
-    bankName: currentPaymentInfo?.bankInfo?.bankName || "",
-    accountNumber: currentPaymentInfo?.bankInfo?.accountNumber || "",
-    ifscBicCode: currentPaymentInfo?.bankInfo?.ifscBicCode || "",
-    accountHolderName: currentPaymentInfo?.bankInfo?.accountHolderName || "",
-    accountType: currentPaymentInfo?.bankInfo?.accountType || "",
-    swiftCode: currentPaymentInfo?.bankInfo?.swiftCode || "",
+    bankName: currentPaymentInfo?.bankInfo?.bank_name || "",
+    accountNumber: currentPaymentInfo?.bankInfo?.bank_account_no || "",
+    ifscBicCode: currentPaymentInfo?.bankInfo?.bank_ifsc_bic_code || "",
+    accountHolderName:
+      currentPaymentInfo?.bankInfo?.bank_account_holder_name || "",
+    accountType: currentPaymentInfo?.bankInfo?.bank_account_type || "",
+    swiftCode: currentPaymentInfo?.bankInfo?.bank_swift_code || "",
   };
 
   const handlePaypalSubmit = async (

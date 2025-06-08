@@ -126,7 +126,9 @@ export const getPayoutsByAffiliateId = async (
       .select()
       .from(payouts)
       .where(eq(payouts.affiliateId, affiliateId))
-      .orderBy(desc(payouts.createdAt));
+      .orderBy(desc(payouts.createdAt))
+      .limit(rows_per_page)
+      .offset(offset);
 
     return {
       data: {
@@ -150,21 +152,23 @@ export const getPayoutsByAffiliateId = async (
     };
   }
 };
+
 export const getApprovedPayoutsByAffiliateId = async (affiliateId: number) => {
   try {
-    console.log("Fetching approved payouts for affiliateId:", affiliateId);
     const result = await db
-      .select({ amount: sql<number>`sum(${payouts.requestedAmount})` })
+      .select({ amount: payouts.requestedAmount })
       .from(payouts)
       .where(
         and(eq(payouts.affiliateId, affiliateId), eq(payouts.status, "paid"))
       )
       .orderBy(payouts.createdAt);
 
-    console.log("Approved Payouts Result:", result);
+    const amount = result.reduce((sum, payout) => {
+      return sum + parseFloat(payout.amount || "0");
+    }, 0);
 
     return {
-      data: result[0] || 0,
+      data: amount,
       message: "ok",
       status: "success",
     };

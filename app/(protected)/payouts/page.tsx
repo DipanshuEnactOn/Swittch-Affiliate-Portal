@@ -10,11 +10,18 @@ import {
   getPayoutsByAffiliateId,
 } from "@/models/payouts-model";
 import { createTranslation } from "@/i18n/server";
+import { AppRoutes } from "@/utils/routes";
+import { redirect } from "next/navigation";
 
 export default async function PayoutsPage({ searchParams }: any) {
   const { t } = await createTranslation();
 
   const user = await getAuthSession();
+  const userStatus = user?.user?.status;
+
+  if (userStatus === "pending") {
+    return redirect(AppRoutes.auth.pending);
+  }
   const { rows_per_page, page } = searchParams;
   const affilite = (await getAffiliateById(user.user.id))?.data || null;
   const paymentInfo = {
@@ -30,9 +37,7 @@ export default async function PayoutsPage({ searchParams }: any) {
 
   const affiliatePaidAmount = (
     await getApprovedPayoutsByAffiliateId(user.user.id)
-  )?.data?.amount;
-
-  console.log("Affiliate Paid Amount:", affiliatePaidAmount);
+  )?.data;
 
   const affiliateEarnings = await getEarningsDataForAffiliate(user.user.id);
 

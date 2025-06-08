@@ -55,6 +55,7 @@ export default function FilterComponent() {
     searchParams.set("from", moment(defaultFromDate).format("YYYY-MM-DD"));
     searchParams.set("to", moment(currentDate).format("YYYY-MM-DD"));
     router.push(`${pathname}?${searchParams.toString()}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateSearchParams = (key: string, value: string) => {

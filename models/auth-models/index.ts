@@ -1,4 +1,4 @@
-import { auth } from "@/app/api/(auth)/auth/[...nextauth]/route";
+import { auth } from "@/app/api/(auth)/auth/auth";
 
 export const getAuthSession = async () => {
   try {

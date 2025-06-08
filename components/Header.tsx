@@ -58,7 +58,7 @@ const Header = () => {
       });
       toast({
         title: t("success"),
-        description: t("auth.logout"),
+        description: t("auth.logout.success"),
       });
     } catch (error) {
       toast({
@@ -109,7 +109,7 @@ const Header = () => {
 
         <div>
           <Button variant="outline" onClick={handleSignOut}>
-            Logout
+            {t("auth.logout.title")}
           </Button>
         </div>
       </div>

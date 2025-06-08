@@ -65,14 +65,6 @@ const config: Config = {
           "5": "hsl(var(--chart-5))",
         },
         // Custom colors from your CSS variables
-        orange: {
-          50: "var(--color-orange-50)",
-          400: "var(--color-orange-400)",
-          500: "var(--color-orange-500)",
-        },
-        blue: {
-          500: "var(--color-blue-500)",
-        },
         brand: {
           50: "var(--color-brand-50)",
           100: "var(--color-brand-100)",

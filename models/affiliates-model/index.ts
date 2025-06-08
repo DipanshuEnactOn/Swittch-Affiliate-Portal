@@ -224,7 +224,10 @@ export const getAffiliateByEmail = async (email: string) => {
 export const getAffiliateStatus = async (email: string) => {
   try {
     const result = await db
-      .select({ status: affiliates.approvalStatus })
+      .select({
+        status: affiliates.approvalStatus,
+        emailVerified: affiliates.isEmailVerified,
+      })
       .from(affiliates)
       .where(eq(affiliates.email, email));
 

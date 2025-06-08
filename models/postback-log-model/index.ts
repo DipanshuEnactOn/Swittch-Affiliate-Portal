@@ -235,3 +235,65 @@ export const deletePostbackLog = async (id: number) => {
     };
   }
 };
+
+export const getPendingPostbackLogs = async () => {
+  try {
+    const result = await db
+      .select()
+      .from(postbackLogs)
+      .where(eq(postbackLogs.status, "pending"));
+
+    return {
+      data: result,
+      message: "ok",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const updatePostbackLogStatus = async (
+  id: number,
+  status: "success" | "failure",
+  message?: any
+) => {
+  try {
+    const result = await db.transaction(async (tx) => {
+      const updated = await tx
+        .update(postbackLogs)
+        .set({
+          status,
+          statusMessages: message,
+          processedAt: new Date().toISOString(),
+        })
+        .where(eq(postbackLogs.id, id))
+        .returning();
+      return updated[0];
+    });
+
+    if (!result) {
+      return {
+        data: null,
+        message: "Postback log not found",
+        status: "error",
+      };
+    }
+
+    return {
+      data: result,
+      message: "Postback log status updated successfully",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};

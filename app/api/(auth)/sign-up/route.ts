@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     const { name, email, password } = body;
 
-    const existingUser = await getAffiliateByEmail(email);
+    const existingUser = await getAffiliateByEmail(email.toLowerCase());
     if (existingUser.data) {
       return commonResponse({
         data: null,

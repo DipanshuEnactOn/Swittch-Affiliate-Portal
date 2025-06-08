@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     const affiliatePaidAmount =
-      (await getApprovedPayoutsByAffiliateId(id))?.data?.amount || 0;
+      (await getApprovedPayoutsByAffiliateId(id))?.data || 0;
 
     const affiliateEarnings = await getEarningsDataForAffiliate(id);
 

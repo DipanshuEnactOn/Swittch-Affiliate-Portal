@@ -172,7 +172,9 @@ function StatusBadge({
       status.toLowerCase() as "processing" | "pending" | "rejected" | "paid"
     ];
 
-  const className = `inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor}`;
+  const className = `inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor} ${
+    status === "pending" ? "bg-yellow-100 text-yellow-500" : ""
+  }`;
 
   return (
     <span className={`${className}`}>

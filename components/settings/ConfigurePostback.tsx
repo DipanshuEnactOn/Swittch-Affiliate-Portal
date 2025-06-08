@@ -17,9 +17,11 @@ import { postbackSchema } from "@/utils/validation";
 import { Api } from "@/services/api-services";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/i18n/client";
+import { useRouter } from "next/navigation";
 
 export default function ConfigurePostback({ goals }: any) {
   const { t } = useTranslation();
+  const router = useRouter();
   const user = useSession().data?.user;
 
   const initialValues = {
@@ -41,10 +43,11 @@ export default function ConfigurePostback({ goals }: any) {
         campaignId: 1,
         campaignGoalId:
           values.postbackType === "goal"
-            ? goals?.find((g: any) => g.title === values.selectedGoal).id
+            ? goals?.find((g: any) => g.name === values.selectedGoal).id
             : 1,
         postbackUrl:
           values.postbackType === "goal" ? values.goalUrl : values.globalUrl,
+        methodType: values.methodType,
       };
       const response = await Api.post({ path: "/postback", body: data });
       if (response.status === "error") {
@@ -59,6 +62,7 @@ export default function ConfigurePostback({ goals }: any) {
         title: t("postback.toast.successTitle"),
         description: t("postback.toast.successMessage"),
       });
+      router.refresh();
       resetForm();
     } catch (error) {
       console.error("Error saving postback:", error);
@@ -73,8 +77,6 @@ export default function ConfigurePostback({ goals }: any) {
     }
   };
 
-  // TODO: Show Postabhck Table for the User here even for same ids and give delete option
-
   return (
     <Card>
       <CardContent className="p-6">
@@ -84,6 +86,7 @@ export default function ConfigurePostback({ goals }: any) {
           initialValues={initialValues}
           validationSchema={postbackSchema}
           onSubmit={handleSubmit}
+          validateOnChange={true}
           enableReinitialize
         >
           {({ values, setFieldValue, isSubmitting, errors, touched }) => (

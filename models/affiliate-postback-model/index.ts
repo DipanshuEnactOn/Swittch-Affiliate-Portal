@@ -1,6 +1,6 @@
 import { db } from "@/db";
-import { affiliatePostbacks } from "@/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { affiliatePostbacks, campaignGoals, campaigns } from "@/db/schema";
+import { and, desc, eq, sql } from "drizzle-orm";
 
 export const insertAffiliatePostback = async (postbackData: any) => {
   try {
@@ -63,7 +63,8 @@ export const deleteAffiliatePostback = async (id: number) => {
   try {
     const result = await db.transaction(async (tx) => {
       const deleted = await tx
-        .delete(affiliatePostbacks)
+        .update(affiliatePostbacks)
+        .set({ isDeleted: true, deletedAt: new Date(), updatedAt: new Date() })
         .where(eq(affiliatePostbacks.id, id))
         .returning();
       return deleted[0];
@@ -121,16 +122,72 @@ export const getAffiliatePostbackById = async (id: number) => {
   }
 };
 
-export const getAffiliatePostbacksByAffiliate = async (affiliateId: number) => {
+export const getAffiliatePostbacksByAffiliate = async (
+  affiliateId: number,
+  filters: any
+) => {
   try {
-    const result = await db
-      .select()
+    let rows_per_page = 10;
+    let page = 1;
+
+    if (filters?.rows_per_page) {
+      rows_per_page = parseInt(filters.rows_per_page);
+    }
+
+    if (filters?.page) {
+      page = parseInt(filters.page);
+    }
+
+    const offset = (page - 1) * rows_per_page;
+
+    const countResult = await db
+      .select({
+        count: sql<number>`count(*)`,
+      })
       .from(affiliatePostbacks)
-      .where(eq(affiliatePostbacks.affiliateId, affiliateId))
-      .orderBy(desc(affiliatePostbacks.createdAt));
+      .where(
+        and(
+          eq(affiliatePostbacks.affiliateId, affiliateId),
+          eq(affiliatePostbacks.isDeleted, false)
+        )
+      );
+
+    const totalCount = countResult[0]?.count || 0;
+    const totalPages = Math.ceil(totalCount / rows_per_page);
+
+    const result = await db
+      .select({
+        ...(affiliatePostbacks as any),
+        goalName: campaignGoals.name,
+        campaignName: campaigns.name,
+      })
+      .from(affiliatePostbacks)
+      .where(
+        and(
+          eq(affiliatePostbacks.affiliateId, affiliateId),
+          eq(affiliatePostbacks.isDeleted, false)
+        )
+      )
+      .leftJoin(
+        campaignGoals,
+        eq(affiliatePostbacks.campaignGoalId, campaignGoals.id)
+      )
+      .leftJoin(campaigns, eq(affiliatePostbacks.campaignId, campaigns.id))
+      .orderBy(desc(affiliatePostbacks.createdAt))
+      .limit(rows_per_page)
+      .offset(offset);
 
     return {
-      data: result,
+      data: {
+        result,
+        pagination: {
+          totalCount,
+          totalPages,
+          currentPage: page,
+          rows_per_page,
+        },
+        countResult: countResult[0]?.count || 0,
+      },
       message: "Affiliate postbacks retrieved successfully",
       status: "success",
     };
@@ -165,7 +222,7 @@ export const getAffiliatePostbacksByCampaign = async (campaignId: number) => {
   }
 };
 
-export const getAffiliatePostbackByAffiliateAndCampaign = async (
+export const getAffiliatePostbackByCampaignAndGoal = async (
   affiliateId: number,
   campaignId: number,
   campaignGoalId?: number
@@ -195,7 +252,7 @@ export const getAffiliatePostbackByAffiliateAndCampaign = async (
     }
 
     return {
-      data: result[0],
+      data: result,
       message: "Affiliate postback retrieved successfully",
       status: "success",
     };

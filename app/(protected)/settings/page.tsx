@@ -2,21 +2,30 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import ConfigurePostback from "@/components/settings/ConfigurePostback";
 import PasswordChange from "@/components/settings/PasswordChange";
 import PersonalInformation from "@/components/settings/PersonalInformation";
+import PostbacksTable from "@/components/settings/PostbackTable";
 import { Card, CardContent } from "@/components/ui/card";
 import { createTranslation } from "@/i18n/server";
 import { getAffiliateCampaignGoalsByCampaignId } from "@/models/affiliate-campaign-goal-model";
+import { getAffiliatePostbacksByAffiliate } from "@/models/affiliate-postback-model";
 import { getAffiliateByEmail } from "@/models/affiliates-model";
 import { getAuthSession } from "@/models/auth-models";
 import { getCampaignGoalsByCampaignId } from "@/models/campaign-goal-model";
 import { AppRoutes } from "@/utils/routes";
 import { redirect } from "next/navigation";
 
-export default async function SettingsPage() {
+export default async function SettingsPage({ searchParams }: any) {
   const user = await getAuthSession();
+  const userStatus = user?.user?.status;
+
+  if (userStatus === "pending") {
+    return redirect(AppRoutes.auth.pending);
+  }
   const { t } = await createTranslation();
+  const { rows_per_page, page } = searchParams;
   if (!user) {
     return redirect(AppRoutes.auth.signIn);
   }
+
   const affiliate = (await getAffiliateByEmail(user.user.email as string))
     ?.data;
 
@@ -41,6 +50,13 @@ export default async function SettingsPage() {
       };
     });
 
+  const postbacks = (
+    await getAffiliatePostbacksByAffiliate(affiliate?.id || 0, {
+      rows_per_page,
+      page,
+    })
+  ).data;
+
   return (
     <DashboardLayout>
       <div className="mx-auto space-y-8">
@@ -55,6 +71,8 @@ export default async function SettingsPage() {
         {/* Configure Postback */}
         <ConfigurePostback goals={finalGoals} />
 
+        <PostbacksTable data={postbacks} />
+
         {/* Postback Documentation */}
         <Card>
           <CardContent className="p-6">
@@ -63,11 +81,20 @@ export default async function SettingsPage() {
               To get a list of all surveys, please call the following URL:
             </p>
             <div className="bg-gray-50 p-3 rounded text-xs font-mono mb-6 break-all">
-              https://rev-api.swtch.tv/api/get-surveys?api_page_id=
-              {`{your_app_id}`}&ext_user_id={`{ext_user_id}`}&subid_1=
-              {`{your_subid_1}`}&subid_2={`{your_subid_2}`}
-              &output_method=api&user_ip={`{user_ip}`}&user_agent=
-              {`{user_agent}`}
+              https://your-api-endpoint.com/api/get-data?campaign_id=
+              {`{campaign_id}`}
+              &campaign_goal_id={`{campaign_goal_id}`}
+              &affiliate_link_id={`{affiliate_link_id}`}
+              &link_name={`{link_name}`}
+              &goal_name={`{goal_name}`}
+              &transaction_id={`{transaction_id}`}
+              &click_code={`{click_code}`}
+              &conversion_id={`{conversion_id}`}
+              &subId1={`{subId1}`}
+              &subId2={`{subId2}`}
+              &subId3={`{subId3}`}
+              &commission_value={`{commission_value}`}
+              &conversion_value={`{conversion_value}`}
             </div>
 
             <div className="overflow-x-auto">
@@ -87,105 +114,127 @@ export default async function SettingsPage() {
                 </thead>
                 <tbody className="text-xs text-gray-600 space-y-2">
                   <tr className="border-b">
-                    <td className="py-3 font-mono">api_id={`{your_app_id}`}</td>
+                    <td className="py-3 font-mono">
+                      campaign_id={`{campaign_id}`}
+                    </td>
                     <td className="py-3">
-                      You must submit your app ID with each request. You can
-                      find your app ID in your CPX Research publisher dashboard
-                      as soon as you create a new app.{" "}
-                      <span className="text-blue-600 underline cursor-pointer">
-                        here
-                      </span>
-                      .
+                      The ID for the specific campaign. You must submit this
+                      with each request to identify the campaign.
                     </td>
                     <td className="py-3">Mandatory</td>
                   </tr>
                   <tr className="border-b">
                     <td className="py-3 font-mono">
-                      ext_user_id= {`{ext_user_id}`}
+                      campaign_goal_id={`{campaign_goal_id}`}
                     </td>
                     <td className="py-3">
-                      The external user ID is a unique identifier for each of
-                      your users on your end. It is required for CPX Research to
-                      build a user profile and match users with future surveys
-                      based on their past data, and will also be used for{" "}
-                      <span className="text-blue-600 underline cursor-pointer">
-                        postback/s2s/webhook communication
-                      </span>
-                      . The external user ID for a single user should always
-                      remain the same and should not change.
+                      The ID for the specific campaign goal. This should match
+                      the campaign&apos;s defined goal.
                     </td>
                     <td className="py-3">Mandatory</td>
                   </tr>
                   <tr className="border-b">
                     <td className="py-3 font-mono">
-                      subid_1= {`{your_subid_1}`}
+                      affiliate_link_id={`{affiliate_link_id}`}
                     </td>
                     <td className="py-3">
-                      If you would like to submit a custom parameter that should
-                      be added to the entry links in your API response, you can
-                      use our optional subid parameters.
-                    </td>
-                    <td className="py-3">Optional</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
-                      subid_2= {`{your_subid_2}`}
-                    </td>
-                    <td className="py-3">
-                      If you would like to submit a custom parameter that should
-                      be added to the entry links in your API response, you can
-                      use our optional subid parameters.
-                    </td>
-                    <td className="py-3">Optional</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">output_method=api</td>
-                    <td className="py-3">
-                      This is a static parameter that must be included and
-                      should not be changed.
-                    </td>
-                    <td className="py-3">Mandatory</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">ip_user={`{ip_user}`}</td>
-                    <td className="py-3">
-                      You must replace it with your users' IP addresses in order
-                      to determine location, match them with region-specific
-                      surveys, and enhance fraud detection. Only IPv4 research
-                      can be sure they will get a better user experience.
+                      The affiliate link ID for tracking the specific link
+                      clicked by the user.
                     </td>
                     <td className="py-3">Mandatory</td>
                   </tr>
                   <tr className="border-b">
                     <td className="py-3 font-mono">
-                      user_agent= {`{user_agent}`}
+                      link_name={`{link_name}`}
                     </td>
                     <td className="py-3">
-                      Replace it with the user's browser/device user agent
-                      string. This ensures compatibility with device-specific
-                      surveys.
+                      The name of the link associated with the campaign. This is
+                      used to track the link’s performance.
                     </td>
                     <td className="py-3">Optional</td>
                   </tr>
                   <tr className="border-b">
-                    <td className="py-3 font-mono">limit=12</td>
+                    <td className="py-3 font-mono">
+                      goal_name={`{goal_name}`}
+                    </td>
                     <td className="py-3">
-                      The default maximum number of available surveys returned
-                      in the API response is 12. You can adjust this value to
-                      receive more or fewer surveys in your API response.
+                      The name of the specific goal within the campaign. This is
+                      used to track goal-specific performance.
                     </td>
                     <td className="py-3">Optional</td>
                   </tr>
-                  <tr>
+                  <tr className="border-b">
                     <td className="py-3 font-mono">
-                      secure_hash= {`{secure_hash}`}
+                      transaction_id={`{transaction_id}`}
                     </td>
                     <td className="py-3">
-                      Replace this with a hash provided to you in your dashboard
-                      (MD5). This secures API requests by validating
-                      authenticity and preventing tampering.
+                      The unique identifier for the transaction associated with
+                      the campaign.
                     </td>
-                    <td className="py-3">Recommended</td>
+                    <td className="py-3">Mandatory</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 font-mono">
+                      click_code={`{click_code}`}
+                    </td>
+                    <td className="py-3">
+                      A unique identifier for each click. This is used to track
+                      the user&apos;s click event.
+                    </td>
+                    <td className="py-3">Mandatory</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 font-mono">
+                      conversion_id={`{conversion_id}`}
+                    </td>
+                    <td className="py-3">
+                      A unique identifier for the conversion event, used for
+                      conversion tracking.
+                    </td>
+                    <td className="py-3">Mandatory</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 font-mono">subId1={`{subId1}`}</td>
+                    <td className="py-3">
+                      An optional custom parameter for additional tracking
+                      purposes.
+                    </td>
+                    <td className="py-3">Optional</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 font-mono">subId2={`{subId2}`}</td>
+                    <td className="py-3">
+                      An optional custom parameter for additional tracking
+                      purposes.
+                    </td>
+                    <td className="py-3">Optional</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 font-mono">subId3={`{subId3}`}</td>
+                    <td className="py-3">
+                      An optional custom parameter for additional tracking
+                      purposes.
+                    </td>
+                    <td className="py-3">Optional</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 font-mono">
+                      commission_value={`{commission_value}`}
+                    </td>
+                    <td className="py-3">
+                      The commission value associated with the conversion.
+                    </td>
+                    <td className="py-3">Mandatory</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 font-mono">
+                      conversion_value={`{conversion_value}`}
+                    </td>
+                    <td className="py-3">
+                      The value associated with the completed conversion (such
+                      as the monetary amount).
+                    </td>
+                    <td className="py-3">Mandatory</td>
                   </tr>
                 </tbody>
               </table>

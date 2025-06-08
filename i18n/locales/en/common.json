@@ -1,6 +1,9 @@
 {
 "success":"Success",
 "error":"Error",
+"cancel": "Cancel",
+"delete": "Delete",
+"deleting": "Deleting...",
 "somethingWentWrong": "Something went wrong. Please try again.",
 "passwordChanged": "Password updated successfully",
 "auth": {
@@ -40,7 +43,9 @@
     "pending": {
       "title": "Request Pending",
       "description": "Your request has been sent to the admin. Once approved, we will notify you via email.",
-      "message": "Thank you for signing up! Please check your email for further instructions."
+      "message": "Thank you for signing up! Please check your email for further instructions.",
+      "email_title":"Please verify your email",
+      "email_description":"To complete your registration, please verify your email address by clicking the link we sent to your email."
     },
     "verify_email":{
       "title":"Your email has been verified",
@@ -51,6 +56,10 @@
       "name": "Enter your name",
       "email": "Enter your email",
       "password": "Enter your password"
+    },
+    "logout":{
+      "title": "Log Out",
+      "success": "You have been logged out successfully."
     }
   },
 "dashboard": {
@@ -193,6 +202,7 @@
   "toast": {
     "successTitle": "Success",
     "successMessage": "Postback configuration saved successfully",
+    "postbackDeleted": "Postback deleted successfully",
     "errorTitle": "Error",
     "errorMessage": "Failed to save postback configuration"
   },
@@ -203,6 +213,21 @@
     "4": "First purchase",
     "5": "Subscribe to premium"
   },
+  "table": {
+      "title": "Postbacks",
+      "date": "Date",
+      "campaignGoal": "Campaign Goal",
+      "goalName": "Goal Name",
+      "postbackUrl": "Postback URL",
+      "methodType": "Method Type",
+      "actions": "Actions",
+      "empty": "No postbacks found",
+      "noGoal": "No Goal"
+    },
+    "delete": {
+      "title": "Delete Postback",
+      "description": "Are you sure you want to delete this postback? This action cannot be undone."
+    },
   "noCampaignGoals": "No campaign goals found. Please add one first."
 },
 "profile": {
@@ -292,9 +317,9 @@
     "password": "Password must be at least 8 characters",
     "errorCreatingUser":"Error signing up. Please try again.",
     "errorSigningIn": "Error signing in. Please check your credentials and try again.",
-    "userCreatedSuccessfully":"Sign up successful!",
+    "userCreatedSuccessfully":"Sign up successfull",
     "checkEmailForVerification": "Please check your email for verification instructions.",
-    "signInSuccess":"Sign in successful!",
+    "signInSuccess":"Sign in successfull",
     "emailAlreadyExists":"Email already exists. Please use a different email address or sign in with your existing account.",
     "invalidData": "Invalid request data",
   "invalidPassword": "Current password is incorrect",

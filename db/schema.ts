@@ -202,7 +202,7 @@ export const conversions = pgTable("conversions", {
   status: conversionStatusEnum("status").notNull().default("pending"),
   payoutId: bigint("payout_id", { mode: "number" }),
   adminNotes: varchar("admin_notes", { length: 500 }),
-  convertedAt: timestamp("converted_at", { mode: "string" }).notNull(),
+  convertedAt: timestamp("converted_at").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -214,8 +214,11 @@ export const affiliatePostbacks = pgTable("affiliate_postbacks", {
   campaignId: bigint("campaign_id", { mode: "number" }).notNull(),
   campaignGoalId: bigint("campaign_goal_id", { mode: "number" }),
   postbackUrl: varchar("postback_url", { length: 1500 }).notNull(),
+  methodType: varchar("method_type", { length: 50 }).notNull().default("GET"),
+  isDeleted: boolean("is_deleted").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  deletedAt: timestamp("deleted_at"),
 });
 
 export const affiliateConversionsSummary = pgTable("vw_affiliate_conversions", {
