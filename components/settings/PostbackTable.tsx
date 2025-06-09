@@ -83,7 +83,7 @@ export default function PostbacksTable({ data }: any) {
       cell: ({ row }) => {
         const rowValue = row.original;
         return (
-          <div className="flex items-center text-gray-600">
+          <div className="flex items-center text-gray-600 whitespace-nowrap">
             {moment(rowValue.createdAt).format("YYYY-MM-DD")}
           </div>
         );
@@ -117,14 +117,18 @@ export default function PostbacksTable({ data }: any) {
       cell: ({ row }) => {
         const rowValue = row.original;
         return (
-          <div className="flex items-center text-gray-900 max-w-xs">
-            <span className="truncate" title={rowValue.postbackUrl}>
+          <div className="flex items-center text-gray-900 max-w-full">
+            <span
+              className="break-all min-w-[200px]"
+              title={rowValue.postbackUrl}
+            >
               {rowValue.postbackUrl}
             </span>
           </div>
         );
       },
     },
+
     {
       accessorKey: "methodType",
       header: t("postback.table.methodType"),
@@ -181,7 +185,7 @@ export default function PostbacksTable({ data }: any) {
           </h3>
         </div>
       </CardHeader>
-      <CardContent className="px-6 pt-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="space-y-4">
           {/* Table */}
           <div className="rounded-md border">
@@ -192,7 +196,7 @@ export default function PostbacksTable({ data }: any) {
                     {headerGroup.headers.map((header) => (
                       <TableHead
                         key={header.id}
-                        className="text-gray-600 font-medium px-6 py-4"
+                        className="text-gray-600 font-medium px-4 py-3"
                       >
                         {header.isPlaceholder
                           ? null
@@ -214,7 +218,7 @@ export default function PostbacksTable({ data }: any) {
                       data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="px-6 py-4">
+                        <TableCell key={cell.id} className="px-4 py-3">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()

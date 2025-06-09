@@ -82,8 +82,8 @@ export default function FilterComponent() {
         <CardTitle>{t("filters.title")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t("filters.status.label")}</Label>
               <Select
@@ -93,7 +93,7 @@ export default function FilterComponent() {
                   updateSearchParams("status", value);
                 }}
               >
-                <SelectTrigger className="w-[140px]">
+                <SelectTrigger className="w-[140px]s w-full">
                   <SelectValue placeholder={t("filters.status.all")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -120,7 +120,7 @@ export default function FilterComponent() {
                       id="date"
                       variant={"outline"}
                       className={cn(
-                        "w-[300px] justify-start text-left font-normal",
+                        "h-11 w-full justify-start text-left font-normal",
                         !date && "text-muted-foreground"
                       )}
                     >
@@ -166,7 +166,10 @@ export default function FilterComponent() {
           </div>
 
           {hasActiveFilters && (
-            <Button onClick={clearFilters} className="self-start md:self-end">
+            <Button
+              onClick={clearFilters}
+              className="ml-auto self-start md:self-end"
+            >
               <X className="mr-2 h-4 w-4" />
               {t("filters.clear")}
             </Button>

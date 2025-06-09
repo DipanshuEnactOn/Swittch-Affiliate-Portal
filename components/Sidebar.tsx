@@ -12,7 +12,7 @@ export function Sidebar() {
 
   return (
     <>
-      <div className="sidebar fixed top-0 left-0 z-9999 flex h-[100dvh] w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 lg:static lg:translate-x-0 dark:border-gray-800 dark:bg-black -translate-x-full">
+      <div className="sidebar fixed top-0 left-0 z-20 flex h-[100dvh] w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 lg:static lg:translate-x-0 dark:border-gray-800 dark:bg-black -translate-x-full">
         <div className="sidebar-header flex items-center gap-2 py-5 justify-between">
           <Link
             href={AppRoutes.dashboard}
@@ -54,7 +54,7 @@ export function Sidebar() {
 
       <div
         id="overlay"
-        className="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-[9998] lg:hidden"
+        className="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-[19+] lg:hidden"
       ></div>
     </>
   );

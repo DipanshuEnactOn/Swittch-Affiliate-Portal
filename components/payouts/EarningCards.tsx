@@ -45,7 +45,7 @@ export default function EarningCards({ earningsData }: any) {
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       {cards.map(({ icon: Icon, label, amount, color, bgColor }) => (
         <Card key={label} className="bg-white">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex flex-col items-start space-y-3">
               <div className={`p-2 ${bgColor} rounded-lg`}>
                 <Icon className={`h-5 w-5 text-${color}-600`} />

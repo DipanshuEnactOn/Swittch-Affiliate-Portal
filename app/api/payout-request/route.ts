@@ -10,6 +10,7 @@ import {
 } from "@/models/payouts-model";
 import { commonResponse } from "@/utils/response-format";
 import { NextRequest } from "next/server";
+import { Config } from "@/utils/config";
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -100,6 +101,28 @@ export async function POST(request: NextRequest) {
         data: result.data,
         status: "error",
         message: t("payouts.errorCreatingPayout"),
+      });
+    }
+
+    try {
+      const emailResponse = await fetch(
+        `${Config.env.app.admin_url}/send-mail-to-affiliate?user_id=${id}&payout_id=${result.data?.id}&type=payout_request`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // body: JSON.stringify({
+          //   payout_id: result.data?.id,
+          //   type: "payout_request",
+          // }),
+        }
+      );
+    } catch (error) {
+      return commonResponse({
+        data: null,
+        status: "error",
+        message: t("auth.signup.errorSendingVerificationEmail"),
       });
     }
 

@@ -38,14 +38,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    const verificationToken = generateVerificationToken();
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const token = generateVerificationToken();
     const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
     const newUser = {
       name,
       email,
       password: hashedPassword,
-      verificationToken,
+      token,
       tokenExpiry,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -60,34 +60,36 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const verificationLink = `${Config.env.app.app_url}/verify-email/${verificationToken}`;
+    const verificationLink = `${Config.env.app.app_url}/verify-email/${token}`;
 
     try {
       const emailResponse = await fetch(
-        `${Config.env.app.admin_url}/send-mail-to-affiliate`,
+        `${Config.env.app.admin_url}/send-mail-to-affiliate?userId=${
+          newAffiliate.data.id
+        }&verificationLink=${encodeURIComponent(verificationLink)}&type=verify`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            userId: newAffiliate.data.id,
-            verificationLink: verificationLink,
-            type: "verify",
-          }),
+          // body: JSON.stringify({
+          //   userId: newAffiliate.data.id,
+          //   verificationLink: verificationLink,
+          //   type: "verify",
+          // }),
         }
       );
 
       if (!emailResponse.ok) {
         return commonResponse({
-          data: null,
+          data: emailResponse,
           status: "error",
           message: t("auth.signup.errorSendingVerificationEmail"),
         });
       }
     } catch (error) {
       return commonResponse({
-        data: null,
+        data: error,
         status: "error",
         message: t("auth.signup.errorSendingVerificationEmail"),
       });

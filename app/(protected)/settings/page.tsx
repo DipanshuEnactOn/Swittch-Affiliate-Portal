@@ -75,7 +75,7 @@ export default async function SettingsPage({ searchParams }: any) {
 
         {/* Postback Documentation */}
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <h2 className="text-lg font-medium mb-4">Postback Documentation</h2>
             <p className="text-sm text-gray-600 mb-4">
               To get a list of all surveys, please call the following URL:
@@ -100,11 +100,11 @@ export default async function SettingsPage({ searchParams }: any) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b">
+                  <tr className="border-b last:border-0">
                     <th className="text-left py-2 text-gray-600 font-medium">
                       Parameter
                     </th>
-                    <th className="text-left py-2 text-gray-600 font-medium">
+                    <th className="text-left py-2 text-gray-600 font-medium min-w-[200px]">
                       Description
                     </th>
                     <th className="text-left py-2 text-gray-600 font-medium">
@@ -113,128 +113,128 @@ export default async function SettingsPage({ searchParams }: any) {
                   </tr>
                 </thead>
                 <tbody className="text-xs text-gray-600 space-y-2">
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       campaign_id={`{campaign_id}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       The ID for the specific campaign. You must submit this
                       with each request to identify the campaign.
                     </td>
-                    <td className="py-3">Mandatory</td>
+                    <td className="py-3 px-3">Mandatory</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       campaign_goal_id={`{campaign_goal_id}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       The ID for the specific campaign goal. This should match
                       the campaign&apos;s defined goal.
                     </td>
-                    <td className="py-3">Mandatory</td>
+                    <td className="py-3 px-3">Mandatory</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       affiliate_link_id={`{affiliate_link_id}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       The affiliate link ID for tracking the specific link
                       clicked by the user.
                     </td>
-                    <td className="py-3">Mandatory</td>
+                    <td className="py-3 px-3">Mandatory</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       link_name={`{link_name}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       The name of the link associated with the campaign. This is
                       used to track the link’s performance.
                     </td>
-                    <td className="py-3">Optional</td>
+                    <td className="py-3 px-3">Optional</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       goal_name={`{goal_name}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       The name of the specific goal within the campaign. This is
                       used to track goal-specific performance.
                     </td>
-                    <td className="py-3">Optional</td>
+                    <td className="py-3 px-3">Optional</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       transaction_id={`{transaction_id}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       The unique identifier for the transaction associated with
                       the campaign.
                     </td>
-                    <td className="py-3">Mandatory</td>
+                    <td className="py-3 px-3">Mandatory</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       click_code={`{click_code}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       A unique identifier for each click. This is used to track
                       the user&apos;s click event.
                     </td>
-                    <td className="py-3">Mandatory</td>
+                    <td className="py-3 px-3">Mandatory</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       conversion_id={`{conversion_id}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       A unique identifier for the conversion event, used for
                       conversion tracking.
                     </td>
-                    <td className="py-3">Mandatory</td>
+                    <td className="py-3 px-3">Mandatory</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">subId1={`{subId1}`}</td>
-                    <td className="py-3">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">subId1={`{subId1}`}</td>
+                    <td className="py-3 px-3">
                       An optional custom parameter for additional tracking
                       purposes.
                     </td>
-                    <td className="py-3">Optional</td>
+                    <td className="py-3 px-3">Optional</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">subId2={`{subId2}`}</td>
-                    <td className="py-3">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">subId2={`{subId2}`}</td>
+                    <td className="py-3 px-3">
                       An optional custom parameter for additional tracking
                       purposes.
                     </td>
-                    <td className="py-3">Optional</td>
+                    <td className="py-3 px-3">Optional</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">subId3={`{subId3}`}</td>
-                    <td className="py-3">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">subId3={`{subId3}`}</td>
+                    <td className="py-3 px-3">
                       An optional custom parameter for additional tracking
                       purposes.
                     </td>
-                    <td className="py-3">Optional</td>
+                    <td className="py-3 px-3">Optional</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       commission_value={`{commission_value}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       The commission value associated with the conversion.
                     </td>
-                    <td className="py-3">Mandatory</td>
+                    <td className="py-3 px-3">Mandatory</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 font-mono">
+                  <tr className="border-b last:border-0">
+                    <td className="py-3 px-3 font-mono">
                       conversion_value={`{conversion_value}`}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 px-3">
                       The value associated with the completed conversion (such
                       as the monetary amount).
                     </td>
-                    <td className="py-3">Mandatory</td>
+                    <td className="py-3 px-3">Mandatory</td>
                   </tr>
                 </tbody>
               </table>

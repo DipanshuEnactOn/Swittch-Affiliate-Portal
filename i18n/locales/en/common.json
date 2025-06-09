@@ -311,6 +311,26 @@
   "placeholder": "Pick a date",
   "clear": "Clear filters"
 },
+"conversion": {
+    "invalidStatus": "The provided status is invalid.",
+    "transactionIdRequired": "Transaction ID is required.",
+    "invalidClickCode": "The provided click code is invalid.",
+    "logInsertFailed": "Failed to insert postback log.",
+    "invalidData": "The provided data is invalid.",
+    "failedToFetchPendingLogs": "Failed to fetch pending postback logs.",
+    "invalidCampaignOrGoal": "Invalid campaign or goal.",
+    "updateFailed": "Failed to update the conversion status.",
+    "conversionAlreadyExists": "Conversion already exists and is not in pending status.",
+    "conversionNotPending": "Conversion is already completed, not pending.",
+    "createFailed": "Failed to create new conversion.",
+    "cronJobFailed": "The cron job failed to process postback logs.",
+    "invalidTransactionId": "Transaction ID is invalid or missing.",
+    "postbackError": "An error occurred while sending postback.",
+    "postbackSuccess": "Postback sent successfully.",
+    "conversionCreated": "Conversion created successfully.",
+    "conversionUpdated": "Conversion status updated successfully.",
+    "conversionFailed": "Conversion processing failed."
+  },
 "validation": {
     "required": "This field is required",
     "email": "Please enter a valid email address",

@@ -18,6 +18,7 @@ import { Api } from "@/services/api-services";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/i18n/client";
 import { useRouter } from "next/navigation";
+import Textarea from "../ui/Textarea";
 
 export default function ConfigurePostback({ goals }: any) {
   const { t } = useTranslation();
@@ -44,7 +45,7 @@ export default function ConfigurePostback({ goals }: any) {
         campaignGoalId:
           values.postbackType === "goal"
             ? goals?.find((g: any) => g.name === values.selectedGoal).id
-            : 1,
+            : null,
         postbackUrl:
           values.postbackType === "goal" ? values.goalUrl : values.globalUrl,
         methodType: values.methodType,
@@ -79,7 +80,7 @@ export default function ConfigurePostback({ goals }: any) {
 
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <h2 className="text-lg font-medium mb-6">{t("postback.title")}</h2>
 
         <Formik
@@ -90,157 +91,178 @@ export default function ConfigurePostback({ goals }: any) {
           enableReinitialize
         >
           {({ values, setFieldValue, isSubmitting, errors, touched }) => (
-            <Form className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="postbackType" className="text-sm text-gray-600">
-                  {t("postback.selectType")}
-                </Label>
-                <Select
-                  value={values.postbackType}
-                  onValueChange={(value) => {
-                    setFieldValue("postbackType", value);
-                    setFieldValue("globalUrl", "");
-                    setFieldValue("selectedGoal", "");
-                    setFieldValue("goalUrl", "");
-                  }}
-                >
-                  <SelectTrigger className="bg-white">
-                    <SelectValue
-                      placeholder={t("postback.placeholderOption")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="global">
-                      {t("postback.type.global")}
-                    </SelectItem>
-                    <SelectItem value="goal">
-                      {t("postback.type.goal")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.postbackType && touched.postbackType && (
-                  <p className="text-sm text-red-600">{errors.postbackType}</p>
-                )}
-              </div>
-
-              {values.postbackType === "global" && (
+            <Form className="space-y-4 sm:space-y-6">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="globalUrl" className="text-sm text-gray-600">
-                    {t("postback.globalUrl.label")}
-                  </Label>
-                  <Input
-                    id="globalUrl"
-                    name="globalUrl"
-                    value={values.globalUrl}
-                    onChange={(e) => setFieldValue("globalUrl", e.target.value)}
-                    placeholder={t("postback.globalUrl.placeholder")}
-                    className="bg-white"
-                  />
-                  {errors.globalUrl && touched.globalUrl && (
-                    <p className="text-sm text-red-600">{errors.globalUrl}</p>
-                  )}
-                </div>
-              )}
-
-              {values.postbackType === "goal" && (
-                <>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="selectedGoal"
-                      className="text-sm text-gray-600"
-                    >
-                      {t("postback.goal.label")}
-                    </Label>
-                    {goals.length === 0 ? (
-                      <p className="text-sm text-gray-600">
-                        {t("postback.noCampaignGoals")}
-                      </p>
-                    ) : (
-                      <Select
-                        value={values.selectedGoal}
-                        onValueChange={(value) => {
-                          setFieldValue("selectedGoal", value);
-                          setFieldValue("goalUrl", "");
-                        }}
-                      >
-                        <SelectTrigger className="bg-white">
-                          <SelectValue
-                            placeholder={t("postback.goal.placeholder")}
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {goals.map((goal: any) => (
-                            <SelectItem key={goal.id} value={goal?.name || ""}>
-                              {goal?.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                    {errors.selectedGoal && touched.selectedGoal && (
-                      <p className="text-sm text-red-600">
-                        {errors.selectedGoal}
-                      </p>
-                    )}
-                  </div>
-
-                  {values.selectedGoal && (
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="goalUrl"
-                        className="text-sm text-gray-600"
-                      >
-                        {t("postback.goal.urlLabel")}
-                      </Label>
-                      <Input
-                        id="goalUrl"
-                        name="goalUrl"
-                        value={values.goalUrl}
-                        onChange={(e) =>
-                          setFieldValue("goalUrl", e.target.value)
-                        }
-                        placeholder={t("postback.goal.urlPlaceholder")}
-                        className="bg-white"
-                      />
-                      {errors.goalUrl && touched.goalUrl && (
-                        <p className="text-sm text-red-600">{errors.goalUrl}</p>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {values.postbackType !== "" && (
-                <div className="space-y-2">
-                  <Label htmlFor="methodType" className="text-sm text-gray-600">
-                    {t("postback.methodType.label")}
+                  <Label
+                    htmlFor="postbackType"
+                    className="text-sm text-gray-600"
+                  >
+                    {t("postback.selectType")}
                   </Label>
                   <Select
-                    value={values.methodType}
-                    onValueChange={(value) =>
-                      setFieldValue("methodType", value)
-                    }
+                    value={values.postbackType}
+                    onValueChange={(value) => {
+                      setFieldValue("postbackType", value);
+                      setFieldValue("globalUrl", "");
+                      setFieldValue("selectedGoal", "");
+                      setFieldValue("goalUrl", "");
+                    }}
                   >
                     <SelectTrigger className="bg-white">
                       <SelectValue
-                        placeholder={t("postback.methodType.placeholder")}
+                        placeholder={t("postback.placeholderOption")}
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="GET">
-                        {t("postback.methodType.get")}
+                      <SelectItem value="global">
+                        {t("postback.type.global")}
                       </SelectItem>
-                      <SelectItem value="POST">
-                        {t("postback.methodType.post")}
+                      <SelectItem value="goal">
+                        {t("postback.type.goal")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors.methodType && touched.methodType && (
-                    <p className="text-sm text-red-600">{errors.methodType}</p>
+                  {errors.postbackType && touched.postbackType && (
+                    <p className="text-sm text-red-600">
+                      {errors.postbackType}
+                    </p>
                   )}
                 </div>
-              )}
 
+                {values.postbackType === "global" && (
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="globalUrl"
+                      className="text-sm text-gray-600"
+                    >
+                      {t("postback.globalUrl.label")}
+                    </Label>
+                    <Input
+                      id="globalUrl"
+                      name="globalUrl"
+                      value={values.globalUrl}
+                      onChange={(e) =>
+                        setFieldValue("globalUrl", e.target.value)
+                      }
+                      placeholder={t("postback.globalUrl.placeholder")}
+                      className="bg-white"
+                    />
+                    {errors.globalUrl && touched.globalUrl && (
+                      <p className="text-sm text-red-600">{errors.globalUrl}</p>
+                    )}
+                  </div>
+                )}
+
+                {values.postbackType === "goal" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="selectedGoal"
+                        className="text-sm text-gray-600"
+                      >
+                        {t("postback.goal.label")}
+                      </Label>
+                      {goals.length === 0 ? (
+                        <p className="text-sm text-gray-600">
+                          {t("postback.noCampaignGoals")}
+                        </p>
+                      ) : (
+                        <Select
+                          value={values.selectedGoal}
+                          onValueChange={(value) => {
+                            setFieldValue("selectedGoal", value);
+                            setFieldValue("goalUrl", "");
+                          }}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue
+                              placeholder={t("postback.goal.placeholder")}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {goals.map((goal: any) => (
+                              <SelectItem
+                                key={goal.id}
+                                value={goal?.name || ""}
+                              >
+                                {goal?.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                      {errors.selectedGoal && touched.selectedGoal && (
+                        <p className="text-sm text-red-600">
+                          {errors.selectedGoal}
+                        </p>
+                      )}
+                    </div>
+
+                    {values.selectedGoal && (
+                      <div className="col-span-1 md:col-span-2 space-y-2">
+                        <Label
+                          htmlFor="goalUrl"
+                          className="text-sm text-gray-600"
+                        >
+                          {t("postback.goal.urlLabel")}
+                        </Label>
+                        <Textarea
+                          id="goalUrl"
+                          value={values.goalUrl}
+                          onChange={(e) =>
+                            setFieldValue("goalUrl", e.target.value)
+                          }
+                          placeholder={t("postback.goal.urlPlaceholder")}
+                          className="bg-white"
+                          cols={7}
+                        />
+                        {errors.goalUrl && touched.goalUrl && (
+                          <p className="text-sm text-red-600">
+                            {errors.goalUrl}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {values.postbackType !== "" && (
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="methodType"
+                      className="text-sm text-gray-600"
+                    >
+                      {t("postback.methodType.label")}
+                    </Label>
+                    <Select
+                      value={values.methodType}
+                      onValueChange={(value) =>
+                        setFieldValue("methodType", value)
+                      }
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue
+                          placeholder={t("postback.methodType.placeholder")}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="GET">
+                          {t("postback.methodType.get")}
+                        </SelectItem>
+                        <SelectItem value="POST">
+                          {t("postback.methodType.post")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.methodType && touched.methodType && (
+                      <p className="text-sm text-red-600">
+                        {errors.methodType}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
               <div className="flex justify-end mt-6">
                 <Button
                   type="submit"

@@ -59,7 +59,7 @@ export default function PersonalInformation({ affiliateUser }: any) {
 
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <h2 className="text-lg font-medium mb-6">{t("profile.title")}</h2>
         <Formik
           initialValues={initialValues}
@@ -68,8 +68,8 @@ export default function PersonalInformation({ affiliateUser }: any) {
           validationSchema={PersonalInformationSchema}
         >
           {({ values, handleChange, handleBlur, touched, errors }) => (
-            <Form>
-              <div className="grid grid-cols-2 gap-4 mb-6">
+            <Form className="space-y-4 sm:space-y-6">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-sm text-gray-600">
                     {t("profile.fields.name")}

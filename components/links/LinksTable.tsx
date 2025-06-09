@@ -167,7 +167,7 @@ export default function LinksTable({ data }: { data: any }) {
         </div>
         <CreateAffiliateLink />
       </CardHeader>
-      <CardContent className="px-6 pt-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="space-y-4">
           <div className="rounded-md border">
             <Table>
@@ -177,7 +177,7 @@ export default function LinksTable({ data }: { data: any }) {
                     {headerGroup.headers.map((header) => (
                       <TableHead
                         key={header.id}
-                        className="text-gray-600 font-medium px-6 py-4"
+                        className="text-gray-600 font-medium px-4 py-3"
                       >
                         {header.isPlaceholder
                           ? null
@@ -199,7 +199,7 @@ export default function LinksTable({ data }: { data: any }) {
                       data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="px-6 py-4">
+                        <TableCell key={cell.id} className="px-4 py-3">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()

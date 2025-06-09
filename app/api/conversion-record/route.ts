@@ -1,4 +1,4 @@
-import { NewPostbackLog } from "@/db/schema";
+import { conversionStatusEnum, NewPostbackLog } from "@/db/schema";
 import { createTranslation } from "@/i18n/server";
 import { getClickByClickCode } from "@/models/clicks-model";
 import { insertPostbackLog } from "@/models/postback-log-model";
@@ -13,10 +13,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { goal_id, click_code, transaction_id, status } = body;
 
-    const validStatuses = Object.values(postbackStatusEnum)[1];
+    const validStatuses = Object.values(conversionStatusEnum)[1];
 
     if (
       !validStatuses.includes(status) ||
+      status === "paid" ||
       status === undefined ||
       status === null
     ) {

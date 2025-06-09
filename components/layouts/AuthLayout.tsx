@@ -1,4 +1,6 @@
+import { AppRoutes } from "@/utils/routes";
 import Image from "next/image";
+import Link from "next/link";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -7,8 +9,10 @@ interface AuthLayoutProps {
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="relative flex flex-col justify-center w-full h-screen dark:bg-gray-900 sm:p-0 lg:flex-row">
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md space-y-8">{children}</div>
+      <div className="flex-1 h-[100dvh] grid place-content-center overflow-hidden">
+        <div className="w-full max-w-md max-h-full space-y-8 overflow-y-auto">
+          {children}
+        </div>
       </div>
       <div className="relative items-center hidden w-full h-full bg-brand-950 dark:bg-white/5 lg:grid lg:w-1/2">
         <div className="absolute right-0 top-0 w-full max-w-[250px] xl:max-w-[450px]">

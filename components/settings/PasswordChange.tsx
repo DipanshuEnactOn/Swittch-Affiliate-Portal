@@ -73,7 +73,7 @@ export default function PasswordChange({ affiliateUser }: any) {
 
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <h2 className="text-lg font-medium mb-6">{t("password.title")}</h2>
         <Formik
           initialValues={initialValues}
@@ -82,8 +82,8 @@ export default function PasswordChange({ affiliateUser }: any) {
           validationSchema={ChangePasswordSchema}
         >
           {({ values, handleChange, handleBlur, touched, errors }) => (
-            <Form>
-              <div className="space-y-4">
+            <Form className="space-y-4 sm:space-y-6">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label
                     htmlFor="currentPassword"

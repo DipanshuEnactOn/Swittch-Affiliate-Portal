@@ -8,6 +8,7 @@ import AuthLayout from "@/components/layouts/AuthLayout";
 import Link from "next/link";
 import { AppRoutes } from "@/utils/routes";
 import { ArrowLeftIcon } from "lucide-react";
+import Image from "next/image";
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -28,7 +29,20 @@ export default function ForgotPassword() {
   return (
     <AuthLayout>
       <div className="flex flex-col items-center justify-center min-h-screen w-full p-8 space-y-5">
-        <div className="flex flex-col gap-2 w-full">
+        <Link
+          href={AppRoutes.dashboard}
+          className="lg:hidden h-14 w-fit flex items-start mx-auto"
+        >
+          <Image
+            src="/images/swittch.png"
+            alt="Logo"
+            height={100}
+            width={100}
+            className="max-h-12 w-auto"
+          />
+        </Link>
+
+        <div className="lg:!mt-0 flex flex-col gap-2 w-full">
           <h1 className="font-semibold text-gray-800 dark:text-white/90 sm:text-title-md text-3xl">
             {t("auth.forgotPassword.title")}
           </h1>

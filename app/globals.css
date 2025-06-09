@@ -86,12 +86,13 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground overflow-hidden;
+    @apply bg-background text-foreground;
   }
 }
 
 @layer theme {
-  :root, :host {
+  :root,
+  :host {
     --color-orange-50: #fff6ed;
     --color-orange-400: #fd853a;
     --color-orange-500: #fb6514;
@@ -200,7 +201,7 @@
     --color-theme-pink-500: #ee46bc;
     --color-theme-purple-500: #7a5af8;
     --drop-shadow-4xl: 0 35px 35px rgba(0, 0, 0, 0.25),
-    0 45px 65px rgba(0, 0, 0, 0.15);
+      0 45px 65px rgba(0, 0, 0, 0.15);
     --z-index-1: 1;
     --z-index-9: 9;
     --z-index-999: 999;
@@ -211,10 +212,13 @@
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .animate-spin {
-    animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+}
+.body-overflow-hidden {
+  overflow: hidden !important;
 }

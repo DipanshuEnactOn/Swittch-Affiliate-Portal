@@ -12,6 +12,7 @@ import { signOut } from "next-auth/react";
 const Header = () => {
   const { t } = useTranslation();
   React.useEffect(() => {
+    const body = document.querySelector("body");
     const toggleBtn = document.querySelector(".header-toggle-btn");
     const toggleBtnXIcon = document.querySelector(
       ".header-toggle-btn .x-mark-icon"
@@ -29,8 +30,10 @@ const Header = () => {
       mainContent &&
       toggleBtnXIcon &&
       toggleBtnBarIcon &&
-      overlay
+      overlay &&
+      body
     ) {
+      body.classList.add("body-overflow-hidden");
       const toggleSidebar = () => {
         toggleBtn.classList.toggle("active");
         toggleBtnXIcon.classList.toggle("hidden");
@@ -70,10 +73,10 @@ const Header = () => {
   };
 
   return (
-    <header className="header admin-header sticky top-0 z-99999 px-4 sm:px-6 py-3 flex w-full border-gray-200 bg-white border-b">
+    <header className="header admin-header sticky top-0 z-20 px-4 sm:px-6 py-3 flex w-full border-gray-200 bg-white border-b">
       <div className="flex grow items-center justify-between gap-1">
         <div className="flex items-center gap-2 sm:gap-4">
-          <button className="header-toggle-btn lg:hidden z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 lg:h-11 lg:w-11 border">
+          <button className="header-toggle-btn lg:hidden flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 lg:h-11 lg:w-11 border">
             {/* bar icon */}
             <svg
               xmlns="http://www.w3.org/2000/svg"

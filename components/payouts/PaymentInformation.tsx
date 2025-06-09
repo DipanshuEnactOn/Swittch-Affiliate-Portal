@@ -127,7 +127,7 @@ export default function PaymentInformation({ paymentInfo, amount }: any) {
             {t("payouts.paypalTitle")}
           </CardTitle>
         </CardHeader>
-        <CardContent className="mt-4">
+        <CardContent className=" p-4 sm:p-6">
           <Formik
             initialValues={paypalInitialValues}
             validationSchema={PayPalSchema}
@@ -205,7 +205,7 @@ export default function PaymentInformation({ paymentInfo, amount }: any) {
             {t("payouts.bankTitle")}
           </CardTitle>
         </CardHeader>
-        <CardContent className="mt-4">
+        <CardContent className="p-4 sm:p-6">
           <Formik
             initialValues={bankInitialValues}
             validationSchema={BankDetailsSchema}
@@ -362,7 +362,7 @@ export default function PaymentInformation({ paymentInfo, amount }: any) {
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-4 gap-3">
+                <div className="flex justify-end gap-3">
                   <Button
                     type="submit"
                     className="text-white px-8 min-w-[140px] bg-brand-600 hover:bg-brand-700 rounded-lg"

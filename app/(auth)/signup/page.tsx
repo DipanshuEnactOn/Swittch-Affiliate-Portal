@@ -8,6 +8,7 @@ import Link from "next/link";
 import { AppRoutes } from "@/utils/routes";
 import { Api } from "@/services/api-services";
 import { toast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -39,8 +40,21 @@ export default function SignUpPage() {
 
   return (
     <AuthLayout>
-      <div className="flex flex-col items-center justify-center max-h-screen w-full p-8 space-y-5">
-        <div className="flex flex-col gap-2 w-full">
+      <div className="w-full p-8 space-y-5">
+        <Link
+          href={AppRoutes.dashboard}
+          className="lg:hidden h-14 w-fit flex items-start mx-auto"
+        >
+          <Image
+            src="/images/swittch.png"
+            alt="Logo"
+            height={100}
+            width={100}
+            className="max-h-12 w-auto"
+          />
+        </Link>
+
+        <div className="lg:!mt-0 flex flex-col gap-2 w-full">
           <h1 className="font-semibold text-gray-800 dark:text-white/90 sm:text-title-md text-3xl">
             {t("auth.signUp.title")}
           </h1>

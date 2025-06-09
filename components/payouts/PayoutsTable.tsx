@@ -100,7 +100,7 @@ export default function PayoutsTable({ data }: any) {
           </h3>
         </div>
       </CardHeader>
-      <CardContent className="px-6 pt-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="space-y-4">
           {/* Table */}
           <div className="rounded-md border">
@@ -111,7 +111,7 @@ export default function PayoutsTable({ data }: any) {
                     {headerGroup.headers.map((header) => (
                       <TableHead
                         key={header.id}
-                        className="text-gray-600 font-medium px-6 py-4"
+                        className="text-gray-600 font-medium px-4 py-3"
                       >
                         {header.isPlaceholder
                           ? null
@@ -133,7 +133,7 @@ export default function PayoutsTable({ data }: any) {
                       data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="px-6 py-4">
+                        <TableCell key={cell.id} className="px-4 py-3">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
@@ -172,9 +172,7 @@ function StatusBadge({
       status.toLowerCase() as "processing" | "pending" | "rejected" | "paid"
     ];
 
-  const className = `inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor} ${
-    status === "pending" ? "bg-yellow-100 text-yellow-500" : ""
-  }`;
+  const className = `inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor}`;
 
   return (
     <span className={`${className}`}>
