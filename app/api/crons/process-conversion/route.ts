@@ -1,14 +1,17 @@
-import { Conversion, NewConversion } from "@/db/schema";
+import {
+  affiliateConversionsSummary,
+  Conversion,
+  NewConversion,
+} from "@/db/schema";
 import { createTranslation } from "@/i18n/server";
 import { getAffiliateCampaignGoalById } from "@/models/affiliate-campaign-goal-model";
+import { getAffiliateLinkNameById } from "@/models/affiliate-link-model";
 import { getAffiliatePostbackByCampaignAndGoal } from "@/models/affiliate-postback-model";
 import { getCampaignGoalById } from "@/models/campaign-goal-model";
 import { getCampaignById } from "@/models/campaigns-model";
+import { markClickAsConverted } from "@/models/clicks-model";
 import {
-  getClickByClickCode,
-  markClickAsConverted,
-} from "@/models/clicks-model";
-import {
+  getAffiliateConversionsSummaryByClickCode,
   getConversionByTransactionId,
   insertConversion,
   updateConversionStatus,
@@ -27,7 +30,7 @@ export async function POST(request: NextRequest) {
     const pendingPostbackLogs = await getPendingPostbackLogs();
 
     if (pendingPostbackLogs.status === "error" || !pendingPostbackLogs.data) {
-      console.log("Error fetching pending postback logs");
+      // console.log("Error fetching pending postback logs");
       return commonResponse({
         data: null,
         status: "error",
@@ -43,16 +46,18 @@ export async function POST(request: NextRequest) {
         const body: any = postbackLog.rawPostbackData;
         const { goal_code, click_code, transaction_id, status } = body;
 
-        console.log(
-          `Processing postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
-        );
+        // console.log(
+        //   `Processing postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
+        // );
 
-        const clickRecord = (await getClickByClickCode(click_code))?.data;
+        const clickRecord = (
+          await getAffiliateConversionsSummaryByClickCode(click_code)
+        )?.data;
 
         if (!clickRecord) {
-          console.log(
-            `Invalid click code for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
-          );
+          // console.log(
+          //   `Invalid click code for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
+          // );
           await updatePostbackLogStatus(postbackLog.id, "failure", {
             error: t("conversion.invalidClickCode"),
           });
@@ -69,9 +74,9 @@ export async function POST(request: NextRequest) {
         let affiliateCampaignGoal = null;
 
         if (!campaign || !campaignGoal) {
-          console.log(
-            `Invalid campaign or goal for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
-          );
+          // console.log(
+          //   `Invalid campaign or goal for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
+          // );
           await updatePostbackLogStatus(postbackLog.id, "failure", {
             error: t("conversion.invalidCampaignOrGoal"),
           });
@@ -92,9 +97,9 @@ export async function POST(request: NextRequest) {
         )?.data;
 
         if (existingConversion) {
-          console.log(
-            `Existing conversion found for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
-          );
+          // console.log(
+          //   `Existing conversion found for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
+          // );
           if (existingConversion.status === "pending") {
             const updateResult = await updateConversionStatus(
               existingConversion.id,
@@ -102,9 +107,9 @@ export async function POST(request: NextRequest) {
             );
 
             if (updateResult.status === "error") {
-              console.log(
-                `Failed to update conversion status for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
-              );
+              // console.log(
+              //   `Failed to update conversion status for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
+              // );
               await updatePostbackLogStatus(postbackLog.id, "failure", {
                 error: t("conversion.updateFailed"),
                 transactionId: transaction_id,
@@ -127,9 +132,9 @@ export async function POST(request: NextRequest) {
               transactionId: transaction_id,
             });
           } else {
-            console.log(
-              `Conversion already exists and not pending for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
-            );
+            // console.log(
+            //   `Conversion already exists and not pending for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
+            // );
             await updatePostbackLogStatus(postbackLog.id, "failure", {
               error: t("conversion.conversionAlreadyExists"),
               transactionId: transaction_id,
@@ -142,9 +147,9 @@ export async function POST(request: NextRequest) {
             continue;
           }
         } else {
-          console.log(
-            `Creating new conversion for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
-          );
+          // console.log(
+          //   `Creating new conversion for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
+          // );
           let conversionValue = campaignGoal?.commissionAmount || "0";
           let commission = campaignGoal?.commissionAmount || "0";
 
@@ -163,9 +168,9 @@ export async function POST(request: NextRequest) {
             transactionId: transaction_id,
             conversionValue,
             commission,
-            sub1: clickRecord.sub1,
-            sub2: clickRecord.sub2,
-            sub3: clickRecord.sub3,
+            sub1: clickRecord.linkSub1,
+            sub2: clickRecord.linkSub2,
+            sub3: clickRecord.linkSub3,
             status: status || "pending",
             postbackLogId: postbackLog.id,
             createdAt: new Date(),
@@ -176,9 +181,9 @@ export async function POST(request: NextRequest) {
           const createConversion = await insertConversion(newConversion);
 
           if (createConversion.status === "error") {
-            console.log(
-              `Failed to create new conversion for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
-            );
+            // console.log(
+            //   `Failed to create new conversion for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
+            // );
             await updatePostbackLogStatus(postbackLog.id, "failure");
             errors.push({
               postbackLogId: postbackLog.id,
@@ -196,19 +201,24 @@ export async function POST(request: NextRequest) {
             await getAffiliatePostbackByCampaignAndGoal(
               clickRecord.affiliateId,
               clickRecord.campaignId ? Number(clickRecord.campaignId) : 1,
-              goal_code ? Number(goal_code) : 1
+              Number(goal_code)
             )
           )?.data;
 
           if (affiliatePostback && affiliatePostback.length > 0) {
             for (const postback of affiliatePostback) {
+              const link_name =
+                (await getAffiliateLinkNameById(clickRecord.affiliateLinkId))
+                  ?.data || "default";
               const postbackData: any = {
                 affiliate_id: clickRecord.affiliateId,
                 affiliate_link_id: clickRecord.affiliateLinkId,
                 campaign_id: clickRecord.campaignId
                   ? Number(clickRecord.campaignId)
                   : 1,
-                campaign_goal_code: goal_code ? Number(goal_code) : 1,
+                link_name: link_name,
+                goal_name: clickRecord.goalName,
+                campaign_goal_id: goal_code ? Number(goal_code) : 1,
                 conversion_id: conversionData.id,
                 conversion_value: conversionData.conversionValue,
                 commission_value: conversionData.commission,
@@ -234,7 +244,7 @@ export async function POST(request: NextRequest) {
                   );
                 }
 
-                console.log("Sending postback to URL:", finalUrl);
+                // console.log("Sending postback to URL:", finalUrl);
                 const response = await fetch(finalUrl, {
                   method: postback.methodType || "POST",
                   headers: {
@@ -247,16 +257,28 @@ export async function POST(request: NextRequest) {
                 });
 
                 // const data = await response.json();
-                console.log(
-                  `Postback sent successfully for conversion ID: ${conversionData.id}, Response status: ${response.status}`
-                );
-              } catch (error) {
-                console.error(
-                  `Postback error for conversion ID: ${conversionData.id}`,
-                  error
-                );
+                // console.log(
+                //   `Postback sent successfully for conversion ID: ${conversionData.id}, Response status: ${response.status}`
+                // );
+              } catch (error: any) {
+                // console.error(
+                //   `Postback error for conversion ID: ${conversionData.id}`,
+                //   error
+                // );
+                await updatePostbackLogStatus(postbackLog.id, "failure", {
+                  error: error.message || "Postback sending failed",
+                  transactionId: transaction_id,
+                });
               }
             }
+          } else {
+            // console.log(
+            //   `No postback found for affiliate ID: ${clickRecord.affiliateId}, Campaign ID: ${clickRecord.campaignId}, Goal Code: ${goal_code}`
+            // );
+            await updatePostbackLogStatus(postbackLog.id, "failure", {
+              error: "No postback found for affiliate",
+              transactionId: transaction_id,
+            });
           }
 
           await updatePostbackLogStatus(postbackLog.id, "success", {
@@ -270,10 +292,10 @@ export async function POST(request: NextRequest) {
           });
         }
       } catch (error: any) {
-        console.error(
-          `Error processing postback log ID: ${postbackLog.id}`,
-          error
-        );
+        // console.error(
+        //   `Error processing postback log ID: ${postbackLog.id}`,
+        //   error
+        // );
         await updatePostbackLogStatus(postbackLog.id, "failure", {
           error: error.message || "Unknown error",
           transactionId: postbackLog.transactionId,
@@ -294,7 +316,7 @@ export async function POST(request: NextRequest) {
       errors,
     };
 
-    console.log("Cron job processing summary:", summary);
+    // console.log("Cron job processing summary:", summary);
 
     return commonResponse({
       data: summary,
@@ -302,7 +324,7 @@ export async function POST(request: NextRequest) {
       message: `Processed ${summary.totalProcessed} postback logs. ${summary.successful} successful, ${summary.failed} failed.`,
     });
   } catch (error) {
-    console.error("Cron job processing error:", error);
+    // console.error("Cron job processing error:", error);
     return commonResponse({
       data: null,
       status: "error",

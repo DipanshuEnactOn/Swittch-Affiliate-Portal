@@ -1,8 +1,23 @@
 import { db } from "@/db";
 import { affiliateConversionsSummary, conversions } from "@/db/schema";
-import { and, count, desc, eq, gte, lte, or, sql, sum } from "drizzle-orm";
+import {
+  and,
+  count,
+  desc,
+  eq,
+  gte,
+  InferSelectModel,
+  lte,
+  or,
+  sql,
+  sum,
+} from "drizzle-orm";
 import { date } from "drizzle-orm/mysql-core";
 import moment from "moment";
+
+type AffiliateConversionsSummaryType = InferSelectModel<
+  typeof affiliateConversionsSummary
+>;
 
 export const insertConversion = async (conversionData: any) => {
   try {
@@ -478,6 +493,33 @@ export const getAllAffiliateTransactions = async (
   } catch (error: any) {
     return {
       data: error,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const getAffiliateConversionsSummaryByClickCode = async (
+  clickCode: string
+): Promise<{
+  data: AffiliateConversionsSummaryType | null;
+  message: string;
+  status: "success" | "error";
+}> => {
+  try {
+    const result = await db
+      .select()
+      .from(affiliateConversionsSummary)
+      .where(eq(affiliateConversionsSummary.clickCode, clickCode))
+      .limit(1);
+    return {
+      data: result[0] || null,
+      message: "Conversion retrieved successfully",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
       message: error.message || "An error occurred",
       status: "error",
     };

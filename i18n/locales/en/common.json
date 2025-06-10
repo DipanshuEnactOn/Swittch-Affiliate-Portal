@@ -6,6 +6,8 @@
 "deleting": "Deleting...",
 "somethingWentWrong": "Something went wrong. Please try again.",
 "passwordChanged": "Password updated successfully",
+ "errorSendingEmail": "Error sending email",
+    "emailSent": "Email sent successfully",
 "auth": {
     "signIn": {
       "title": "Sign In",
@@ -31,7 +33,12 @@
       "emailAlreadyExists": "Email already exists. Please use a different email address or sign in with your existing account.",
   "errorCreatingUser": "Error signing up. Please try again.",
   "userCreatedSuccessfully": "Sign up successful!",
-  "invalidData": "Invalid request data"
+  "invalidData": "Invalid request data",
+  "errorSendingVerificationEmail": "Error sending verification email",
+      "errorSendingPayoutEmail": "Error sending payout email",
+      "errorSendingWelcomeEmail": "Error sending welcome email",
+      "verificationEmailSent": "Verification email sent successfully",
+      "welcomeEmailSent": "Welcome email sent successfully"
     },
     "forgotPassword": {
       "title": "Forgot Password",
@@ -110,6 +117,7 @@
   "successMessage": "Payout request sent successfully",
   "errorTitle": "Error",
   "errorMessage": "Something went wrong",
+  "emailSent": "Payout email sent successfully",
   "table": {
     "title":"Payouts History",
     "date": "Date",

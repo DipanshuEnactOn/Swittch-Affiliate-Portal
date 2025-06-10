@@ -7,6 +7,7 @@ import {
   verifyAffiliateEmail,
 } from "@/models/affiliates-model";
 import { getAuthSession } from "@/models/auth-models";
+import { sendEmailToAffiliate } from "@/services/email-service";
 import { AppRoutes } from "@/utils/routes";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
@@ -14,28 +15,37 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
 
-export default async function page({ params }: { params: { token: string } }) {
+export default async function page({
+  params,
+  searchParams,
+}: {
+  params: { token: string };
+  searchParams: { userId?: string };
+}) {
   const { token } = params;
-  const user = await getAuthSession();
+  const { userId } = searchParams;
   const { t } = await createTranslation();
 
-  if (!user || !token) {
+  if (!userId || !token) {
     return redirect(AppRoutes.auth.signIn);
   }
 
-  const affiliate = (await getAffiliateById(user.user.id))?.data;
+  const affiliate = (await getAffiliateById(Number(userId)))?.data;
 
   if (!affiliate || affiliate.token !== token) {
     return redirect(AppRoutes.auth.signIn);
   }
 
-  const verifyUserEmail = await verifyAffiliateEmail(user.user.id);
+  const verifyUserEmail = await verifyAffiliateEmail(Number(userId));
 
   if (verifyUserEmail.status === "error") {
     return redirect(AppRoutes.auth.signIn);
   }
 
-  // Hit api here to send welocme email
+  const res = await sendEmailToAffiliate({
+    type: "welcome",
+    userId: userId,
+  });
 
   return (
     <>

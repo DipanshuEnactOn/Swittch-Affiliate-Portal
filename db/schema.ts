@@ -1,3 +1,4 @@
+import { metadata } from "@/app/layout";
 import {
   pgTable,
   serial,
@@ -282,6 +283,16 @@ export const affiliateConversionsSummary = pgTable("vw_affiliate_conversions", {
     scale: 2,
   }),
   conversionYear: timestamp("conversion_year", { mode: "string" }).notNull(),
+});
+
+export const appInstallEvents = pgTable("app_install_events", {
+  id: serial("id").primaryKey(),
+  clickCode: varchar("click_code", { length: 255 }).notNull().unique(),
+  deviceId: varchar("device_id", { length: 255 }).notNull(),
+  deviceType: varchar("device_type", { length: 255 }).notNull(),
+  installTimestamp: varchar("install_timestamp", { length: 255 }).notNull(),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export type AffiliateConversionsSummary =

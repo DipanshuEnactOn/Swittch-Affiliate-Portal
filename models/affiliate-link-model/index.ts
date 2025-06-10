@@ -122,6 +122,7 @@ export const getAffiliateLinkById = async (id: number) => {
         campaignId: affiliateLinks.campaignId,
         affiliateId: affiliateLinks.affiliateId,
         slug: affiliateLinks.slug,
+        name: affiliateLinks.name,
         destinationUrl: affiliateLinks.destinationUrl,
         sub1: affiliateLinks.sub1,
         sub2: affiliateLinks.sub2,
@@ -170,6 +171,28 @@ export const getAffiliateLinkBySlug = async (slug: string) => {
 
     return {
       data: result[0] || null,
+      message: "ok",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const getAffiliateLinkNameById = async (id: number) => {
+  try {
+    const result = await db
+      .select({
+        name: affiliateLinks.name,
+      })
+      .from(affiliateLinks)
+      .where(eq(affiliateLinks.id, id));
+    return {
+      data: result[0]?.name || null,
       message: "ok",
       status: "success",
     };

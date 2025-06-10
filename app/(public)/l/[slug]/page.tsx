@@ -7,6 +7,7 @@ import {
 } from "@/models/affiliate-link-model";
 import { insertClick } from "@/models/clicks-model";
 import { NewClick } from "@/db/schema";
+import { redirect } from "next/navigation";
 
 export default async function Page({
   params,
@@ -20,6 +21,7 @@ export default async function Page({
   const headersList = headers();
   const userAgent = headersList.get("user-agent") || "";
   const parser = new UAParser(userAgent);
+  const deviceType = parser.getDevice().type;
   const deviceInfo = parser.getResult();
   const clickCode = generateClickCode();
   const ipAddress =
@@ -34,7 +36,7 @@ export default async function Page({
     return <p>Affiliate link not found for slug: {slug}</p>;
   }
   if (affiliateLink.status === "inactive") {
-    return <p>Affiliate link is inactive for slug: {slug}</p>;
+    return <p>This affiliate link is inactive</p>;
   }
 
   const data: NewClick = {
@@ -44,6 +46,7 @@ export default async function Page({
     clickCode,
     userAgent,
     ipAddress,
+    deviceType: deviceType || "desktop",
     sub1: sub1 || affiliateLink.sub1 || "",
     sub2: sub2 || affiliateLink.sub2 || "",
     sub3: sub3 || affiliateLink.sub3 || "",
@@ -58,12 +61,23 @@ export default async function Page({
     newClickCount
   );
 
+  if (deviceType === "mobile" || deviceType === "tablet") {
+    redirect(
+      `https://swittch.onelink.me/qwcj/influencerId?click_code=${clickCode}&source=affiliate`
+    );
+  } else {
+    redirect(
+      `https://my.swittch.app/?click_code=${clickCode}&source=affiliate`
+    );
+  }
+
   return (
     <div>
       <p>Slug: {slug}</p>
       <p>Sub1: {sub1}</p>
       <p>Sub2: {sub2}</p>
       <p>Sub3: {sub3}</p>
+      <p>Device Type: {deviceType}</p>
       <h3>Full Device Info (JSON)</h3>
       <pre>{JSON.stringify(deviceInfo, null, 2)}</pre>
       <h3>Click Code</h3>

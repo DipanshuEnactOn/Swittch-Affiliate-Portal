@@ -1,5 +1,5 @@
 {
-  "id": "46e952ef-637a-4c8a-855f-85f10dca43c6",
+  "id": "bf2f56d0-25ff-47dd-92f3-c9cb69e03aba",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -495,6 +495,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "method_type": {
+          "name": "method_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'GET'"
+        },
         "is_deleted": {
           "name": "is_deleted",
           "type": "boolean",
@@ -640,6 +647,64 @@
           "nullsNotDistinct": false,
           "columns": [
             "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.app_install_events": {
+      "name": "app_install_events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "click_code": {
+          "name": "click_code",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "device_type": {
+          "name": "device_type",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "install_timestamp": {
+          "name": "install_timestamp",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "app_install_events_click_code_unique": {
+          "name": "app_install_events_click_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "click_code"
           ]
         }
       },

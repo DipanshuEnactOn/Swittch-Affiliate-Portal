@@ -8,6 +8,7 @@ import { SignUpSchema } from "@/utils/validation";
 import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import { Config } from "@/utils/config";
+import { sendEmailToAffiliate } from "@/services/email-service";
 
 function generateVerificationToken() {
   const array = new Uint8Array(32);
@@ -60,33 +61,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const verificationLink = `${Config.env.app.app_url}/verify-email/${token}`;
+    const verificationLink = `${Config.env.app.app_url}/verify-email/${token}?userId=${newAffiliate.data.id}`;
 
     try {
-      const emailResponse = await fetch(
-        `${Config.env.app.admin_url}/send-mail-to-affiliate?userId=${
-          newAffiliate.data.id
-        }&verificationLink=${encodeURIComponent(verificationLink)}&type=verify`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // body: JSON.stringify({
-          //   userId: newAffiliate.data.id,
-          //   verificationLink: verificationLink,
-          //   type: "verify",
-          // }),
-        }
-      );
-
-      if (!emailResponse.ok) {
-        return commonResponse({
-          data: emailResponse,
-          status: "error",
-          message: t("auth.signup.errorSendingVerificationEmail"),
-        });
-      }
+      const result = await sendEmailToAffiliate({
+        type: "verify",
+        userId: newAffiliate.data.id,
+        verificationLink: verificationLink,
+      });
     } catch (error) {
       return commonResponse({
         data: error,

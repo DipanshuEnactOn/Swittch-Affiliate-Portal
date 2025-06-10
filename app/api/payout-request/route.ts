@@ -11,6 +11,7 @@ import {
 import { commonResponse } from "@/utils/response-format";
 import { NextRequest } from "next/server";
 import { Config } from "@/utils/config";
+import { sendEmailToAffiliate } from "@/services/email-service";
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -105,19 +106,11 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      const emailResponse = await fetch(
-        `${Config.env.app.admin_url}/send-mail-to-affiliate?user_id=${id}&payout_id=${result.data?.id}&type=payout_request`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // body: JSON.stringify({
-          //   payout_id: result.data?.id,
-          //   type: "payout_request",
-          // }),
-        }
-      );
+      const email = await sendEmailToAffiliate({
+        type: "payout_request",
+        user_id: id,
+        payout_id: result.data?.id.toString(),
+      });
     } catch (error) {
       return commonResponse({
         data: null,
