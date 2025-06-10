@@ -7,7 +7,7 @@ import { NextRequest } from "next/server";
 
 async function handleRequest(
   params: {
-    goal_code?: string;
+    tracking_code?: string;
     click_code?: string;
     transaction_id?: string;
     status?: string;
@@ -16,7 +16,7 @@ async function handleRequest(
 ) {
   const { t } = await createTranslation();
   try {
-    const { goal_code, click_code, transaction_id, status } = params;
+    const { tracking_code, click_code, transaction_id, status } = params;
 
     const validStatuses = Object.values(conversionStatusEnum)[1];
 

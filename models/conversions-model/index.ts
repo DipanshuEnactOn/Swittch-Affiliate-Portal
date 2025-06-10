@@ -499,8 +499,8 @@ export const getAllAffiliateTransactions = async (
   }
 };
 
-export const getAffiliateConversionsSummaryByClickCode = async (
-  clickCode: string
+export const getAffiliateConversionsSummaryByTrackingCode = async (
+  tracking_code: string
 ): Promise<{
   data: AffiliateConversionsSummaryType | null;
   message: string;
@@ -510,7 +510,7 @@ export const getAffiliateConversionsSummaryByClickCode = async (
     const result = await db
       .select()
       .from(affiliateConversionsSummary)
-      .where(eq(affiliateConversionsSummary.clickCode, clickCode))
+      .where(eq(affiliateConversionsSummary.trackingCode, tracking_code))
       .limit(1);
     return {
       data: result[0] || null,

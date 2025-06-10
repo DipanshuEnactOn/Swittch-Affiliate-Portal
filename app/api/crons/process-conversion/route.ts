@@ -11,7 +11,7 @@ import { getCampaignGoalById } from "@/models/campaign-goal-model";
 import { getCampaignById } from "@/models/campaigns-model";
 import { markClickAsConverted } from "@/models/clicks-model";
 import {
-  getAffiliateConversionsSummaryByClickCode,
+  getAffiliateConversionsSummaryByTrackingCode,
   getConversionByTransactionId,
   insertConversion,
   updateConversionStatus,
@@ -44,14 +44,14 @@ export async function POST(request: NextRequest) {
     for (const postbackLog of pendingPostbackLogs.data) {
       try {
         const body: any = postbackLog.rawPostbackData;
-        const { goal_code, click_code, transaction_id, status } = body;
+        const { tracking_code, click_code, transaction_id, status } = body;
 
         // console.log(
         //   `Processing postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
         // );
 
         const clickRecord = (
-          await getAffiliateConversionsSummaryByClickCode(click_code)
+          await getAffiliateConversionsSummaryByTrackingCode(click_code)
         )?.data;
 
         if (!clickRecord) {
@@ -68,6 +68,8 @@ export async function POST(request: NextRequest) {
           });
           continue;
         }
+
+        const goal_code = clickRecord.campaignGoalId;
 
         let campaign = (await getCampaignById(clickRecord.campaignId))?.data;
         let campaignGoal = (await getCampaignGoalById(goal_code))?.data;
