@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     for (const postbackLog of pendingPostbackLogs.data) {
       try {
         const body: any = postbackLog.rawPostbackData;
-        const { goal_id, click_code, transaction_id, status } = body;
+        const { goal_code, click_code, transaction_id, status } = body;
 
         console.log(
           `Processing postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         }
 
         let campaign = (await getCampaignById(clickRecord.campaignId))?.data;
-        let campaignGoal = (await getCampaignGoalById(goal_id))?.data;
+        let campaignGoal = (await getCampaignGoalById(goal_code))?.data;
         let affiliateCampaignGoal = null;
 
         if (!campaign || !campaignGoal) {
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
         }
 
         affiliateCampaignGoal = (
-          await getAffiliateCampaignGoalById(Number(goal_id))
+          await getAffiliateCampaignGoalById(Number(goal_code))
         )?.data;
 
         const existingConversion = (
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
           }
 
           const newConversion: NewConversion = {
-            campaignGoalId: goal_id ? Number(goal_id) : 1,
+            campaignGoalId: goal_code ? Number(goal_code) : 1,
             campaignId: clickRecord.campaignId
               ? Number(clickRecord.campaignId)
               : 1,
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
             await getAffiliatePostbackByCampaignAndGoal(
               clickRecord.affiliateId,
               clickRecord.campaignId ? Number(clickRecord.campaignId) : 1,
-              goal_id ? Number(goal_id) : 1
+              goal_code ? Number(goal_code) : 1
             )
           )?.data;
 
@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
                 campaign_id: clickRecord.campaignId
                   ? Number(clickRecord.campaignId)
                   : 1,
-                campaign_goal_id: goal_id ? Number(goal_id) : 1,
+                campaign_goal_code: goal_code ? Number(goal_code) : 1,
                 conversion_id: conversionData.id,
                 conversion_value: conversionData.conversionValue,
                 commission_value: conversionData.commission,

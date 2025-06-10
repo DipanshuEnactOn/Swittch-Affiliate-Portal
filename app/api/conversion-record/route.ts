@@ -4,19 +4,24 @@ import { getClickByClickCode } from "@/models/clicks-model";
 import { insertPostbackLog } from "@/models/postback-log-model";
 import { commonResponse } from "@/utils/response-format";
 import { NextRequest } from "next/server";
-import { postbackStatusEnum } from "@/db/schema";
 
-export async function POST(request: NextRequest) {
+async function handleRequest(
+  params: {
+    goal_code?: string;
+    click_code?: string;
+    transaction_id?: string;
+    status?: string;
+  },
+  request: NextRequest
+) {
   const { t } = await createTranslation();
-
   try {
-    const body = await request.json();
-    const { goal_id, click_code, transaction_id, status } = body;
+    const { goal_code, click_code, transaction_id, status } = params;
 
     const validStatuses = Object.values(conversionStatusEnum)[1];
 
     if (
-      !validStatuses.includes(status) ||
+      !validStatuses.includes(status!) ||
       status === "paid" ||
       status === undefined ||
       status === null
@@ -33,10 +38,9 @@ export async function POST(request: NextRequest) {
       ? forwarded.split(",")[0]
       : request.ip || "unknown";
 
-    const clickRecord = (await getClickByClickCode(click_code))?.data;
-    const transactionId = transaction_id;
+    const clickRecord = (await getClickByClickCode(click_code!))?.data;
 
-    if (!transactionId) {
+    if (!transaction_id) {
       return commonResponse({
         data: null,
         status: "error",
@@ -53,13 +57,13 @@ export async function POST(request: NextRequest) {
     }
 
     const data: NewPostbackLog = {
-      rawPostbackData: body,
-      transactionId: transactionId,
+      rawPostbackData: params,
+      transactionId: transaction_id!,
       status: "pending",
       statusMessages: null,
       receivedAt: new Date().toISOString(),
     };
-    console.log("Postback log data:", data);
+
     const postback_log = await insertPostbackLog(data);
 
     if (postback_log.status === "error") {
@@ -83,4 +87,26 @@ export async function POST(request: NextRequest) {
       message: t("conversion.invalidData"),
     });
   }
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const params = {
+    goal_code: searchParams.get("goal_code") || undefined,
+    click_code: searchParams.get("click_code") || undefined,
+    transaction_id: searchParams.get("transaction_id") || undefined,
+    status: searchParams.get("status") || undefined,
+  };
+  return handleRequest(params, request);
+}
+
+export async function POST(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const params = {
+    goal_code: searchParams.get("goal_code") || undefined,
+    click_code: searchParams.get("click_code") || undefined,
+    transaction_id: searchParams.get("transaction_id") || undefined,
+    status: searchParams.get("status") || undefined,
+  };
+  return handleRequest(params, request);
 }
