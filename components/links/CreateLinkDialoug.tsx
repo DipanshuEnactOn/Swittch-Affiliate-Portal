@@ -170,7 +170,7 @@ export function CreateAffiliateLink() {
                     placeholder={t("affiliateLink.sub1Placeholder")}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.name}
+                    value={values.sub1}
                   />
                   {touched.sub1 && errors.sub1 && (
                     <p className="text-sm text-red-500">{errors.sub1}</p>
@@ -186,7 +186,7 @@ export function CreateAffiliateLink() {
                     placeholder={t("affiliateLink.sub2Placeholder")}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.name}
+                    value={values.sub2}
                   />
                   {touched.sub2 && errors.sub2 && (
                     <p className="text-sm text-red-500">{errors.sub2}</p>
@@ -202,7 +202,7 @@ export function CreateAffiliateLink() {
                     placeholder={t("affiliateLink.sub3Placeholder")}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.name}
+                    value={values.sub3}
                   />
                   {touched.sub3 && errors.sub3 && (
                     <p className="text-sm text-red-500">{errors.sub3}</p>

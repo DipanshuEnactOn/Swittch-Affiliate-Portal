@@ -4,6 +4,7 @@ import { createTranslation } from "@/i18n/server";
 import { getAffiliateCampaignGoalsByCampaignId } from "@/models/affiliate-campaign-goal-model";
 import { getAuthSession } from "@/models/auth-models";
 import { getCampaignGoalsByCampaignId } from "@/models/campaign-goal-model";
+import { getCurrencySymbol } from "@/utils/getCurrency";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
 
@@ -18,7 +19,12 @@ export async function ActiveCampaign({
     (await getCampaignGoalsByCampaignId(campaign?.id || 1)).data || [];
 
   const affiliateCampaignGoals =
-    (await getAffiliateCampaignGoalsByCampaignId(campaign?.id || 1)).data || [];
+    (
+      await getAffiliateCampaignGoalsByCampaignId(
+        campaign?.id || 1,
+        user.user.id
+      )
+    ).data || [];
 
   const finalGoals = campaignGoals
     .filter((goal) => goal.status === "active")
@@ -78,10 +84,11 @@ export async function ActiveCampaign({
                         <CheckCircle className="h-4 w-4 text-blue-500" />
                         <span className="text-sm">{goal.name}</span>
                         <span className="text-sm font-medium ml-auto">
-                          {t("campaign.earn").replace(
-                            "{amount}",
-                            String(goal.amount ?? 0)
-                          )}
+                          {getCurrencySymbol() +
+                            t("campaign.earn").replace(
+                              "{amount}",
+                              String(goal.amount ?? 0)
+                            )}
                         </span>
                       </div>
                     ))}

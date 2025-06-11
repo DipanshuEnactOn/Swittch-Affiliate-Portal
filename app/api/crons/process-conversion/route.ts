@@ -1,17 +1,18 @@
-import {
-  affiliateConversionsSummary,
-  Conversion,
-  NewConversion,
-} from "@/db/schema";
+import { Conversion, NewConversion } from "@/db/schema";
 import { createTranslation } from "@/i18n/server";
 import { getAffiliateCampaignGoalById } from "@/models/affiliate-campaign-goal-model";
-import { getAffiliateLinkNameById } from "@/models/affiliate-link-model";
-import { getAffiliatePostbackByCampaignAndGoal } from "@/models/affiliate-postback-model";
-import { getCampaignGoalById } from "@/models/campaign-goal-model";
-import { getCampaignById } from "@/models/campaigns-model";
-import { markClickAsConverted } from "@/models/clicks-model";
 import {
-  getAffiliateConversionsSummaryByTrackingCode,
+  getAffiliateLinkNameById,
+  updateAffiliateLinkStats,
+} from "@/models/affiliate-link-model";
+import { getAffiliatePostbackByCampaignAndGoal } from "@/models/affiliate-postback-model";
+import { getCampaignGoalByTrackingCode } from "@/models/campaign-goal-model";
+import { getCampaignById } from "@/models/campaigns-model";
+import {
+  getClickByClickCode,
+  markClickAsConverted,
+} from "@/models/clicks-model";
+import {
   getConversionByTransactionId,
   insertConversion,
   updateConversionStatus,
@@ -49,10 +50,14 @@ export async function POST(request: NextRequest) {
         // console.log(
         //   `Processing postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`
         // );
-
-        const clickRecord = (
-          await getAffiliateConversionsSummaryByTrackingCode(click_code)
-        )?.data;
+        // console.log(
+        //   "Receieved data:",
+        //   tracking_code,
+        //   click_code,
+        //   transaction_id,
+        //   status
+        // );
+        const clickRecord = (await getClickByClickCode(click_code))?.data;
 
         if (!clickRecord) {
           // console.log(
@@ -69,11 +74,21 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        const goal_code = clickRecord.campaignGoalId;
+        // console.log(
+        //   `Click record found for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`,
+        //   clickRecord
+        // );
 
         let campaign = (await getCampaignById(clickRecord.campaignId))?.data;
-        let campaignGoal = (await getCampaignGoalById(goal_code))?.data;
+        let campaignGoal = (await getCampaignGoalByTrackingCode(tracking_code))
+          ?.data;
         let affiliateCampaignGoal = null;
+
+        // console.log(
+        //   `Campaign and campaign goal found for postback log ID: ${postbackLog.id}, Transaction ID: ${transaction_id}`,
+        //   campaign,
+        //   campaignGoal
+        // );
 
         if (!campaign || !campaignGoal) {
           // console.log(
@@ -89,6 +104,7 @@ export async function POST(request: NextRequest) {
           });
           continue;
         }
+        const goal_code = campaignGoal.id;
 
         affiliateCampaignGoal = (
           await getAffiliateCampaignGoalById(Number(goal_code))
@@ -170,9 +186,9 @@ export async function POST(request: NextRequest) {
             transactionId: transaction_id,
             conversionValue,
             commission,
-            sub1: clickRecord.linkSub1,
-            sub2: clickRecord.linkSub2,
-            sub3: clickRecord.linkSub3,
+            sub1: clickRecord.sub1,
+            sub2: clickRecord.sub2,
+            sub3: clickRecord.sub3,
             status: status || "pending",
             postbackLogId: postbackLog.id,
             createdAt: new Date(),
@@ -199,6 +215,12 @@ export async function POST(request: NextRequest) {
 
           await markClickAsConverted(clickRecord.clickCode);
 
+          const updateLinkEarnings = await updateAffiliateLinkStats(
+            clickRecord.affiliateLinkId,
+            undefined,
+            conversionData.commission
+          );
+
           const affiliatePostback = (
             await getAffiliatePostbackByCampaignAndGoal(
               clickRecord.affiliateId,
@@ -219,7 +241,7 @@ export async function POST(request: NextRequest) {
                   ? Number(clickRecord.campaignId)
                   : 1,
                 link_name: link_name,
-                goal_name: clickRecord.goalName,
+                goal_name: campaignGoal?.name,
                 campaign_goal_id: goal_code ? Number(goal_code) : 1,
                 conversion_id: conversionData.id,
                 conversion_value: conversionData.conversionValue,

@@ -6,6 +6,7 @@ import { Database, CreditCard, Clock, Wallet } from "lucide-react";
 import { Button } from "../ui/button";
 import { PayoutRequest } from "./PayoutRequestDialoug";
 import { useTranslation } from "@/i18n/client";
+import { getCurrencySymbol } from "@/utils/getCurrency";
 
 export default function EarningCards({ earningsData }: any) {
   const { t } = useTranslation();
@@ -54,7 +55,7 @@ export default function EarningCards({ earningsData }: any) {
                 <div className="flex flex-col">
                   <p className="text-sm text-gray-600 mb-1">{label}</p>
                   <p className={`text-2xl font-semibold text-${color}-600`}>
-                    {Number(amount).toFixed(2)}
+                    {getCurrencySymbol() + Number(amount).toFixed(2)}
                   </p>
                 </div>
               </div>

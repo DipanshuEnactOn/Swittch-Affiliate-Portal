@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { useState } from "react";
+import { getCurrencySymbol } from "@/utils/getCurrency";
 
 export function PayoutRequest({ open, setOpen, amount, type }: any) {
   const { t } = useTranslation();
@@ -64,7 +65,11 @@ export function PayoutRequest({ open, setOpen, amount, type }: any) {
 
         <div>
           <h3>{t("payouts.confirmation")}</h3>
-          <h5>{t("payouts.amountText").replace("{amount}", amount)}</h5>
+          <h5>
+            {t("payouts.amountText")
+              .replace("{amount}", amount)
+              .replace("{currency}", getCurrencySymbol())}
+          </h5>
         </div>
 
         <DialogFooter>

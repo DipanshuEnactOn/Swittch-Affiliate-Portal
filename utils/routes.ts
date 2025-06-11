@@ -4,6 +4,7 @@ export const AppRoutes = {
     signUp: "/signup",
     forgot_password: "/forgot-password",
     pending: "/pending",
+    verify_email: "/verify-email",
   },
   dashboard: "/dashboard",
   links: "/links",

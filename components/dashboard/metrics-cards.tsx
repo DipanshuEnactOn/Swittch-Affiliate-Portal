@@ -5,6 +5,7 @@ import { getClicksByAffiliateId } from "@/models/clicks-model";
 import { getConversionStatsForAffiliate } from "@/models/conversions-model";
 import { LightbulbIcon, Link, DollarSign } from "lucide-react";
 import { createTranslation } from "@/i18n/server";
+import { getCurrencySymbol } from "@/utils/getCurrency";
 
 export async function MetricsCards() {
   const { t } = await createTranslation();
@@ -29,7 +30,10 @@ export async function MetricsCards() {
       />
       <MetricCard
         title={t("metrics.totalEarnings")}
-        value={userAllEarnings?.totalCommission?.toLocaleString() || "0"}
+        value={
+          getCurrencySymbol() +
+            userAllEarnings?.totalCommission?.toLocaleString() || "0"
+        }
         icon={<DollarSign className="h-6 w-6 text-blue-500" />}
       />
     </div>

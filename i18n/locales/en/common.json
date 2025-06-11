@@ -110,7 +110,7 @@
   "bankDetailsUpdated": "Bank details updated successfully",
   "payout_title": "Payout Request",
   "confirmation": "Are you sure you want to withdraw?",
-  "amountText": "Your withdrawal amount is {amount}.",
+  "amountText": "Your withdrawal amount is {currency}{amount}.",
   "cancel": "Cancel",
   "confirm": "Confirm",
   "successTitle": "Success",
@@ -268,7 +268,7 @@
   "goals": "Campaign Goals",
   "fallbackTitle": "Campaign Title",
   "fallbackDescription": "Campaign Description.",
-  "earn": "Earn {amount}"
+  "earn": "{amount}"
 },
 "earnings": {
   "chartTitle": "Total Earnings ($)",

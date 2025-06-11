@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { payouts } from "@/db/schema";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, or, sql, sum } from "drizzle-orm";
 
 export const getAllPayouts = async ({ filters }: any) => {
   try {
@@ -358,6 +358,34 @@ export const deletePayout = async (id: number) => {
     return {
       data: result,
       message: "Payout deleted successfully",
+      status: "success",
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      message: error.message || "An error occurred",
+      status: "error",
+    };
+  }
+};
+
+export const getInProcessPayoutsAmountByAffiliateId = async (
+  affiliateId: number
+) => {
+  try {
+    const result = await db
+      .select({ amout: sum(payouts.requestedAmount) })
+      .from(payouts)
+      .where(
+        and(
+          eq(payouts.affiliateId, affiliateId),
+          or(eq(payouts.status, "pending"), eq(payouts.status, "processing"))
+        )
+      );
+
+    return {
+      data: result[0] || null,
+      message: "ok",
       status: "success",
     };
   } catch (error: any) {

@@ -92,7 +92,7 @@ async function handleRequest(
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const params = {
-    goal_code: searchParams.get("goal_code") || undefined,
+    tracking_code: searchParams.get("tracking_code") || undefined,
     click_code: searchParams.get("click_code") || undefined,
     transaction_id: searchParams.get("transaction_id") || undefined,
     status: searchParams.get("status") || undefined,
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const params = {
-    goal_code: searchParams.get("goal_code") || undefined,
+    tracking_code: searchParams.get("tracking_code") || undefined,
     click_code: searchParams.get("click_code") || undefined,
     transaction_id: searchParams.get("transaction_id") || undefined,
     status: searchParams.get("status") || undefined,

@@ -30,6 +30,7 @@ export async function middleware(req: NextRequest) {
     signUp: AppRoutes.auth.signUp,
     forgotPassword: AppRoutes.auth.forgot_password,
     pending: AppRoutes.auth.pending,
+    verify_email: AppRoutes.auth.verify_email,
   };
 
   const isAuthPath = [

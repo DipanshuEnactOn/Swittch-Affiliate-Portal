@@ -24,6 +24,7 @@ import { payoutStatusColors } from "@/utils/get-color-for-status";
 import TablePagination from "../TablePagination";
 import { useTranslation } from "@/i18n/client";
 import moment from "moment";
+import { getCurrencySymbol } from "@/utils/getCurrency";
 
 type PayoutStatus = "paid" | "pending" | "rejected" | "processing";
 
@@ -52,7 +53,7 @@ export default function PayoutsTable({ data }: any) {
         const rowValue = row.original;
         return (
           <div className="flex items-center text-gray-900 font-medium">
-            {rowValue.requestedAmount}
+            {getCurrencySymbol() + rowValue.requestedAmount}
           </div>
         );
       },

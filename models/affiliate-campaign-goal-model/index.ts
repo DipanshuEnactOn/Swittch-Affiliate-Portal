@@ -125,13 +125,19 @@ export const getAffiliateCampaignGoalsByAffiliateId = async (
 };
 
 export const getAffiliateCampaignGoalsByCampaignId = async (
-  campaignId: number
+  campaignId: number,
+  affiliateId: number
 ) => {
   try {
     const result = await db
       .select()
       .from(affiliateCampaignGoals)
-      .where(eq(affiliateCampaignGoals.campaignId, campaignId));
+      .where(
+        and(
+          eq(affiliateCampaignGoals.campaignId, campaignId),
+          eq(affiliateCampaignGoals.affiliateId, affiliateId)
+        )
+      );
 
     return {
       data: result,

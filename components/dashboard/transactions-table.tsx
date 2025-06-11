@@ -26,6 +26,7 @@ import moment from "moment";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import TablePagination from "../TablePagination";
+import { getCurrencySymbol } from "@/utils/getCurrency";
 
 interface Transaction {
   conversionId: number;
@@ -137,9 +138,10 @@ export function TransactionsTable({ transactions }: any) {
     {
       accessorKey: "commission",
       header: t("transactions.earning"),
-      cell: ({ row }) => (
+      cell: ({ row }: { row: any }) => (
         <div className="flex items-center">
-          ${Number(row.original.commission || 0).toFixed(2)}
+          {getCurrencySymbol() +
+            Number(row.original.commission || 0).toFixed(2)}
         </div>
       ),
     },

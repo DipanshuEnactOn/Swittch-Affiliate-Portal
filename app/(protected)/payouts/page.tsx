@@ -7,6 +7,7 @@ import { getAuthSession } from "@/models/auth-models";
 import { getEarningsDataForAffiliate } from "@/models/conversions-model";
 import {
   getApprovedPayoutsByAffiliateId,
+  getInProcessPayoutsAmountByAffiliateId,
   getPayoutsByAffiliateId,
 } from "@/models/payouts-model";
 import { createTranslation } from "@/i18n/server";
@@ -35,6 +36,10 @@ export default async function PayoutsPage({ searchParams }: any) {
       })
     )?.data || [];
 
+  const inPayoutsRequestsAmount = (
+    await getInProcessPayoutsAmountByAffiliateId(user.user.id)
+  )?.data?.amout;
+
   const affiliatePaidAmount = (
     await getApprovedPayoutsByAffiliateId(user.user.id)
   )?.data;
@@ -46,7 +51,9 @@ export default async function PayoutsPage({ searchParams }: any) {
     pendingEarnings: affiliateEarnings.pendingEarning || 0,
     paidEarnings: affiliatePaidAmount || 0,
     availableAmount:
-      (affiliateEarnings.totalEarnings || 0) - (affiliatePaidAmount || 0),
+      (affiliateEarnings.totalEarnings || 0) -
+      (affiliatePaidAmount || 0) -
+      (Number(inPayoutsRequestsAmount) || 0),
   };
 
   return (
