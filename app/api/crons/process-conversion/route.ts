@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
               : 1,
             clickCode: clickRecord.clickCode,
             affiliateId: clickRecord.affiliateId,
-            transactionId: transaction_id,
+            transactionId: `${transaction_id}_${goal_code}`,
             conversionValue,
             commission,
             sub1: clickRecord.sub1,

@@ -65,9 +65,9 @@ export const PersonalInformationSchema = Yup.object().shape({
 
 export const AffiliateLinkSchema = Yup.object({
   link: Yup.string()
-    .required("URL is required")
-    .min(3, "URL must be at least 3 characters")
-    .max(50, "URL must be less than 50 characters")
+    .required("Keyword is required")
+    .min(3, "Keyword must be at least 3 characters")
+    .max(50, "Keyword must be less than 50 characters")
     .matches(
       /^[a-zA-Z0-9-_]+$/,
       "URL can only contain letters, numbers, hyphens, and underscores"

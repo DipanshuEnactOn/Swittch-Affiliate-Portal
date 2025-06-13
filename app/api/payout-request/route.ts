@@ -12,6 +12,7 @@ import { commonResponse } from "@/utils/response-format";
 import { NextRequest } from "next/server";
 import { Config } from "@/utils/config";
 import { sendEmailToAffiliate } from "@/services/email-service";
+import CryptoJS from "crypto-js";
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -80,6 +81,15 @@ export async function POST(request: NextRequest) {
       };
     }
 
+    const generateTransactionId = () => {
+      const timestamp = Date.now().toString(36);
+      const randomString =
+        affiliate.email + Math.random().toString(36) + Date.now().toString(36);
+      const randomPart = CryptoJS.MD5(randomString).toString().substring(0, 10);
+
+      return `${timestamp}-${randomPart}`;
+    };
+
     const data: NewPayout = {
       affiliateId: id,
       paymentMethod: type,
@@ -90,6 +100,7 @@ export async function POST(request: NextRequest) {
             affiliate.bankDetails?.accountNumber || "",
       requestedAmount: amount,
       paymentDetails: JSON.stringify(payment_details),
+      transactionId: generateTransactionId(),
       status: "pending",
       createdAt: new Date(),
       updatedAt: new Date(),

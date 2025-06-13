@@ -42,10 +42,10 @@ export default async function page({
     return redirect(AppRoutes.auth.signIn);
   }
 
-  const res = await sendEmailToAffiliate({
-    type: "welcome",
-    userId: userId,
-  });
+  // const res = await sendEmailToAffiliate({
+  //   type: "welcome",
+  //   userId: userId,
+  // });
 
   return (
     <>
